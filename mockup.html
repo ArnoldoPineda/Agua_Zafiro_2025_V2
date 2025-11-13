@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capturador - Agua Zafiro</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div>
+      <h1>💧 AGUA ZAFIRO</h1>
+      <p>Control de Ventas y Gastos Diario</p>
+    </div>
+    <div class="nav-actions">
+      <span class="status">● Sistema Activo</span>
+      <button class="btn import">⬆ Importar</button>
+      <button class="btn export">⬇ Exportar</button>
+      <button class="btn login">Login</button>
+      <span class="records">58 registros</span>
+    </div>
+  </div>
+
+  <!-- FORMULARIO -->
+  <div class="section">
+    <h2><i class="fa-solid fa-clipboard"></i> Capturar Información Diaria</h2>
+
+    <!-- Fecha y Caja Inicial -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="fecha">📅 Fecha:</label>
+        <input type="date" id="fecha" name="fecha">
+      </div>
+      <div class="form-group">
+        <label for="caja">💰 Caja Inicial (L.):</label>
+        <input type="number" id="caja" name="caja" value="0">
+      </div>
+    </div>
+  </div>
+
+  <!-- Ventas -->
+  <div class="section">
+    <h2><i class="fa-solid fa-box"></i> Ventas</h2>
+    <div id="ventas-container"></div>
+  </div>
+
+  <!-- Gastos -->
+  <div class="section">
+    <h2><i class="fa-solid fa-money-bill-wave"></i> Gastos</h2>
+    <div id="gastos-container"></div>
+  </div>
+
+  <!-- Créditos -->
+  <div class="section">
+    <h2><i class="fa-solid fa-file-invoice-dollar"></i> Créditos</h2>
+    <div id="creditos-container"></div>
+  </div>
+
+  <!-- Resumen -->
+  <div class="section resumen-dia">
+    <h2><i class="fa-solid fa-chart-line"></i> Resumen del Día</h2>
+    <div class="resumen">
+      <div class="card caja">Caja Inicial: L.<span id="res-caja">0.00</span></div>
+      <div class="card venta">Total Ventas: L.<span id="res-ventas">0.00</span></div>
+      <div class="card gasto">Total Gastos: L.<span id="res-gastos">0.00</span></div>
+      <div class="card credito">Total Créditos: L.<span id="res-creditos">0.00</span></div>
+      <div class="card resultado">Resultado Final: L.<span id="res-final">0.00</span></div>
+    </div>
+
+    <!-- Observaciones y Fotos -->
+    <div class="form-row">
+      <div class="form-group wide">
+        <label><i class="fa-solid fa-pen"></i> Observaciones del Día</label>
+        <textarea placeholder="Escribe observaciones..."></textarea>
+      </div>
+      <div class="form-group">
+        <label><i class="fa-solid fa-camera"></i> Subir Fotos (máx. 3)</label>
+        <div class="foto-inputs">
+          <label class="upload-icon">
+            <i class="fa-solid fa-camera"></i>
+            <input type="file" accept="image/*" capture="environment">
+          </label>
+          <label class="upload-icon">
+            <i class="fa-solid fa-camera"></i>
+            <input type="file" accept="image/*" capture="environment">
+          </label>
+          <label class="upload-icon">
+            <i class="fa-solid fa-camera"></i>
+            <input type="file" accept="image/*" capture="environment">
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="footer-actions">
+      <button class="btn save"><i class="fa-solid fa-floppy-disk"></i> Guardar Registro Completo</button>
+      <button class="btn clear"><i class="fa-solid fa-broom"></i> Limpiar Todo</button>
+    </div>
+  </div>
+
+  <script src="capturador.js"></script>
+</body>
+</html>

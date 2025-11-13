@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calendario de Registros</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <!-- 🎨 FONTAWESOME PARA ICONOS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Estilos específicos para el calendario */
+    .calendar-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 15px;
+      color: white;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .calendar-nav-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .calendar-nav-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .calendar-title {
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .calendar-legend {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 15px;
+      background: white;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid white;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .legend-color.con-info { background: #10b981; }
+    .legend-color.hoy { background: #f59e0b; }
+    .legend-color.sin-info { background: #e5e7eb; }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background: #e5e7eb;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .calendar-day-header {
+      background: #374151;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .calendar-day {
+      background: #f9fafb;
+      min-height: 100px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .calendar-day:hover {
+      transform: scale(1.02);
+      z-index: 10;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .calendar-day.con-info {
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+      border-left: 4px solid #10b981;
+    }
+
+    .calendar-day.hoy {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border-left: 4px solid #f59e0b;
+      font-weight: 700;
+    }
+
+    .calendar-day.sin-info {
+      background: #f3f4f6;
+      color: #9ca3af;
+    }
+
+    .calendar-day.other-month {
+      background: #f8fafc;
+      color: #cbd5e1;
+    }
+
+    .day-number {
+      font-size: 18px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .calendar-day.hoy .day-number {
+      color: #92400e;
+    }
+
+    .calendar-day.sin-info .day-number {
+      color: #9ca3af;
+    }
+
+    .day-indicator {
+      align-self: flex-end;
+      margin-top: 10px;
+    }
+
+    .info-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      display: inline-block;
+    }
+
+    .day-summary {
+      font-size: 10px;
+      color: #6b7280;
+      margin-top: 5px;
+      text-align: center;
+    }
+
+    .calendar-day.con-info .day-summary {
+      color: #065f46;
+      font-weight: 600;
+    }
+
+    .stats-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      padding: 30px;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    .stats-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .stats-header h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stat-number {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      opacity: 0.9;
+      font-weight: 500;
+    }
+
+    .day-detail-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-content.edit-mode {
+      max-width: 900px;
+      width: 95%;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #6b7280;
+    }
+
+    .modal-close:hover {
+      color: #ef4444;
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .quick-action-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .quick-action-btn:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+    }
+
+    .quick-action-btn.success {
+      background: #10b981;
+    }
+
+    .quick-action-btn.success:hover {
+      background: #059669;
+    }
+
+    .quick-action-btn.danger {
+      background: #ef4444;
+    }
+
+    .quick-action-btn.danger:hover {
+      background: #dc2626;
+    }
+
+    .admin-only {
+      display: none;
+    }
+
+    /* Estilos para el modo de edición */
+    .edit-form {
+      display: none;
+    }
+
+    .edit-form.active {
+      display: block;
+    }
+
+    .form-section {
+      margin-bottom: 25px;
+      padding: 20px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      background: #f9fafb;
+    }
+
+    .section-title-edit {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .form-group {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .mini-registros {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mini-registro {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      background: white;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .mini-registro input,
+    .mini-registro select {
+      flex: 1;
+      margin: 0;
+      padding: 6px 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    .remove-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .add-btn {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .resumen {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-align: center;
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .card.venta {
+      background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+      color: #065f46;
+    }
+
+    .card.gasto {
+      background: linear-gradient(135deg, #fef2f2, #fecaca);
+      color: #991b1b;
+    }
+
+    .card.credito {
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      color: #1e40af;
+    }
+
+    .card.resultado {
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      color: #166534;
+      font-size: 18px;
+    }
+
+    @media (max-width: 768px) {
+      .calendar-grid {
+        gap: 0;
+      }
+      
+      .calendar-day {
+        min-height: 80px;
+        padding: 8px;
+      }
+      
+      .calendar-header {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .calendar-legend {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .modal-content.edit-mode {
+        width: 98%;
+        padding: 15px;
+        max-height: 90vh;
+      }
+
+      .form-row {
+        flex-direction: column;
+      }
+
+      .mini-registro {
+        flex-direction: column;
+      }
+
+      .mini-registro input,
+      .mini-registro select {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+ <!-- NAVBAR MEJORADA -->
+<nav class="navbar">
+  <h1>💧 Agua Zafiro</h1>
+  <div class="nav-actions">
+    <div class="status"><i class="fas fa-circle"></i> Sistema Activo</div>
+    <button class="btn import"><i class="fas fa-upload"></i> Importar</button>
+    <button class="btn export"><i class="fas fa-download"></i> Exportar</button>
+    <a href="capturador.html" class="nav-btn">
+      <i class="fas fa-clipboard-list"></i>
+      <span>Capturador</span>
+    </a>
+    <a href="calendario.html" class="nav-btn active">
+      <i class="fas fa-calendar-alt"></i>
+      <span>Calendario</span>
+    </a>
+    <a href="dashboard.html" class="nav-btn">
+      <i class="fas fa-chart-line"></i>
+      <span>Dashboard</span>
+    </a>
+
+<!-- ✅ AGREGAR AQUÍ -->
+    <a href="produccion.html" class="nav-btn admin-only">
+      <i class="fas fa-industry"></i>
+      <span>Producción</span>
+    </a>
+
+    <!-- El botón de login/logout se agrega dinámicamente por auth.js -->
+  </div>
+</nav>
+      
+
+  <!-- CONTENIDO DEL CALENDARIO -->
+  <div class="calendar-container">
+    <!-- Header del Calendario -->
+    <div class="calendar-header">
+      <button class="calendar-nav-btn" onclick="cambiarMes(-1)">⬅ Anterior</button>
+      <div class="calendar-title" id="calendarTitle">Septiembre 2025</div>
+      <button class="calendar-nav-btn" onclick="cambiarMes(1)">Siguiente ➡</button>
+    </div>
+
+    <!-- Leyenda -->
+    <div class="calendar-legend">
+      <div class="legend-item">
+        <div class="legend-color con-info"></div>
+        <span>Con información</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color hoy"></div>
+        <span>Día actual</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color sin-info"></div>
+        <span>Sin información</span>
+      </div>
+    </div>
+
+    <!-- Grid del Calendario -->
+    <div class="calendar-grid" id="calendarGrid">
+      <!-- Se genera dinámicamente con JavaScript -->
+    </div>
+
+    <!-- Estadísticas del Mes -->
+    <div class="stats-section">
+      <div class="stats-header">
+        <h2>📊 Estadísticas del Mes</h2>
+        <p>Resumen de actividad y rendimiento</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number" id="diasTrabajados">-</span>
+          <span class="stat-label">Días Trabajados</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number" id="diasPendientes">-</span>
+          <span class="stat-label">Días Pendientes</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number" id="porcentajeCompleto">-%</span>
+          <span class="stat-label">% Completado</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number" id="ventasTotales">L. -</span>
+          <span class="stat-label">Ventas del Mes</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones Rápidas -->
+    <div class="quick-actions">
+      <button class="quick-action-btn success" onclick="irACapturador()">📝 Nuevo Registro</button>
+      <button class="quick-action-btn" onclick="verDashboard()">📊 Ver Dashboard</button>
+      <button class="quick-action-btn" onclick="exportarMes()">📄 Exportar Mes</button>
+    </div>
+  </div>
+
+  <!-- Modal para detalles del día -->
+  <div class="day-detail-modal" id="dayModal">
+    <div class="modal-content" id="modalContent">
+      <div class="modal-header">
+        <h3 id="modalTitle">Detalles del Día</h3>
+        <button class="modal-close" onclick="cerrarModal()">×</button>
+      </div>
+      
+      <!-- Vista de solo lectura -->
+      <div id="readOnlyContent">
+        <!-- Contenido dinámico -->
+      </div>
+      
+      <!-- Formulario de edición -->
+      <div class="edit-form" id="editForm">
+        
+        <!-- Información básica -->
+        <div class="form-section">
+          <div class="section-title-edit">📑 Información del Día</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Fecha:</label>
+              <input type="date" id="editFecha" readonly>
+            </div>
+            <div class="form-group">
+              <label>Caja Inicial (L.):</label>
+              <input type="number" id="editCajaInicial" value="0" step="0.01" min="0">
+            </div>
+          </div>
+        </div>
+
+        <!-- Ventas -->
+        <div class="form-section">
+          <div class="section-title-edit">📦 Ventas</div>
+          <div class="mini-registros" id="editVentas">
+            <!-- Se generan dinámicamente -->
+          </div>
+          <button type="button" class="add-btn" onclick="agregarVentaEdit()">+ Agregar Venta</button>
+        </div>
+
+        <!-- Gastos -->
+        <div class="form-section">
+          <div class="section-title-edit">💸 Gastos</div>
+          <div class="mini-registros" id="editGastos">
+            <!-- Se generan dinámicamente -->
+          </div>
+          <button type="button" class="add-btn" onclick="agregarGastoEdit()">+ Agregar Gasto</button>
+        </div>
+
+        <!-- Créditos -->
+        <div class="form-section">
+          <div class="section-title-edit">📑 Créditos</div>
+          <div class="mini-registros" id="editCreditos">
+            <!-- Se generan dinámicamente -->
+          </div>
+          <button type="button" class="add-btn" onclick="agregarCreditoEdit()">+ Agregar Crédito</button>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="form-section">
+          <div class="section-title-edit">📝 Observaciones</div>
+          <div class="form-group">
+            <textarea id="editObservaciones" rows="3" placeholder="Observaciones del día..."></textarea>
+          </div>
+        </div>
+      </div>
+      
+      <div class="quick-actions" id="modalActions">
+        <!-- Botones dinámicos según el modo -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 📡 SUPABASE CDN - ORDEN CORRECTO -->
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+<script src="roles.js"></script>
+<script src="auth.js"></script>
+
+  <script>
+    // ===== CALENDARIO CON SUPABASE - AGUA ZAFIRO =====
+
+    // Variables globales
+    let mesActual = new Date().getMonth();
+    let anoActual = new Date().getFullYear();
+    let diaHoy = new Date().getDate();
+    let fechaEditando = null;
+    let modoEdicion = false;
+    let esAdmin = false;
+    let catalogosData = {};
+    let registrosDelMes = {};
+
+    const nombresMeses = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+
+    const nombresDias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', async function() {
+  console.log('🗓️ Iniciando Calendario con Supabase...');
+  
+  // Verificar permisos y configurar UI
+  const currentUser = checkPagePermissions();
+  if (!currentUser) return;
+  displayUserInfo();
+  setupRoleBasedUI(currentUser.role);
+  verificarPermisos();
+
+      
+      // Cargar catálogos desde Supabase
+      await cargarCatalogos();
+      
+      // Cargar datos del mes y generar calendario
+      await cargarRegistrosDelMes();
+      generarCalendario();
+      actualizarEstadisticas();
+      
+      console.log('✅ Calendario inicializado correctamente');
+    });
+
+    async function cargarCatalogos() {
+      console.log('📋 Cargando catálogos desde Supabase...');
+      
+      try {
+        const tipos = ['vendedores', 'ciudades', 'productos', 'gastos', 'creditos'];
+        
+        for (const tipo of tipos) {
+          const result = await SupabaseData.getCatalogs(tipo);
+          if (result.success) {
+            catalogosData[tipo] = result.data.map(item => item.valor);
+            console.log(`✅ ${tipo}: ${result.data.length} elementos`);
+          } else {
+            console.error(`❌ Error cargando ${tipo}:`, result.error);
+            catalogosData[tipo] = [];
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error cargando catálogos:', error);
+      }
+    }
+
+   async function cargarRegistrosDelMes() {
+  console.log('📊 Cargando registros del mes desde Supabase...');
+  
+  try {
+    // Obtener primer y último día del mes
+    const primerDia = new Date(anoActual, mesActual, 1);
+    const ultimoDia = new Date(anoActual, mesActual + 1, 0);
+    
+    const fechaInicio = primerDia.toISOString().split('T')[0];
+    const fechaFin = ultimoDia.toISOString().split('T')[0];
+    
+    console.log(`📅 Consultando desde ${fechaInicio} hasta ${fechaFin}`);
+    
+    // CONSULTA DIRECTA A SUPABASE CON FILTRO DE FECHAS
+    const { data: records, error } = await supabaseClient
+      .from('daily_records')
+      .select(`
+        fecha,
+        caja_inicial,
+        observaciones,
+        sales(vendedor, ciudad, producto, cantidad, precio, total, orden),
+        expenses(categoria, descripcion, monto, orden),
+        credits(categoria, detalle, monto, orden)
+      `)
+      .gte('fecha', fechaInicio)
+      .lte('fecha', fechaFin)
+      .order('fecha', { ascending: true });
+    
+    if (error) {
+      console.error('❌ Error cargando registros:', error);
+      registrosDelMes = {};
+      return;
+    }
+    
+    registrosDelMes = {};
+    
+    // Procesar datos directamente
+    if (records && records.length > 0) {
+      records.forEach(record => {
+        registrosDelMes[record.fecha] = {
+          cajaInicial: record.caja_inicial,
+          ventas: record.sales || [],
+          gastos: record.expenses || [],
+          creditos: record.credits || [],
+          observaciones: record.observaciones || ''
+        };
+      });
+    }
+    
+    console.log(`✅ Cargados ${Object.keys(registrosDelMes).length} días con datos para ${nombresMeses[mesActual]} ${anoActual}`);
+    console.log('Fechas cargadas:', Object.keys(registrosDelMes).sort());
+    
+  } catch (error) {
+    console.error('❌ Error cargando registros del mes:', error);
+    registrosDelMes = {};
+  }
+}
+
+    function verificarPermisos() {
+      const currentUser = SupabaseAuth.getCurrentUser();
+      esAdmin = currentUser && currentUser.role === 'admin';
+      console.log('🔒 Permisos verificados - Es admin:', esAdmin);
+    }
+
+    function generarCalendario() {
+      const grid = document.getElementById('calendarGrid');
+      const title = document.getElementById('calendarTitle');
+      
+      title.textContent = `${nombresMeses[mesActual]} ${anoActual}`;
+      grid.innerHTML = '';
+      
+      // Agregar headers de días
+      nombresDias.forEach(dia => {
+        const header = document.createElement('div');
+        header.className = 'calendar-day-header';
+        header.textContent = dia;
+        grid.appendChild(header);
+      });
+      
+      // Obtener primer día del mes y días totales
+      const primerDia = new Date(anoActual, mesActual, 1).getDay();
+      const diasEnMes = new Date(anoActual, mesActual + 1, 0).getDate();
+      const diasMesAnterior = new Date(anoActual, mesActual, 0).getDate();
+      
+      // Días del mes anterior
+      for (let i = primerDia - 1; i >= 0; i--) {
+        const dia = diasMesAnterior - i;
+        const celda = crearCeldaDia(dia, 'other-month');
+        grid.appendChild(celda);
+      }
+      
+      // Días del mes actual
+      for (let dia = 1; dia <= diasEnMes; dia++) {
+        const fecha = `${anoActual}-${String(mesActual + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+        const tieneRegistro = registrosDelMes[fecha];
+        const esHoy = (dia === diaHoy && mesActual === new Date().getMonth() && anoActual === new Date().getFullYear());
+        
+        let clase = 'sin-info';
+        if (esHoy) clase = 'hoy';
+        else if (tieneRegistro) clase = 'con-info';
+        
+        const celda = crearCeldaDia(dia, clase, fecha, tieneRegistro);
+        grid.appendChild(celda);
+      }
+      
+      // Completar semana con días del siguiente mes
+      const celdasCreadas = grid.children.length - 7; // -7 por los headers
+      const celdasFaltantes = Math.ceil(celdasCreadas / 7) * 7 - celdasCreadas;
+      
+      for (let dia = 1; dia <= celdasFaltantes; dia++) {
+        const celda = crearCeldaDia(dia, 'other-month');
+        grid.appendChild(celda);
+      }
+    }
+
+    function crearCeldaDia(numero, clase, fecha = null, registro = null) {
+      const celda = document.createElement('div');
+      celda.className = `calendar-day ${clase}`;
+      
+      if (fecha) {
+        celda.setAttribute('data-fecha', fecha);
+        celda.onclick = () => mostrarDetallesDia(fecha, registro);
+      }
+      
+      const numeroDiv = document.createElement('div');
+      numeroDiv.className = 'day-number';
+      numeroDiv.textContent = numero;
+      celda.appendChild(numeroDiv);
+      
+      if (registro && clase === 'con-info') {
+        const indicador = document.createElement('div');
+        indicador.className = 'day-indicator';
+        indicador.innerHTML = '<span class="info-dot"></span>';
+        celda.appendChild(indicador);
+        
+        const resumen = document.createElement('div');
+        resumen.className = 'day-summary';
+        const totalVentas = registro.ventas ? registro.ventas.reduce((sum, v) => sum + v.total, 0) : 0;
+        const totalGastos = registro.gastos ? registro.gastos.reduce((sum, g) => sum + g.monto, 0) : 0;
+        const totalCreditos = registro.creditos ? registro.creditos.reduce((sum, c) => sum + c.monto, 0) : 0;
+        const total = registro.cajaInicial + totalVentas - totalGastos + totalCreditos;
+        resumen.textContent = `L. ${total.toLocaleString()}`;
+        celda.appendChild(resumen);
+      }
+      
+      return celda;
+    }
+
+    async function cambiarMes(direccion) {
+      mesActual += direccion;
+      
+      if (mesActual > 11) {
+        mesActual = 0;
+        anoActual++;
+      } else if (mesActual < 0) {
+        mesActual = 11;
+        anoActual--;
+      }
+      
+      // Recargar datos del nuevo mes
+      await cargarRegistrosDelMes();
+      generarCalendario();
+      actualizarEstadisticas();
+    }
+
+    function mostrarDetallesDia(fecha, registro) {
+      fechaEditando = fecha;
+      modoEdicion = false;
+      
+      const modal = document.getElementById('dayModal');
+      const modalContent = document.getElementById('modalContent');
+      const title = document.getElementById('modalTitle');
+      const readOnlyContent = document.getElementById('readOnlyContent');
+      const editForm = document.getElementById('editForm');
+      const actions = document.getElementById('modalActions');
+      
+      // Resetear clases del modal
+      modalContent.className = 'modal-content';
+      
+      const fechaObj = new Date(fecha + 'T00:00:00');
+      const fechaTexto = fechaObj.toLocaleDateString('es-ES', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      
+      title.textContent = fechaTexto.charAt(0).toUpperCase() + fechaTexto.slice(1);
+      
+      // Mostrar vista de solo lectura
+      readOnlyContent.style.display = 'block';
+      editForm.classList.remove('active');
+      
+      if (registro) {
+        const totalVentas = registro.ventas ? registro.ventas.reduce((sum, v) => sum + v.total, 0) : 0;
+        const totalGastos = registro.gastos ? registro.gastos.reduce((sum, g) => sum + g.monto, 0) : 0;
+        const totalCreditos = registro.creditos ? registro.creditos.reduce((sum, c) => sum + c.monto, 0) : 0;
+        const utilidad = registro.cajaInicial + totalVentas - totalGastos + totalCreditos;
+        
+        readOnlyContent.innerHTML = `
+          <div class="resumen">
+            <div class="card">Caja Inicial: L. ${registro.cajaInicial ? registro.cajaInicial.toLocaleString() : '0'}</div>
+            <div class="card venta">Ventas: L. ${totalVentas.toLocaleString()}</div>
+            <div class="card gasto">Gastos: L. ${totalGastos.toLocaleString()}</div>
+            <div class="card credito">Créditos: L. ${totalCreditos.toLocaleString()}</div>
+            <div class="card resultado">Utilidad: L. ${utilidad.toLocaleString()}</div>
+          </div>
+          <div style="margin-top: 15px;">
+            <h4>📦 Ventas (${registro.ventas ? registro.ventas.length : 0})</h4>
+            ${registro.ventas && registro.ventas.length > 0 ? 
+              registro.ventas.map(v => `<p>• ${v.vendedor} - ${v.ciudad} - ${v.cantidad} ${v.producto} - L.${v.total}</p>`).join('') 
+              : '<p>Sin ventas registradas</p>'}
+            
+            <h4>💸 Gastos (${registro.gastos ? registro.gastos.length : 0})</h4>
+            ${registro.gastos && registro.gastos.length > 0 ? 
+              registro.gastos.map(g => `<p>• ${g.categoria}: ${g.descripcion || 'Sin descripción'} - L.${g.monto}</p>`).join('') 
+              : '<p>Sin gastos registrados</p>'}
+            
+            <h4>📑 Créditos (${registro.creditos ? registro.creditos.length : 0})</h4>
+            ${registro.creditos && registro.creditos.length > 0 ? 
+              registro.creditos.map(c => `<p>• ${c.categoria}: ${c.detalle || 'Sin detalle'} - L.${c.monto}</p>`).join('') 
+              : '<p>Sin créditos registrados</p>'}
+            
+            ${registro.observaciones ? `<h4>📝 Observaciones</h4><p>${registro.observaciones}</p>` : ''}
+          </div>
+        `;
+      } else {
+        readOnlyContent.innerHTML = `
+          <p style="text-align: center; color: #6b7280; margin: 20px 0;">
+            No hay información registrada para este día.
+          </p>
+          <div style="text-align: center;">
+            <button class="quick-action-btn success" onclick="crearRegistro('${fecha}')">
+              📝 Crear Registro
+            </button>
+          </div>
+        `;
+      }
+      
+      // Configurar botones según permisos
+      if (esAdmin && registro) {
+        actions.innerHTML = `
+          <button class="quick-action-btn success" onclick="activarModoEdicion()">✏️ Editar día</button>
+          <button class="quick-action-btn danger" onclick="eliminarDia()">🗑️ Eliminar día</button>
+          <button class="quick-action-btn" onclick="cerrarModal()">✖️ Cerrar</button>
+        `;
+      } else if (registro) {
+        actions.innerHTML = `
+          <button class="quick-action-btn" onclick="cerrarModal()">✖️ Cerrar</button>
+        `;
+      } else {
+        actions.innerHTML = `
+          <button class="quick-action-btn success" onclick="crearRegistro('${fecha}')">📝 Crear Registro</button>
+          <button class="quick-action-btn" onclick="cerrarModal()">✖️ Cerrar</button>
+        `;
+      }
+      
+      modal.style.display = 'block';
+    }
+
+function activarModoEdicion() {
+  if (!esAdmin) {
+    alert('Solo los administradores pueden editar registros.');
+    return;
+  }
+  
+  modoEdicion = true;
+  const modalContent = document.getElementById('modalContent');
+  const readOnlyContent = document.getElementById('readOnlyContent');
+  const editForm = document.getElementById('editForm');
+  const actions = document.getElementById('modalActions');
+  
+  // Cambiar a modo edición
+  modalContent.className = 'modal-content edit-mode';
+  readOnlyContent.style.display = 'none';
+  editForm.classList.add('active');
+  
+  // Cargar datos en el formulario
+  cargarDatosEnFormulario(fechaEditando);
+  
+  // Cambiar botones
+  actions.innerHTML = `
+    <button class="quick-action-btn success" onclick="guardarCambios()">💾 Guardar Cambios</button>
+    <button class="quick-action-btn" onclick="cancelarEdicion()">❌ Cancelar</button>
+  `;
+}
+
+async function eliminarDia() {
+  if (!esAdmin) {
+    alert('Solo los administradores pueden eliminar registros.');
+    return;
+  }
+  
+  if (!fechaEditando) {
+    alert('Error: No hay fecha seleccionada.');
+    return;
+  }
+  
+  const fechaObj = new Date(fechaEditando + 'T00:00:00');
+  const fechaTexto = fechaObj.toLocaleDateString('es-ES', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+  
+  if (confirm(`¿Está seguro que desea eliminar PERMANENTEMENTE todos los datos del ${fechaTexto}?\n\nEsta acción no se puede deshacer.`)) {
+    try {
+      // Obtener el ID del registro
+      const registro = registrosDelMes[fechaEditando];
+      if (!registro) {
+        alert('No hay datos para eliminar en esta fecha.');
+        return;
+      }
+      
+      // Buscar el ID del daily_record
+      const { data: dailyRecord, error: searchError } = await supabaseClient
+        .from('daily_records')
+        .select('id')
+        .eq('fecha', fechaEditando)
+        .single();
+      
+      if (searchError || !dailyRecord) {
+        alert('Error: No se encontró el registro a eliminar.');
+        return;
+      }
+      
+      // Eliminar todos los datos relacionados
+      await Promise.all([
+        supabaseClient.from('sales').delete().eq('daily_record_id', dailyRecord.id),
+        supabaseClient.from('expenses').delete().eq('daily_record_id', dailyRecord.id),
+        supabaseClient.from('credits').delete().eq('daily_record_id', dailyRecord.id),
+        supabaseClient.from('daily_records').delete().eq('id', dailyRecord.id)
+      ]);
+      
+      // Actualizar datos locales
+      delete registrosDelMes[fechaEditando];
+      
+      // Regenerar calendario
+      generarCalendario();
+      actualizarEstadisticas();
+      
+      // Cerrar modal y confirmar
+      cerrarModal();
+      alert(`Registro del ${fechaTexto} eliminado exitosamente.`);
+      
+    } catch (error) {
+      console.error('Error eliminando registro:', error);
+      alert('Error al eliminar el registro: ' + error.message);
+    }
+  }
+}
+
+function cargarDatosEnFormulario(fecha) {
+  const registro = registrosDelMes[fecha] || {};
+  
+  // Información básica
+  document.getElementById('editFecha').value = fecha;
+  document.getElementById('editCajaInicial').value = registro.cajaInicial || 0;
+  document.getElementById('editObservaciones').value = registro.observaciones || '';
+  
+  // Cargar ventas
+  const ventasContainer = document.getElementById('editVentas');
+  ventasContainer.innerHTML = '';
+  if (registro.ventas && registro.ventas.length > 0) {
+    registro.ventas.forEach(venta => {
+      agregarVentaEdit(venta);
+    });
+  } else {
+    agregarVentaEdit();
+  }
+  
+  // Cargar gastos
+  const gastosContainer = document.getElementById('editGastos');
+  gastosContainer.innerHTML = '';
+  if (registro.gastos && registro.gastos.length > 0) {
+    registro.gastos.forEach(gasto => {
+      agregarGastoEdit(gasto);
+    });
+  } else {
+    agregarGastoEdit();
+  }
+  
+  // Cargar créditos
+  const creditosContainer = document.getElementById('editCreditos');
+  creditosContainer.innerHTML = '';
+  if (registro.creditos && registro.creditos.length > 0) {
+    registro.creditos.forEach(credito => {
+      agregarCreditoEdit(credito);
+    });
+  } else {
+    agregarCreditoEdit();
+  }
+}
+function cargarDatosEnFormulario(fecha) {
+  
+  // ... función siguiente que ya existe  
+      
+      modoEdicion = true;
+      const modalContent = document.getElementById('modalContent');
+      const readOnlyContent = document.getElementById('readOnlyContent');
+      const editForm = document.getElementById('editForm');
+      const actions = document.getElementById('modalActions');
+      
+      // Cambiar a modo edición
+      modalContent.className = 'modal-content edit-mode';
+      readOnlyContent.style.display = 'none';
+      editForm.classList.add('active');
+      
+      // Cargar datos en el formulario
+      cargarDatosEnFormulario(fechaEditando);
+      
+      // Cambiar botones
+      actions.innerHTML = `
+        <button class="quick-action-btn success" onclick="guardarCambios()">💾 Guardar Cambios</button>
+        <button class="quick-action-btn" onclick="cancelarEdicion()">❌ Cancelar</button>
+      `;
+    }
+
+    function cargarDatosEnFormulario(fecha) {
+      const registro = registrosDelMes[fecha] || {};
+      
+      // Información básica
+      document.getElementById('editFecha').value = fecha;
+      document.getElementById('editCajaInicial').value = registro.cajaInicial || 0;
+      document.getElementById('editObservaciones').value = registro.observaciones || '';
+      
+      // Cargar ventas
+      const ventasContainer = document.getElementById('editVentas');
+      ventasContainer.innerHTML = '';
+      if (registro.ventas && registro.ventas.length > 0) {
+        registro.ventas.forEach(venta => {
+          agregarVentaEdit(venta);
+        });
+      } else {
+        agregarVentaEdit();
+      }
+      
+      // Cargar gastos
+      const gastosContainer = document.getElementById('editGastos');
+      gastosContainer.innerHTML = '';
+      if (registro.gastos && registro.gastos.length > 0) {
+        registro.gastos.forEach(gasto => {
+          agregarGastoEdit(gasto);
+        });
+      } else {
+        agregarGastoEdit();
+      }
+      
+      // Cargar créditos
+      const creditosContainer = document.getElementById('editCreditos');
+      creditosContainer.innerHTML = '';
+      if (registro.creditos && registro.creditos.length > 0) {
+        registro.creditos.forEach(credito => {
+          agregarCreditoEdit(credito);
+        });
+      } else {
+        agregarCreditoEdit();
+      }
+    }
+
+    function agregarVentaEdit(datos = {}) {
+      const container = document.getElementById('editVentas');
+      const ventaDiv = document.createElement('div');
+      ventaDiv.className = 'mini-registro';
+      
+      const vendedores = catalogosData.vendedores || ['Brayan', 'Ariel', 'Bodega'];
+      const ciudades = catalogosData.ciudades || ['Comayagua', 'Siguatepeque'];
+      const productos = catalogosData.productos || ['Botellones', 'Bolsas'];
+      
+      ventaDiv.innerHTML = `
+        <select class="vendedor" onchange="calcularTotalEdit(this)">
+          <option value="">Vendedor...</option>
+          ${vendedores.map(v => `<option value="${v}" ${datos.vendedor === v ? 'selected' : ''}>${v}</option>`).join('')}
+        </select>
+        <select class="ciudad" onchange="calcularTotalEdit(this)">
+          <option value="">Ciudad...</option>
+          ${ciudades.map(c => `<option value="${c}" ${datos.ciudad === c ? 'selected' : ''}>${c}</option>`).join('')}
+        </select>
+        <select class="producto" onchange="autoSetPriceEdit(this)">
+          <option value="">Producto...</option>
+          ${productos.map(p => `<option value="${p}" ${datos.producto === p ? 'selected' : ''}>${p}</option>`).join('')}
+        </select>
+        <input type="number" placeholder="Cant." class="cantidad" value="${datos.cantidad || ''}" min="1" onchange="calcularTotalEdit(this)">
+        <input type="number" placeholder="Precio" class="precio" value="${datos.precio || ''}" step="0.01" min="0.01" onchange="calcularTotalEdit(this)">
+        <input type="number" placeholder="Total" class="total" value="${datos.total || ''}" readonly>
+        <button type="button" class="remove-btn" onclick="eliminarRegistroEdit(this)">🗑️</button>
+      `;
+      
+      container.appendChild(ventaDiv);
+    }
+
+    function agregarGastoEdit(datos = {}) {
+      const container = document.getElementById('editGastos');
+      const gastoDiv = document.createElement('div');
+      gastoDiv.className = 'mini-registro';
+      
+      const categoriasGastos = catalogosData.gastos || ['Combustible', 'Planilla Omar'];
+      
+      gastoDiv.innerHTML = `
+        <select class="categoria">
+          <option value="">Categoría...</option>
+          ${categoriasGastos.map(c => `<option value="${c}" ${datos.categoria === c ? 'selected' : ''}>${c}</option>`).join('')}
+        </select>
+        <input type="text" placeholder="Descripción" class="descripcion" value="${datos.descripcion || ''}">
+        <input type="number" placeholder="Monto" class="monto" value="${datos.monto || ''}" step="0.01" min="0.01">
+        <button type="button" class="remove-btn" onclick="eliminarRegistroEdit(this)">🗑️</button>
+      `;
+      
+      container.appendChild(gastoDiv);
+    }
+
+    function agregarCreditoEdit(datos = {}) {
+      const container = document.getElementById('editCreditos');
+      const creditoDiv = document.createElement('div');
+      creditoDiv.className = 'mini-registro';
+      
+      const categoriasCreditos = catalogosData.creditos || ['CORRAL LA VILLA', 'OTROS'];
+      
+      creditoDiv.innerHTML = `
+        <select class="categoria">
+          <option value="">Categoría...</option>
+          ${categoriasCreditos.map(c => `<option value="${c}" ${datos.categoria === c ? 'selected' : ''}>${c}</option>`).join('')}
+        </select>
+        <input type="text" placeholder="Detalle" class="detalle" value="${datos.detalle || ''}">
+        <input type="number" placeholder="Monto" class="monto" value="${datos.monto || ''}" step="0.01" min="0.01">
+        <button type="button" class="remove-btn" onclick="eliminarRegistroEdit(this)">🗑️</button>
+      `;
+      
+      container.appendChild(creditoDiv);
+    }
+
+    function autoSetPriceEdit(selectElement) {
+      const producto = selectElement.value;
+      const registro = selectElement.closest('.mini-registro');
+      const precioInput = registro.querySelector('.precio');
+      
+      if (producto === 'Botellones') {
+        precioInput.value = '30.00';
+      } else if (producto === 'Bolsas') {
+        precioInput.value = '18.00';
+      }
+      
+      calcularTotalEdit(selectElement);
+    }
+
+    function calcularTotalEdit(element) {
+      const registro = element.closest('.mini-registro');
+      const cantidad = registro.querySelector('.cantidad').value;
+      const precio = registro.querySelector('.precio').value;
+      const totalField = registro.querySelector('.total');
+      
+      if (cantidad && precio && totalField) {
+        const total = cantidad * precio;
+        totalField.value = total.toFixed(2);
+      }
+    }
+
+    function eliminarRegistroEdit(button) {
+      button.closest('.mini-registro').remove();
+    }
+
+    async function guardarCambios() {
+      if (!esAdmin) {
+        alert('No tienes permisos para guardar cambios.');
+        return;
+      }
+      
+      const fecha = document.getElementById('editFecha').value;
+      const cajaInicial = parseFloat(document.getElementById('editCajaInicial').value) || 0;
+      const observaciones = document.getElementById('editObservaciones').value;
+      
+      // Recopilar ventas
+      const ventas = [];
+      document.querySelectorAll('#editVentas .mini-registro').forEach(registro => {
+        const vendedor = registro.querySelector('.vendedor').value;
+        const ciudad = registro.querySelector('.ciudad').value;
+        const producto = registro.querySelector('.producto').value;
+        const cantidad = parseInt(registro.querySelector('.cantidad').value);
+        const precio = parseFloat(registro.querySelector('.precio').value);
+        const total = parseFloat(registro.querySelector('.total').value);
+        
+        if (vendedor && ciudad && producto && cantidad && precio) {
+          ventas.push({ vendedor, ciudad, producto, cantidad, precio, total });
+        }
+      });
+      
+      // Recopilar gastos
+      const gastos = [];
+      document.querySelectorAll('#editGastos .mini-registro').forEach(registro => {
+        const categoria = registro.querySelector('.categoria').value;
+        const descripcion = registro.querySelector('.descripcion').value;
+        const monto = parseFloat(registro.querySelector('.monto').value);
+        
+        if (categoria && descripcion && monto) {
+          gastos.push({ categoria, descripcion, monto });
+        }
+      });
+      
+      // Recopilar créditos
+      const creditos = [];
+      document.querySelectorAll('#editCreditos .mini-registro').forEach(registro => {
+        const categoria = registro.querySelector('.categoria').value;
+        const detalle = registro.querySelector('.detalle').value;
+        const monto = parseFloat(registro.querySelector('.monto').value);
+        
+        if (categoria && detalle && monto) {
+          creditos.push({ categoria, detalle, monto });
+        }
+      });
+      
+      try {
+        // Guardar en Supabase
+        const datos = {
+          cajaInicial,
+          ventas,
+          gastos,
+          creditos,
+          observaciones
+        };
+        
+        const result = await SupabaseData.saveRegistroDiario(fecha, datos);
+        
+        if (result.success) {
+          // Actualizar datos locales
+          registrosDelMes[fecha] = datos;
+          
+          // Regenerar calendario y mostrar confirmación
+          generarCalendario();
+          actualizarEstadisticas();
+          alert('¡Cambios guardados exitosamente!');
+          
+          // Volver a vista de solo lectura
+          mostrarDetallesDia(fecha, registrosDelMes[fecha]);
+        } else {
+          throw new Error(result.error);
+        }
+      } catch (error) {
+        console.error('❌ Error guardando cambios:', error);
+        alert('Error al guardar cambios: ' + error.message);
+      }
+    }
+
+    function cancelarEdicion() {
+      // Volver a vista de solo lectura sin guardar
+      mostrarDetallesDia(fechaEditando, registrosDelMes[fechaEditando]);
+    }
+
+    function cerrarModal() {
+      document.getElementById('dayModal').style.display = 'none';
+      modoEdicion = false;
+      fechaEditando = null;
+    }
+
+    function actualizarEstadisticas() {
+      const registros = Object.values(registrosDelMes);
+      const diasTrabajados = registros.length;
+      const diasDelMes = new Date(anoActual, mesActual + 1, 0).getDate();
+      const diasPendientes = diasDelMes - diasTrabajados;
+      const porcentaje = diasTrabajados > 0 ? Math.round((diasTrabajados / diasDelMes) * 100) : 0;
+      
+      const ventasTotales = registros.reduce((sum, r) => {
+        if (r.ventas && r.ventas.length > 0) {
+          return sum + r.ventas.reduce((vSum, v) => vSum + (v.total || 0), 0);
+        }
+        return sum;
+      }, 0);
+      
+      document.getElementById('diasTrabajados').textContent = diasTrabajados;
+      document.getElementById('diasPendientes').textContent = diasPendientes;
+      document.getElementById('porcentajeCompleto').textContent = `${porcentaje}%`;
+      document.getElementById('ventasTotales').textContent = `L. ${ventasTotales.toLocaleString()}`;
+    }
+
+    // Funciones de navegación
+    function irACapturador() {
+      const currentUser = SupabaseAuth.getCurrentUser();
+      if (currentUser && currentUser.role === 'socio') {
+        alert('Los socios no tienen acceso al capturador');
+        return;
+      }
+      window.location.href = 'capturador.html';
+    }
+
+    function verDashboard() {
+      const currentUser = SupabaseAuth.getCurrentUser();
+      if (currentUser && currentUser.role === 'vendedor') {
+        alert('Los vendedores no tienen acceso al dashboard');
+        return;
+      }
+      window.location.href = 'dashboard.html';
+    }
+
+    function exportarMes() {
+      alert('Función de exportación - Se implementará próximamente');
+    }
+
+    function crearRegistro(fecha) {
+      window.location.href = `capturador.html?fecha=${fecha}`;
+    }
+
+    // Cerrar modal al hacer clic fuera
+    window.onclick = function(event) {
+      const modal = document.getElementById('dayModal');
+      if (event.target === modal) {
+        cerrarModal();
+      }
+    }
+
+    console.log('✅ Calendario con Supabase cargado correctamente');
+  </script>
+  <!-- SISTEMA DE EXPORTACIÓN -->
+<script>
+// 📤 SISTEMA DE EXPORTACIÓN AGUA ZAFIRO
+// Exporta datos de Supabase a Excel con opciones de rango de fechas
+
+console.log('📤 Cargando Sistema de Exportación Agua Zafiro...');
+
+// ===== FUNCIONES PRINCIPALES =====
+async function iniciarExportacion() {
+    console.log('📤 === INICIANDO EXPORTACIÓN ===');
+    
+    try {
+        // Verificar permisos
+        const usuario = SupabaseAuth?.getCurrentUser();
+        if (!usuario) {
+            alert('❌ Debe estar logueado para exportar');
+            return;
+        }
+        
+        // Solo admin y socios pueden exportar
+        if (usuario.role !== 'admin' && usuario.role !== 'socio') {
+            alert('❌ Solo administradores y socios pueden exportar datos');
+            return;
+        }
+        
+        // Mostrar modal de opciones
+        mostrarModalExportacion();
+        
+    } catch (error) {
+        console.error('❌ Error iniciando exportación:', error);
+        alert(`Error: ${error.message}`);
+    }
+}
+
+function mostrarModalExportacion() {
+    // Eliminar modal existente si hay uno
+    const existingModal = document.getElementById('exportModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Crear modal
+    const modal = document.createElement('div');
+    modal.id = 'exportModal';
+    modal.innerHTML = `
+        <div style="
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); z-index: 10000;
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
+        ">
+            <div style="
+                background: white; border-radius: 20px; padding: 30px;
+                max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                border: 3px solid #9333ea;
+            ">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <h2 style="color: #9333ea; margin: 0 0 10px 0; font-size: 24px;">📤 Exportar Datos</h2>
+                    <p style="color: #6b7280; margin: 0;">Seleccione el rango de fechas para exportar</p>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 15px; font-weight: 600;">
+                        <input type="radio" name="rangoExport" value="todo" checked style="margin-right: 10px;">
+                        📋 Exportar todos los registros
+                    </label>
+                    
+                    <label style="display: block; margin-bottom: 15px; font-weight: 600;">
+                        <input type="radio" name="rangoExport" value="mes" style="margin-right: 10px;">
+                        📅 Solo este mes
+                    </label>
+                    
+                    <label style="display: block; margin-bottom: 15px; font-weight: 600;">
+                        <input type="radio" name="rangoExport" value="ano" style="margin-right: 10px;">
+                        📆 Solo este año
+                    </label>
+                    
+                    <label style="display: block; margin-bottom: 15px; font-weight: 600;">
+                        <input type="radio" name="rangoExport" value="rango" style="margin-right: 10px;">
+                        📊 Rango personalizado
+                    </label>
+                </div>
+                
+                <div id="rangoPersonalizado" style="display: none; margin-bottom: 20px; padding: 15px; background: #f3f4f6; border-radius: 10px;">
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 150px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Fecha inicial:</label>
+                            <input type="date" id="fechaInicio" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Fecha final:</label>
+                            <input type="date" id="fechaFin" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px; padding: 15px; background: #eff6ff; border-radius: 10px; border-left: 4px solid #3b82f6;">
+                    <h4 style="margin: 0 0 10px 0; color: #1e40af;">ℹ️ Información del archivo:</h4>
+                    <ul style="margin: 0; padding-left: 20px; color: #1e40af; font-size: 14px;">
+                        <li>Formato: Excel (.xlsx)</li>
+                        <li>Estructura: Similar al archivo de importación</li>
+                        <li>Una fila por día registrado</li>
+                        <li>Todas las ventas, gastos y créditos incluidos</li>
+                    </ul>
+                </div>
+                
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <button onclick="procesarExportacion()" style="
+                        background: #9333ea; color: white; border: none; padding: 12px 25px;
+                        border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 16px;
+                    ">📤 Exportar</button>
+                    
+                    <button onclick="cerrarModalExportacion()" style="
+                        background: #6b7280; color: white; border: none; padding: 12px 25px;
+                        border-radius: 10px; cursor: pointer; font-weight: 600;
+                    ">❌ Cancelar</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Agregar event listeners
+    const radios = modal.querySelectorAll('input[name="rangoExport"]');
+    const rangoPersonalizado = modal.getElementById('rangoPersonalizado');
+    
+    radios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'rango') {
+                rangoPersonalizado.style.display = 'block';
+                
+                // Establecer fechas por defecto
+                const hoy = new Date();
+                const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+                
+                modal.getElementById('fechaInicio').value = inicioMes.toISOString().split('T')[0];
+                modal.getElementById('fechaFin').value = hoy.toISOString().split('T')[0];
+            } else {
+                rangoPersonalizado.style.display = 'none';
+            }
+        });
+    });
+}
+
+function cerrarModalExportacion() {
+    const modal = document.getElementById('exportModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+async function procesarExportacion() {
+    try {
+        // Obtener opciones seleccionadas
+        const modal = document.getElementById('exportModal');
+        const rangoSeleccionado = modal.querySelector('input[name="rangoExport"]:checked').value;
+        
+        let fechaInicio, fechaFin;
+        
+        // Determinar rango de fechas
+        const hoy = new Date();
+        
+        switch (rangoSeleccionado) {
+            case 'todo':
+                fechaInicio = '1900-01-01';
+                fechaFin = '2100-12-31';
+                break;
+                
+            case 'mes':
+                fechaInicio = new Date(hoy.getFullYear(), hoy.getMonth(), 1).toISOString().split('T')[0];
+                fechaFin = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).toISOString().split('T')[0];
+                break;
+                
+            case 'ano':
+                fechaInicio = `${hoy.getFullYear()}-01-01`;
+                fechaFin = `${hoy.getFullYear()}-12-31`;
+                break;
+                
+            case 'rango':
+                fechaInicio = modal.getElementById('fechaInicio').value;
+                fechaFin = modal.getElementById('fechaFin').value;
+                
+                if (!fechaInicio || !fechaFin) {
+                    alert('❌ Debe seleccionar ambas fechas para el rango personalizado');
+                    return;
+                }
+                
+                if (fechaInicio > fechaFin) {
+                    alert('❌ La fecha inicial no puede ser mayor que la fecha final');
+                    return;
+                }
+                break;
+        }
+        
+        console.log(`📤 Exportando desde ${fechaInicio} hasta ${fechaFin}`);
+        
+        // Cerrar modal y mostrar progreso
+        cerrarModalExportacion();
+        const progressModal = mostrarProgresoExportacion();
+        
+        try {
+            // Obtener datos de Supabase
+            actualizarProgresoExportacion(progressModal, 20, 'Obteniendo datos de Supabase...');
+            const datos = await obtenerDatosParaExportar(fechaInicio, fechaFin);
+            
+            if (!datos || datos.length === 0) {
+                cerrarProgresoExportacion(progressModal);
+                alert('❌ No se encontraron datos en el rango seleccionado');
+                return;
+            }
+            
+            // Convertir datos a formato Excel
+            actualizarProgresoExportacion(progressModal, 50, 'Procesando datos...');
+            const datosExcel = convertirDatosAExcel(datos);
+            
+            // Generar archivo Excel
+            actualizarProgresoExportacion(progressModal, 80, 'Generando archivo Excel...');
+            const nombreArchivo = generarNombreArchivo(rangoSeleccionado, fechaInicio, fechaFin);
+            
+            // Crear y descargar archivo
+            actualizarProgresoExportacion(progressModal, 100, 'Descargando archivo...');
+            await generarYDescargarExcel(datosExcel, nombreArchivo);
+            
+            setTimeout(() => {
+                cerrarProgresoExportacion(progressModal);
+                alert(`✅ Exportación completada!\n\nArchivo: ${nombreArchivo}\nRegistros: ${datos.length}`);
+            }, 1500);
+            
+        } catch (error) {
+            cerrarProgresoExportacion(progressModal);
+            throw error;
+        }
+        
+    } catch (error) {
+        console.error('❌ Error en exportación:', error);
+        alert(`Error durante la exportación: ${error.message}`);
+    }
+}
+
+// ===== FUNCIONES DE DATOS =====
+async function obtenerDatosParaExportar(fechaInicio, fechaFin) {
+    console.log(`🔍 Obteniendo datos desde ${fechaInicio} hasta ${fechaFin}`);
+    
+    try {
+        const { data: records, error } = await supabaseClient
+            .from('daily_records')
+            .select(`
+                fecha,
+                caja_inicial,
+                observaciones,
+                sales(vendedor, ciudad, producto, cantidad, precio, total, orden),
+                expenses(categoria, descripcion, monto, orden),
+                credits(categoria, detalle, monto, orden)
+            `)
+            .gte('fecha', fechaInicio)
+            .lte('fecha', fechaFin)
+            .order('fecha', { ascending: true });
+        
+        if (error) throw error;
+        
+        console.log(`✅ Obtenidos ${records?.length || 0} registros`);
+        return records || [];
+        
+    } catch (error) {
+        console.error('❌ Error obteniendo datos:', error);
+        throw new Error(`Error obteniendo datos: ${error.message}`);
+    }
+}
+
+function convertirDatosAExcel(registros) {
+    console.log(`🔄 Convirtiendo ${registros.length} registros a formato Excel...`);
+    
+    // Headers del Excel (basado en el formato de importación)
+    const headers = [
+        'ID', 'FECHA', 'CAJA_INICIAL',
+        // Ventas (6 vendedores x 6 campos)
+        'VENDEDOR_1', 'CIUDAD_1', 'PRODUCTO_1', 'CANTIDAD_1', 'PRECIO_1', 'TOTAL_1',
+        'VENDEDOR_2', 'CIUDAD_2', 'PRODUCTO_2', 'CANTIDAD_2', 'PRECIO_2', 'TOTAL_2',
+        'VENDEDOR_3', 'CIUDAD_3', 'PRODUCTO_3', 'CANTIDAD_3', 'PRECIO_3', 'TOTAL_3',
+        'VENDEDOR_4', 'CIUDAD_4', 'PRODUCTO_4', 'CANTIDAD_4', 'PRECIO_4', 'TOTAL_4',
+        'VENDEDOR_5', 'CIUDAD_5', 'PRODUCTO_5', 'CANTIDAD_5', 'PRECIO_5', 'TOTAL_5',
+        'VENDEDOR_6', 'CIUDAD_6', 'PRODUCTO_6', 'CANTIDAD_6', 'PRECIO_6', 'TOTAL_6',
+        // Gastos (6 gastos x 3 campos)
+        'GASTO_1', 'DESCRIPCION_1', 'MONTO_GASTO_1',
+        'GASTO_2', 'DESCRIPCION_2', 'MONTO_GASTO_2',
+        'GASTO_3', 'DESCRIPCION_3', 'MONTO_GASTO_3',
+        'GASTO_4', 'DESCRIPCION_4', 'MONTO_GASTO_4',
+        'GASTO_5', 'DESCRIPCION_5', 'MONTO_GASTO_5',
+        'GASTO_6', 'DESCRIPCION_6', 'MONTO_GASTO_6',
+        // Créditos (6 créditos x 3 campos)
+        'CREDITO_1_NOMBRE', 'CREDITO_1_DETALLE', 'CREDITO_1_MONTO',
+        'CREDITO_2_NOMBRE', 'CREDITO_2_DETALLE', 'CREDITO_2_MONTO',
+        'CREDITO_3_NOMBRE', 'CREDITO_3_DETALLE', 'CREDITO_3_MONTO',
+        'CREDITO_4_NOMBRE', 'CREDITO_4_DETALLE', 'CREDITO_4_MONTO',
+        'CREDITO_5_NOMBRE', 'CREDITO_5_DETALLE', 'CREDITO_5_MONTO',
+        'CREDITO_6_NOMBRE', 'CREDITO_6_DETALLE', 'CREDITO_6_MONTO',
+        'OBSERVACIONES', 'FOTOS', 'REGISTRO_NUM'
+    ];
+    
+    const filas = [headers];
+    
+    registros.forEach((registro, index) => {
+        const fila = new Array(78).fill(''); // 78 columnas total
+        
+        // Información básica
+        fila[0] = index + 1; // ID secuencial
+        fila[1] = registro.fecha;
+        fila[2] = registro.caja_inicial || 0;
+        
+        // Ventas (ordenar por orden si existe)
+        const ventas = (registro.sales || []).sort((a, b) => (a.orden || 0) - (b.orden || 0));
+        for (let i = 0; i < Math.min(6, ventas.length); i++) {
+            const venta = ventas[i];
+            const baseIndex = 3 + (i * 6);
+            fila[baseIndex] = venta.vendedor || '';
+            fila[baseIndex + 1] = venta.ciudad || '';
+            fila[baseIndex + 2] = venta.producto || '';
+            fila[baseIndex + 3] = venta.cantidad || 0;
+            fila[baseIndex + 4] = venta.precio || 0;
+            fila[baseIndex + 5] = venta.total || 0;
+        }
+        
+        // Gastos
+        const gastos = (registro.expenses || []).sort((a, b) => (a.orden || 0) - (b.orden || 0));
+        for (let i = 0; i < Math.min(6, gastos.length); i++) {
+            const gasto = gastos[i];
+            const baseIndex = 39 + (i * 3);
+            fila[baseIndex] = gasto.categoria || '';
+            fila[baseIndex + 1] = gasto.descripcion || '';
+            fila[baseIndex + 2] = gasto.monto || 0;
+        }
+        
+        // Créditos
+        const creditos = (registro.credits || []).sort((a, b) => (a.orden || 0) - (b.orden || 0));
+        for (let i = 0; i < Math.min(6, creditos.length); i++) {
+            const credito = creditos[i];
+            const baseIndex = 57 + (i * 3);
+            fila[baseIndex] = credito.categoria || '';
+            fila[baseIndex + 1] = credito.detalle || '';
+            fila[baseIndex + 2] = credito.monto || 0;
+        }
+        
+        // Observaciones
+        fila[75] = registro.observaciones || '';
+        fila[76] = ''; // Fotos (vacío por ahora)
+        fila[77] = 1; // Registro_num
+        
+        filas.push(fila);
+    });
+    
+    console.log(`✅ Convertidos ${filas.length - 1} registros (${filas[0].length} columnas)`);
+    return filas;
+}
+
+function generarNombreArchivo(rango, fechaInicio, fechaFin) {
+    const fecha = new Date().toISOString().split('T')[0];
+    const hora = new Date().toTimeString().split(' ')[0].replace(/:/g, '');
+    
+    let sufijo;
+    switch (rango) {
+        case 'todo':
+            sufijo = 'TODOS_LOS_DATOS';
+            break;
+        case 'mes':
+            const mesActual = new Date().toISOString().slice(0, 7);
+            sufijo = `MES_${mesActual}`;
+            break;
+        case 'ano':
+            const anoActual = new Date().getFullYear();
+            sufijo = `ANO_${anoActual}`;
+            break;
+        case 'rango':
+            sufijo = `${fechaInicio}_AL_${fechaFin}`;
+            break;
+        default:
+            sufijo = 'EXPORTACION';
+    }
+    
+    return `AguaZafiro_${sufijo}_${fecha}_${hora}.xlsx`;
+}
+
+async function generarYDescargarExcel(datos, nombreArchivo) {
+    console.log(`📁 Generando archivo: ${nombreArchivo}`);
+    
+    try {
+        // Crear workbook
+        const ws = XLSX.utils.aoa_to_sheet(datos);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Datos Agua Zafiro");
+        
+        // Configurar anchos de columnas
+        const colWidths = [];
+        for (let i = 0; i < 78; i++) {
+            colWidths.push({ wch: 15 }); // Ancho estándar
+        }
+        ws['!cols'] = colWidths;
+        
+        // Generar archivo y descargar
+        XLSX.writeFile(wb, nombreArchivo);
+        
+        console.log(`✅ Archivo generado y descargado: ${nombreArchivo}`);
+        
+    } catch (error) {
+        console.error('❌ Error generando Excel:', error);
+        throw new Error(`Error generando archivo: ${error.message}`);
+    }
+}
+
+// ===== INTERFAZ DE PROGRESO =====
+function mostrarProgresoExportacion() {
+    const modal = document.createElement('div');
+    modal.id = 'exportProgress';
+    modal.innerHTML = `
+        <div style="
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: white; padding: 30px; border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 20000;
+            min-width: 400px; border: 3px solid #9333ea;
+        ">
+            <h3 style="margin: 0 0 20px 0; text-align: center; color: #9333ea;">📤 Exportando Datos</h3>
+            
+            <div style="background: #f0f0f0; height: 25px; border-radius: 12px; overflow: hidden; margin-bottom: 15px; position: relative;">
+                <div id="barraExport" style="height: 100%; background: linear-gradient(90deg, #9333ea, #7c3aed); width: 0%; transition: width 0.5s;"></div>
+                <div id="porcentajeExport" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">0%</div>
+            </div>
+            
+            <p id="textoExport" style="margin: 0; text-align: center; color: #374151;">Iniciando exportación...</p>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    return modal;
+}
+
+function actualizarProgresoExportacion(modal, porcentaje, mensaje) {
+    const barra = modal.querySelector('#barraExport');
+    const texto = modal.querySelector('#textoExport');
+    const porciento = modal.querySelector('#porcentajeExport');
+    
+    if (barra) barra.style.width = `${porcentaje}%`;
+    if (texto) texto.textContent = mensaje;
+    if (porciento) porciento.textContent = `${Math.round(porcentaje)}%`;
+}
+
+function cerrarProgresoExportacion(modal) {
+    if (modal && modal.parentNode) {
+        modal.parentNode.removeChild(modal);
+    }
+}
+
+// ===== INTEGRACIÓN CON BOTONES EXISTENTES =====
+function conectarBotonesExportacion() {
+    // Buscar todos los botones de exportar en todas las páginas
+    // Buscar botones de exportar de forma válida
+const botones = [];
+// Agregar botones con clases específicas
+document.querySelectorAll('button.export, .btn.export').forEach(btn => botones.push(btn));
+// Agregar botones que contengan "Exportar" en el texto
+document.querySelectorAll('button').forEach(btn => {
+    if (btn.textContent.includes('Exportar')) {
+        botones.push(btn);
+    }
+});
+    
+    botones.forEach(boton => {
+        // Remover event listeners existentes
+        boton.onclick = null;
+        
+        // Agregar nuevo event listener
+        boton.addEventListener('click', function(e) {
+            e.preventDefault();
+            iniciarExportacion();
+        });
+    });
+    
+    console.log(`✅ ${botones.length} botones de exportación conectados`);
+}
+
+// ===== INICIALIZACIÓN =====
+// Ejecutar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', conectarBotonesExportacion);
+} else {
+    conectarBotonesExportacion();
+}
+
+// Hacer funciones disponibles globalmente
+if (typeof window !== 'undefined') {
+    window.iniciarExportacion = iniciarExportacion;
+    window.exportarAguaZafiro = iniciarExportacion; // Alias
+    
+    console.log('✅ SISTEMA DE EXPORTACIÓN AGUA ZAFIRO CARGADO');
+    console.log('📤 Funciones disponibles: iniciarExportacion(), exportarAguaZafiro()');
+    console.log('🔒 Permisos: Solo admin y socios pueden exportar');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agua Zafiro - Sistema de Gestión</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1rem 0;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #2563eb;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: rgba(37, 99, 235, 0.1);
+      padding: 8px 20px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .user-name {
+      font-weight: 600;
+      color: #1f2937;
+      font-size: 14px;
+    }
+
+    .user-role {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .logout-btn {
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .logout-btn:hover {
+      background: #b91c1c;
+      transform: translateY(-1px);
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 15px;
+      background: #10b981;
+      color: white;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .status-indicator .pulse {
+      width: 8px;
+      height: 8px;
+      background: #fff;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 4rem 0;
+      color: white;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .hero p {
+      font-size: 1.3rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .version-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Navigation Cards */
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin: 3rem 0;
+    }
+
+    .nav-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 2.5rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .nav-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-card.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+    }
+
+    .nav-card .icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .nav-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #2563eb;
+    }
+
+    .nav-card p {
+      color: #6b7280;
+      margin-bottom: 1.5rem;
+    }
+
+    .nav-card .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: white;
+      padding: 12px 25px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .nav-card .btn:hover {
+      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      transform: scale(1.05);
+    }
+
+    /* Overlay de acceso restringido */
+    .access-restricted {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(220, 38, 38, 0.9);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 20px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .nav-card.restricted:hover .access-restricted {
+      opacity: 1;
+    }
+
+    .access-restricted i {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .access-restricted span {
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* Color variants for cards */
+    .nav-card.capturador .icon { color: #10b981; }
+    .nav-card.capturador .btn { background: linear-gradient(135deg, #10b981, #059669); }
+    .nav-card.capturador .btn:hover { background: linear-gradient(135deg, #059669, #047857); }
+
+    .nav-card.dashboard .icon { color: #f59e0b; }
+    .nav-card.dashboard .btn { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .nav-card.dashboard .btn:hover { background: linear-gradient(135deg, #d97706, #b45309); }
+
+    .nav-card.calendario .icon { color: #8b5cf6; }
+    .nav-card.calendario .btn { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    .nav-card.calendario .btn:hover { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+
+    .nav-card.produccion .icon { color: #a78bfa; }
+    .nav-card.produccion .btn { background: linear-gradient(135deg, #a78bfa, #9370db); }
+    .nav-card.produccion .btn:hover { background: linear-gradient(135deg, #9370db, #7c3aed); }
+
+    /* Stats Section */
+    .stats-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 3rem;
+      margin: 3rem 0;
+      text-align: center;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .stat-item {
+      padding: 1.5rem;
+      border-radius: 15px;
+      background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #2563eb;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 2rem 0;
+      margin-top: 4rem;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .footer-links a {
+      color: #6b7280;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      color: #2563eb;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 1000;
+    }
+
+    .quick-action-btn {
+      display: block;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: white;
+      border-radius: 50%;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+      transition: all 0.3s ease;
+      margin-bottom: 15px;
+    }
+
+    .quick-action-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 25px rgba(37, 99, 235, 0.6);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .nav-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .nav-card {
+        padding: 2rem;
+      }
+
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .footer-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .quick-actions {
+        bottom: 20px;
+        right: 20px;
+      }
+
+      .quick-action-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+      }
+    }
+
+    /* Loading Animation */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+
+    .loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #e2e8f0;
+      border-top: 4px solid #2563eb;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Notification Toast */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #dc2626;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(220, 38, 38, 0.3);
+      z-index: 10001;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.3s ease;
+    }
+
+    .notification.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .notification.success {
+      background: #10b981;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    /* Role indicator in hero */
+    .role-welcome {
+      background: rgba(255,255,255,0.2);
+      padding: 10px 20px;
+      border-radius: 25px;
+      display: inline-block;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <i class="fas fa-tint"></i>
+          <span>Agua Zafiro</span>
+        </div>
+        
+        <!-- Info del usuario (se muestra cuando está logueado) -->
+        <div class="user-info" id="userInfo" style="display: none;">
+          <div class="user-details">
+            <span class="user-name">Usuario</span>
+            <span class="user-role">Rol</span>
+          </div>
+          <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Salir
+          </button>
+        </div>
+
+        <!-- Status cuando no está logueado -->
+        <div class="status-indicator" id="statusIndicator">
+          <div class="pulse"></div>
+          <span>Sistema Activo</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="version-badge">v2.0 - Sistema Integrado</div>
+      <div class="role-welcome" id="roleWelcome" style="display: none;">
+        Bienvenido, <span id="welcomeUser"></span>
+      </div>
+      <h1>💧 Agua Zafiro</h1>
+      <p>Sistema completo de gestión y monitoreo de distribución de agua</p>
+    </div>
+  </section>
+
+  <!-- Navigation Cards -->
+  <section class="container">
+    <div class="nav-grid">
+      
+      <!-- Capturador de Datos -->
+      <div class="nav-card capturador" data-module="capturador" data-url="capturador.html">
+        <i class="fas fa-clipboard-list icon"></i>
+        <h3>Capturador de Datos</h3>
+        <p>Registra ventas diarias, gastos, créditos y gestiona la información operativa de forma rápida y eficiente.</p>
+        <span class="btn">Acceder al Capturador</span>
+        
+        <!-- Overlay de acceso restringido -->
+        <div class="access-restricted">
+          <i class="fas fa-lock"></i>
+          <span>Acceso restringido<br>para tu rol</span>
+        </div>
+      </div>
+
+      <!-- Dashboard -->
+      <div class="nav-card dashboard" data-module="dashboard" data-url="dashboard.html">
+        <i class="fas fa-chart-line icon"></i>
+        <h3>Dashboard Analítico</h3>
+        <p>Visualiza métricas en tiempo real, reportes avanzados y análisis de performance de vendedores.</p>
+        <span class="btn">Ver Dashboard</span>
+        
+        <!-- Overlay de acceso restringido -->
+        <div class="access-restricted">
+          <i class="fas fa-lock"></i>
+          <span>Acceso restringido<br>para tu rol</span>
+        </div>
+      </div>
+
+      <!-- Calendario -->
+      <div class="nav-card calendario" data-module="calendario" data-url="calendario.html">
+        <i class="fas fa-calendar-alt icon"></i>
+        <h3>Calendario de Gestión</h3>
+        <p>Planifica actividades, consulta historial de registros y gestiona eventos importantes del negocio.</p>
+        <span class="btn">Abrir Calendario</span>
+        
+        <!-- Overlay de acceso restringido -->
+        <div class="access-restricted">
+          <i class="fas fa-lock"></i>
+          <span>Acceso restringido<br>para tu rol</span>
+        </div>
+      </div>
+
+      <!-- Producción (NUEVA) -->
+      <div class="nav-card produccion" data-module="produccion" data-url="produccion.html">
+        <i class="fas fa-industry icon"></i>
+        <h3>Control de Producción</h3>
+        <p>Gestiona bobinas, registra producción de bolsas, botellones, y monitorea la calidad del agua en tiempo real.</p>
+        <span class="btn">Acceder a Producción</span>
+        
+        <!-- Overlay de acceso restringido -->
+        <div class="access-restricted">
+          <i class="fas fa-lock"></i>
+          <span>Acceso restringido<br>para tu rol</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="container">
+    <div class="stats-section">
+      <h2>Resumen del Sistema</h2>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number" id="totalRegistros">0</div>
+          <div class="stat-label">Registros Totales</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">3</div>
+          <div class="stat-label">Módulos Activos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Disponibilidad</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="ultimaActualizacion">--</div>
+          <div class="stat-label">Última Actualización</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div>
+          <p>&copy; 2025 Agua Zafiro. Sistema de Gestión Integral.</p>
+        </div>
+        <div class="footer-links">
+          <a href="#" onclick="navigateToModule('dashboard', 'dashboard.html')">Dashboard</a>
+          <a href="#" onclick="navigateToModule('capturador', 'capturador.html')">Capturador</a>
+          <a href="#" onclick="navigateToModule('calendario', 'calendario.html')">Calendario</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <a href="#" onclick="navigateToModule('capturador', 'capturador.html')" class="quick-action-btn" title="Nuevo Registro">
+      <i class="fas fa-plus"></i>
+    </a>
+    <a href="#" onclick="navigateToModule('dashboard', 'dashboard.html')" class="quick-action-btn" title="Ver Dashboard">
+      <i class="fas fa-chart-bar"></i>
+    </a>
+  </div>
+
+  <!-- 📡 SCRIPTS DE AUTENTICACIÓN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+<script src="auth.js"></script>      <!-- ✅ PRIMERO -->
+<script src="roles.js"></script>     <!-- ✅ DESPUÉS -->
+
+  <script>
+    // 🔐 CONFIGURACIÓN DE PERMISOS POR MÓDULO
+    const MODULE_PERMISSIONS = {
+      'capturador': ['admin', 'vendedor', 'socio'],
+      'dashboard': ['admin', 'socio'],
+      'calendario': ['admin', 'socio', 'vendedor'],
+      'produccion': ['admin', 'produccion']  // ✅ AGREGAR ESTA LÍNEA
+    };
+
+
+    // 🚀 INICIALIZACIÓN DEL SISTEMA
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🏠 Inicializando página principal de Agua Zafiro');
+      
+      // Verificar si el usuario está autenticado
+      const currentUser = SupabaseAuth.getCurrentUser();
+      
+      if (currentUser) {
+        console.log(`👤 Usuario autenticado: ${currentUser.username} (${currentUser.role})`);
+        setupAuthenticatedUI(currentUser);
+        // Configurar permisos con debugging
+console.log('Configurando permisos para rol:', currentUser.role);
+setupModulePermissions(currentUser.role);
+
+// Aplicar setupRoleBasedUI específico para index
+if (typeof setupRoleBasedUI === 'function') {
+  setupRoleBasedUI(currentUser.role);
+}
+      } else {
+        console.log('❌ Usuario no autenticado');
+        setupUnauthenticatedUI();
+      }
+      
+      // Setup de eventos de navegación
+      setupNavigationEvents();
+      
+      // Ocultar loading
+      setTimeout(() => {
+        document.getElementById('loadingOverlay').classList.add('hidden');
+      }, 800);
+      
+      // Inicializar stats
+      actualizarStats();
+      setInterval(actualizarStats, 30000);
+    });
+
+    // 🎨 SETUP UI PARA USUARIO AUTENTICADO
+    function setupAuthenticatedUI(user) {
+      // Mostrar info del usuario
+      const userInfo = document.getElementById('userInfo');
+      const statusIndicator = document.getElementById('statusIndicator');
+      const roleWelcome = document.getElementById('roleWelcome');
+      const welcomeUser = document.getElementById('welcomeUser');
+      
+      userInfo.style.display = 'flex';
+      statusIndicator.style.display = 'none';
+      roleWelcome.style.display = 'inline-block';
+      
+      document.querySelector('.user-name').textContent = user.full_name || user.username;
+      
+      const roleNames = {
+        'admin': 'Administrador',
+        'socio': 'Socio (Solo lectura)',
+        'vendedor': 'Vendedor'
+      };
+      
+      document.querySelector('.user-role').textContent = roleNames[user.role] || user.role;
+      welcomeUser.textContent = user.full_name || user.username;
+    }
+
+    // 🚫 SETUP UI PARA USUARIO NO AUTENTICADO
+    function setupUnauthenticatedUI() {
+      const userInfo = document.getElementById('userInfo');
+      const statusIndicator = document.getElementById('statusIndicator');
+      const roleWelcome = document.getElementById('roleWelcome');
+      
+      userInfo.style.display = 'none';
+      statusIndicator.style.display = 'flex';
+      roleWelcome.style.display = 'none';
+      
+      // Todas las cards requieren autenticación
+      const navCards = document.querySelectorAll('.nav-card');
+      navCards.forEach(card => {
+        card.classList.add('restricted');
+      });
+    }
+
+    // 🔒 CONFIGURAR PERMISOS POR MÓDULO
+    function setupModulePermissions(userRole) {
+      const navCards = document.querySelectorAll('.nav-card');
+      
+      navCards.forEach(card => {
+        const module = card.getAttribute('data-module');
+        const allowedRoles = MODULE_PERMISSIONS[module];
+        
+        if (!allowedRoles || !allowedRoles.includes(userRole)) {
+          card.classList.add('restricted');
+          console.log(`🔒 Módulo ${module} restringido para rol ${userRole}`);
+        } else {
+          card.classList.remove('restricted');
+          console.log(`✅ Módulo ${module} permitido para rol ${userRole}`);
+        }
+      });
+    }
+
+    // 🎯 SETUP EVENTOS DE NAVEGACIÓN
+    function setupNavigationEvents() {
+      const navCards = document.querySelectorAll('.nav-card');
+      
+      navCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+          e.preventDefault();
+          const module = this.getAttribute('data-module');
+          const url = this.getAttribute('data-url');
+          navigateToModule(module, url);
+        });
+      });
+    }
+
+    // 🧭 FUNCIÓN DE NAVEGACIÓN PRINCIPAL
+    function navigateToModule(module, url) {
+      console.log(`🎯 Intentando navegar a: ${module}`);
+      
+      // Verificar autenticación
+      const currentUser = SupabaseAuth.getCurrentUser();
+      
+      if (!currentUser) {
+        console.log('❌ Usuario no autenticado, redirigiendo al login');
+        showNotification('Debe iniciar sesión para acceder', 'error');
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 1500);
+        return;
+      }
+      
+      // Verificar permisos del módulo
+      const allowedRoles = MODULE_PERMISSIONS[module];
+      
+      if (!allowedRoles || !allowedRoles.includes(currentUser.role)) {
+        console.log(`🚫 Acceso denegado a ${module} para rol ${currentUser.role}`);
+        showNotification(`Su rol (${currentUser.role}) no tiene acceso a este módulo`, 'error');
+        return;
+      }
+      
+      console.log(`✅ Acceso permitido a ${module} para ${currentUser.username}`);
+      showNotification(`Accediendo a ${module}...`, 'success');
+      
+      setTimeout(() => {
+        window.location.href = url;
+      }, 1000);
+    }
+
+    // 📢 MOSTRAR NOTIFICACIONES
+    function showNotification(message, type = 'error') {
+      // Remover notificación existente
+      const existingNotification = document.querySelector('.notification');
+      if (existingNotification) {
+        existingNotification.remove();
+      }
+      
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span>${message}</span>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Mostrar notificación
+      setTimeout(() => notification.classList.add('show'), 100);
+      
+      // Ocultar después de 3 segundos
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+
+    // 📊 ACTUALIZAR ESTADÍSTICAS
+    function actualizarStats() {
+      const currentUser = SupabaseAuth.getCurrentUser();
+      
+      // Solo mostrar stats si está autenticado
+      if (currentUser) {
+        const registros = Math.floor(Math.random() * 150) + 50;
+        document.getElementById('totalRegistros').textContent = registros;
+      } else {
+        document.getElementById('totalRegistros').textContent = '--';
+      }
+      
+      const ahora = new Date();
+      document.getElementById('ultimaActualizacion').textContent = 
+        ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // 🚪 FUNCIÓN DE LOGOUT (global)
+    function logout() {
+      if (confirm('¿Está seguro que desea cerrar sesión?')) {
+        const result = SupabaseAuth.logout();
+        if (result.success) {
+          console.log('🚪 Sesión cerrada correctamente');
+          showNotification('Sesión cerrada correctamente', 'success');
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        }
+      }
+    }
+
+    // 🎨 EFECTOS VISUALES
+    document.querySelectorAll('.nav-card').forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        if (!this.classList.contains('restricted')) {
+          this.style.transform = 'translateY(-10px) scale(1.02)';
+        }
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        if (!this.classList.contains('restricted')) {
+          this.style.transform = 'translateY(0) scale(1)';
+        }
+      });
+    });
+
+    // Hacer funciones disponibles globalmente
+    window.navigateToModule = navigateToModule;
+    window.logout = logout;
+    window.showNotification = showNotification;
+
+    console.log('💧 Agua Zafiro - Sistema con autenticación iniciado correctamente');
+    console.log('📊 Módulos disponibles según permisos: Capturador, Dashboard, Calendario');
+  </script>
+  <!-- Al final del body, ANTES de </body> -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="supabase-produccion-diaria.js"></script>  <!-- ⭐ NUEVO -->
+<script src="auth.js"></script>
+<script src="roles.js"></script>
+</body>
+</html>
