@@ -946,7 +946,7 @@ function agregarFilaTablaCalidad(registro) {
     <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">${registro.tds.toFixed(2)}</span></td>
     <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">${registro.usm.toFixed(2)}</span></td>
     <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">${registro.temperatura.toFixed(1)}</span></td>
-    <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">${registro.ph.toFixed(2)}</span></td>
+    <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">${registro.ph !== null ? registro.ph.toFixed(2) : '--'}</span></td>
     <td>${registro.observaciones || '--'}</td>
     <td>
       ${esAdmin ? `
