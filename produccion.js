@@ -864,11 +864,19 @@ async function registrarCalidad() {
   const tds = parseFloat(document.getElementById('tds_calidad').value);
   const usm = parseFloat(document.getElementById('usm_calidad').value);
   const temperatura = parseFloat(document.getElementById('temperatura_calidad').value);
-  const ph = parseFloat(document.getElementById('ph_calidad').value);
+  const phInput = document.getElementById('ph_calidad').value;
+  const ph = phInput ? parseFloat(phInput) : null; // ✅ PH opcional
   const observaciones = document.getElementById('observaciones_calidad').value;
 
-  if (!fecha || isNaN(tds) || isNaN(usm) || isNaN(temperatura) || isNaN(ph)) {
-    mostrarAlerta('Por favor completa todos los campos requeridos', 'error');
+  // ✅ PH ahora es OPCIONAL
+  if (!fecha || isNaN(tds) || isNaN(usm) || isNaN(temperatura)) {
+    mostrarAlerta('Por favor completa todos los campos requeridos (TDS, USM, Temperatura)', 'error');
+    return;
+  }
+
+  // ✅ Solo validar PH si tiene valor
+  if (ph !== null && (ph < 0 || ph > 14)) {
+    mostrarAlerta('El PH debe estar entre 0 y 14', 'error');
     return;
   }
 
