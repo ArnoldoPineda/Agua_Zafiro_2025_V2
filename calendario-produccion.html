@@ -580,6 +580,17 @@
       const diasEnMes = new Date(anoActual, mesActual + 1, 0).getDate();
 
       // Días del mes actual
+      // ✅ AGREGAR CELDAS VACÍAS AL INICIO (ANTES DEL DÍA 1)
+for (let i = 0; i < primerDia; i++) {
+  const celdaVacia = document.createElement('div');
+  celdaVacia.className = 'calendar-day sin-datos';
+  grid.appendChild(celdaVacia);
+}
+
+// Días del mes actual
+for (let dia = 1; dia <= diasEnMes; dia++) {
+  const fecha = `${anoActual}-${String(mesActual + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+
       for (let dia = 1; dia <= diasEnMes; dia++) {
         const fecha = `${anoActual}-${String(mesActual + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
         const tieneRegistro = registrosDelMes[fecha];
