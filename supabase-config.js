@@ -1,4 +1,4 @@
-  // ============================================
+// ============================================
   // CONFIGURACIÓN DE SUPABASE - AGUA ZAFIRO
   // ============================================
 
@@ -283,6 +283,135 @@
         };
       } catch (error) {
         console.error('❌ Error obteniendo resumen diario:', error);
+        return { success: false, error: error.message };
+      }
+    },
+
+    /**
+     * Guardar registro diario completo (daily_records + ventas + gastos + créditos)
+     * VERSIÓN MEJORADA CON UPSERT
+     */
+    async saveRegistroDiario(fecha, datos) {
+      try {
+        const currentUser = SupabaseAuth.getCurrentUser();
+        if (!currentUser) throw new Error('Usuario no autenticado');
+
+        console.log('💾 Guardando registro diario completo:', fecha);
+
+        // PASO 1: UPSERT daily_record (crear si no existe, actualizar si existe)
+        const { data: dailyRecord, error: upsertError } = await supabaseClient
+          .from('daily_records')
+          .upsert({
+            fecha: fecha,
+            caja_inicial: parseFloat(datos.cajaInicial) || 0,
+            observaciones: datos.observaciones || '',
+            created_by: currentUser.id,
+            updated_at: new Date().toISOString()
+          }, {
+            onConflict: 'fecha'
+          })
+          .select()
+          .single();
+
+        if (upsertError) throw upsertError;
+
+        const recordId = dailyRecord.id;
+        console.log('✅ Registro guardado/actualizado:', recordId);
+
+        // PASO 2: Eliminar datos antiguos de este día (ventas, gastos, créditos)
+        await Promise.all([
+          supabaseClient.from('sales').delete().eq('daily_record_id', recordId),
+          supabaseClient.from('expenses').delete().eq('daily_record_id', recordId),
+          supabaseClient.from('credits').delete().eq('daily_record_id', recordId)
+        ]);
+
+        console.log('✅ Datos antiguos eliminados');
+
+        // PASO 3: Insertar ventas
+        if (datos.ventas && datos.ventas.length > 0) {
+          const ventasData = datos.ventas
+            .filter(v => v.vendedor && v.ciudad && v.producto)
+            .map((venta, idx) => ({
+              daily_record_id: recordId,
+              vendedor: venta.vendedor,
+              ciudad: venta.ciudad,
+              producto: venta.producto,
+              cantidad: parseInt(venta.cantidad) || 0,
+              precio: parseFloat(venta.precio) || 0,
+              total: parseFloat(venta.total) || 0,
+              orden: idx + 1,
+              created_at: new Date().toISOString()
+            }));
+
+          if (ventasData.length > 0) {
+            const { error: ventasError } = await supabaseClient
+              .from('sales')
+              .insert(ventasData);
+
+            if (ventasError) throw ventasError;
+            console.log(`✅ ${ventasData.length} ventas guardadas`);
+          }
+        }
+
+        // PASO 4: Insertar gastos
+        if (datos.gastos && datos.gastos.length > 0) {
+          const gastosData = datos.gastos
+            .filter(g => g.categoria && g.monto)
+            .map((gasto, idx) => ({
+              daily_record_id: recordId,
+              categoria: gasto.categoria,
+              descripcion: gasto.descripcion || '',
+              monto: parseFloat(gasto.monto) || 0,
+              orden: idx + 1,
+              created_at: new Date().toISOString()
+            }));
+
+          if (gastosData.length > 0) {
+            const { error: gastosError } = await supabaseClient
+              .from('expenses')
+              .insert(gastosData);
+
+            if (gastosError) throw gastosError;
+            console.log(`✅ ${gastosData.length} gastos guardados`);
+          }
+        }
+
+        // PASO 5: Insertar créditos
+        if (datos.creditos && datos.creditos.length > 0) {
+          const creditosData = datos.creditos
+            .filter(c => c.categoria && c.monto)
+            .map((credito, idx) => ({
+              daily_record_id: recordId,
+              categoria: credito.categoria,
+              detalle: credito.detalle || '',
+              monto: parseFloat(credito.monto) || 0,
+              orden: idx + 1,
+              created_at: new Date().toISOString()
+            }));
+
+          if (creditosData.length > 0) {
+            const { error: creditosError } = await supabaseClient
+              .from('credits')
+              .insert(creditosData);
+
+            if (creditosError) throw creditosError;
+            console.log(`✅ ${creditosData.length} créditos guardados`);
+          }
+        }
+
+        return { 
+          success: true, 
+          data: { 
+            recordId, 
+            fecha,
+            ventasCount: datos.ventas?.length || 0,
+            gastosCount: datos.gastos?.length || 0,
+            creditosCount: datos.creditos?.length || 0
+          } 
+        };
+
+      } catch (error) {
+        console.error('❌ Error guardando registro diario:', error);
         return { success: false, error: error.message };
       }
     }

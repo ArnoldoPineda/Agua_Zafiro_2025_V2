@@ -2,12 +2,6 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Control de Producción - Agua Zafiro</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control de Producción - Agua Zafiro</title>
     
@@ -15,9 +9,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <!-- ✅ AGREGAR EL CSS NUEVO AQUÍ (ANTES del <style> existente) -->
     <style>
-      /* NAVBAR UNIFICADO - COMIENZA AQUÍ */
+      /* NAVBAR UNIFICADO */
       .navbar {
         background: linear-gradient(90deg, #1e3a8a 0%, #1e40af 100%) !important;
         padding: 0.75rem 2rem;
@@ -161,918 +154,862 @@
         background: #dc2626;
         transform: scale(1.05);
       }
-    </style>
-    <!-- ✅ TERMINA AQUÍ EL CSS NUEVO -->
-    
-    <!-- EL <style> ORIGINAL SIGUE AQUÍ -->
-    <style>
-        :root {
-            --primary-color: #1e40af;
-            --success-color: #059669;
-            --warning-color: #d97706;
-            --danger-color: #dc2626;
-        }
-        
-        body {
-            background-color: #f9fafb;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        ... resto del CSS original ...
-    </style>
-</head>
-    
-    <style>
-        :root {
-            --primary-color: #1e40af;
-            --success-color: #059669;
-            --warning-color: #d97706;
-            --danger-color: #dc2626;
-        }
 
-        body {
-            background-color: #f9fafb;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+      /* ESTILOS PRINCIPALES */
+      :root {
+        --primary-color: #1e40af;
+        --success-color: #059669;
+        --warning-color: #d97706;
+        --danger-color: #dc2626;
+      }
 
-        .header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #1e3a8a 100%);
-            color: white;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+      body {
+        background-color: #f9fafb;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
 
-        .header h1 {
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+      .header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #1e3a8a 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
 
-        .nav-tabs {
-            border-bottom: 2px solid #e5e7eb;
-            gap: 1rem;
-        }
+      .header h1 {
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-        .nav-link {
-            color: #6b7280;
-            border: none;
-            border-bottom: 3px solid transparent;
-            font-weight: 600;
-            padding: 0.75rem 1.5rem;
-            transition: all 0.3s ease;
-        }
+      .nav-tabs {
+        border-bottom: 2px solid #e5e7eb;
+        gap: 1rem;
+      }
 
-        .nav-link:hover {
-            color: var(--primary-color);
-        }
+      .nav-link {
+        color: #6b7280;
+        border: none;
+        border-bottom: 3px solid transparent;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+      }
 
-        .nav-link.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-            background: none;
-        }
+      .nav-link:hover {
+        color: var(--primary-color);
+      }
 
-        .card {
-            border: none;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            margin-bottom: 1.5rem;
-            border-radius: 8px;
-        }
+      .nav-link.active {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+        background: none;
+      }
 
-        .card-header {
-            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-            border-bottom: 1px solid #d1d5db;
-            padding: 1rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+      .card {
+        border: none;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+        border-radius: 8px;
+      }
 
-        .form-label {
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 0.5rem;
-        }
+      .card-header {
+        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        border-bottom: 1px solid #d1d5db;
+        padding: 1rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-        .form-control, .form-select {
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            padding: 0.65rem 0.75rem;
-            font-size: 0.95rem;
-        }
+      .form-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+      }
 
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(30, 64, 175, 0.15);
-        }
+      .form-control, .form-select {
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 0.65rem 0.75rem;
+        font-size: 0.95rem;
+      }
 
-        .btn {
-            border-radius: 6px;
-            font-weight: 600;
-            padding: 0.65rem 1.5rem;
-            transition: all 0.3s ease;
-        }
+      .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(30, 64, 175, 0.15);
+      }
 
-        .btn-primary {
-            background-color: var(--primary-color);
-            border: none;
-        }
+      .btn-primary {
+        background-color: var(--primary-color);
+        border: none;
+      }
 
-        .btn-primary:hover {
-            background-color: #1e3a8a;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
-        }
+      .btn-primary:hover {
+        background-color: #1e3a8a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+      }
 
-        .btn-success {
-            background-color: var(--success-color);
-            border: none;
-        }
+      .btn-success {
+        background-color: var(--success-color);
+        border: none;
+      }
 
-        .btn-success:hover {
-            background-color: #047857;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
-        }
+      .btn-success:hover {
+        background-color: #047857;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+      }
 
-        .btn-warning {
-            background-color: var(--warning-color);
-            border: none;
-            color: white;
-        }
+      .btn-warning {
+        background-color: var(--warning-color);
+        border: none;
+        color: white;
+      }
 
-        .btn-warning:hover {
-            background-color: #b45309;
-            transform: translateY(-2px);
-        }
+      .btn-warning:hover {
+        background-color: #b45309;
+        transform: translateY(-2px);
+      }
 
-        .btn-sm {
-            padding: 0.4rem 0.8rem;
-            font-size: 0.85rem;
-        }
+      .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+      }
 
-        .alert {
-            border: none;
-            border-radius: 6px;
-            border-left: 4px solid;
-        }
+      .alert {
+        border: none;
+        border-radius: 6px;
+        border-left: 4px solid;
+      }
 
-        .alert-info {
-            border-left-color: var(--primary-color);
-            background-color: #dbeafe;
-            color: #1e40af;
-        }
+      .alert-info {
+        border-left-color: var(--primary-color);
+        background-color: #dbeafe;
+        color: #1e40af;
+      }
 
-        .alert-warning {
-            border-left-color: var(--warning-color);
-            background-color: #fef3c7;
-            color: #92400e;
-        }
+      .alert-warning {
+        border-left-color: var(--warning-color);
+        background-color: #fef3c7;
+        color: #92400e;
+      }
 
-        .alert-success {
-            border-left-color: var(--success-color);
-            background-color: #d1fae5;
-            color: #065f46;
-        }
+      .alert-success {
+        border-left-color: var(--success-color);
+        background-color: #d1fae5;
+        color: #065f46;
+      }
 
-        .table {
-            font-size: 0.95rem;
-        }
+      .table {
+        font-size: 0.95rem;
+      }
 
-        .table thead {
-            background-color: #f3f4f6;
-            border-bottom: 2px solid #d1d5db;
-        }
+      .table thead {
+        background-color: #f3f4f6;
+        border-bottom: 2px solid #d1d5db;
+      }
 
-        .table th {
-            font-weight: 600;
-            color: var(--primary-color);
-            padding: 1rem 0.75rem;
-        }
+      .table th {
+        font-weight: 600;
+        color: var(--primary-color);
+        padding: 1rem 0.75rem;
+      }
 
-        .table td {
-            padding: 0.75rem;
-            vertical-align: middle;
-        }
+      .table td {
+        padding: 0.75rem;
+        vertical-align: middle;
+      }
 
-        .table tbody tr {
-            border-bottom: 1px solid #e5e7eb;
-            transition: background-color 0.2s ease;
-        }
+      .table tbody tr {
+        border-bottom: 1px solid #e5e7eb;
+        transition: background-color 0.2s ease;
+      }
 
-        .table tbody tr:hover {
-            background-color: #f9fafb;
-        }
+      .table tbody tr:hover {
+        background-color: #f9fafb;
+      }
 
-        .badge {
-            font-weight: 600;
-            padding: 0.5rem 0.75rem;
-            border-radius: 4px;
-        }
+      .badge {
+        font-weight: 600;
+        padding: 0.5rem 0.75rem;
+        border-radius: 4px;
+      }
 
-        .badge-success {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
+      .badge-success {
+        background-color: #d1fae5;
+        color: #065f46;
+      }
 
-        .badge-danger {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
+      .badge-danger {
+        background-color: #fee2e2;
+        color: #991b1b;
+      }
 
-        .badge-warning {
-            background-color: #fef3c7;
-            color: #92400e;
-        }
+      .badge-warning {
+        background-color: #fef3c7;
+        color: #92400e;
+      }
 
-        .section-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin: 1.5rem 0 1rem 0;
-            padding-bottom: 0.75rem;
-            border-bottom: 2px solid #e5e7eb;
-        }
+      .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 1.5rem 0 1rem 0;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e5e7eb;
+      }
 
-        .stat-box {
-            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-            padding: 1.25rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            border-left: 4px solid var(--primary-color);
-        }
+      .stat-box {
+        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        padding: 1.25rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--primary-color);
+      }
 
-        .stat-label {
-            font-size: 0.85rem;
-            color: #6b7280;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+      .stat-label {
+        font-size: 0.85rem;
+        color: #6b7280;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
 
-        .stat-value {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-top: 0.5rem;
-        }
+      .stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-top: 0.5rem;
+      }
 
-        .required::after {
-            content: " *";
-            color: #dc2626;
-            font-weight: bold;
-        }
+      .required::after {
+        content: " *";
+        color: #dc2626;
+        font-weight: bold;
+      }
 
-        .row-space {
-            margin-bottom: 1rem;
-        }
+      .row-space {
+        margin-bottom: 1rem;
+      }
 
-        .divider {
-            height: 2px;
-            background: linear-gradient(90deg, #e5e7eb, transparent);
-            margin: 1.5rem 0;
-        }
+      .divider {
+        height: 2px;
+        background: linear-gradient(90deg, #e5e7eb, transparent);
+        margin: 1.5rem 0;
+      }
 
-        .icon-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+      .icon-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .hidden-field {
+        display: none;
+      }
     </style>
 </head>
 <body>
-  <!-- NAVBAR CORRECTO PARA PRODUCCION.HTML -->
-<nav class="navbar">
-  <h1>💧 Agua Zafiro</h1>
-  <div class="nav-actions">
-    <div class="status"><i class="fas fa-circle"></i> Sistema Activo</div>
-    
-    <!-- Botones admin -->
-    <button class="btn import admin-only" onclick="iniciarImportacionDirecta()">
-      <i class="fas fa-upload"></i> Importar
-    </button>      
-    <button class="btn export admin-only" onclick="iniciarExportacion()">
-      <i class="fas fa-download"></i> Exportar
-    </button>
-    
-    <!-- NAVEGACIÓN -->
-    <a href="capturador.html" class="nav-btn">
-      <i class="fas fa-clipboard-list"></i>
-      <span>Capturador</span>
-    </a>
-    <a href="calendario.html" class="nav-btn">
-      <i class="fas fa-calendar-alt"></i>
-      <span>Calendario</span>
-    </a>
-    <a href="dashboard.html" class="nav-btn">
-      <i class="fas fa-chart-line"></i>
-      <span>Dashboard</span>
-    </a>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <h1>💧 Agua Zafiro</h1>
+    <div class="nav-actions">
+      <div class="status"><i class="fas fa-circle"></i> Sistema Activo</div>
+      
+      <button class="btn import admin-only" onclick="iniciarImportacionDirecta()">
+        <i class="fas fa-upload"></i> Importar
+      </button>      
+      <button class="btn export admin-only" onclick="iniciarExportacion()">
+        <i class="fas fa-download"></i> Exportar
+      </button>
+      
+      <a href="capturador.html" class="nav-btn">
+        <i class="fas fa-clipboard-list"></i>
+        <span>Capturador</span>
+      </a>
+      <a href="calendario-ventas.html" class="nav-btn">
+  <i class="fas fa-calendar-alt"></i>
+  <span>Calendario Ventas</span>
+</a>
+      <a href="dashboard.html" class="nav-btn">
+        <i class="fas fa-chart-line"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="calendario-produccion.html" class="nav-btn">
+  <i class="fas fa-calendar-alt"></i>
+  Calendario
+</a>
 
-    <!-- SUBMENÚ DE PRODUCCIÓN -->
-<div style="display: flex; gap: 0;">
-  <!-- Capturador de Producción -->
-  <a href="produccion.html" class="nav-btn active produccion-access">
-  <i class="fas fa-clipboard-list"></i>
-  <span>Capturador Prod</span>
-</a>
-  
-  <!-- Dashboard de Producción -->
-  <a href="dashboard-produccion.html" class="nav-btn produccion-access">
-  <i class="fas fa-chart-bar"></i>
-  <span>Dashboard Prod</span>
-</a>
-</div>
-    
-    <!-- Info del usuario -->
-    <div class="user-info">
-      <span class="user-name">Usuario</span> | 
-      <span class="user-role">Rol</span>
+      <div style="display: flex; gap: 0;">
+        <a href="produccion.html" class="nav-btn active produccion-access">
+          <i class="fas fa-clipboard-list"></i>
+          <span>Capturador Prod</span>
+        </a>
+        
+        <a href="dashboard-produccion.html" class="nav-btn produccion-access">
+          <i class="fas fa-chart-bar"></i>
+          <span>Dashboard Prod</span>
+        </a>
+      </div>
+      
+      <div class="user-info">
+        <span class="user-name">Usuario</span> | 
+        <span class="user-role">Rol</span>
+      </div>
+      
+      <button class="btn logout-btn" onclick="logout()" title="Cerrar Sesión">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
     </div>
-    
-    <!-- Botón logout -->
-    <button class="btn logout-btn" onclick="logout()" title="Cerrar Sesión">
-  <i class="fas fa-sign-out-alt"></i>
-</button>
+  </nav> 
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="container">
+      <h1><i class="bi bi-boxes"></i> Control de Producción Diaria</h1>
+      <p class="mb-0" style="font-size: 0.95rem; opacity: 0.9;">Agua Zafiro - Gestión de Bolsas y Botellones</p>
+    </div>
   </div>
-</nav> 
-    <!-- HEADER -->
-    <div class="header">
-        <div class="container">
-            <h1><i class="bi bi-boxes"></i> Control de Producción Diaria</h1>
-            <p class="mb-0" style="font-size: 0.95rem; opacity: 0.9;">Agua Zafiro - Gestión de Bolsas y Botellones</p>
-        </div>
-    </div>
 
-    <!-- CONTENEDOR PRINCIPAL -->
-    <div class="container mb-5">
-        <!-- TABS PRINCIPALES: PRODUCCIÓN | CALIDAD -->
-        <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="produccion-main-tab" data-bs-toggle="tab" data-bs-target="#produccion-main-content" type="button" role="tab">
-                    <i class="bi bi-boxes"></i> PRODUCCIÓN
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="calidad-main-tab" data-bs-toggle="tab" data-bs-target="#calidad-main-content" type="button" role="tab">
-                    <i class="bi bi-clipboard-check"></i> CALIDAD
-                </button>
-            </li>
+  <!-- CONTENEDOR PRINCIPAL -->
+  <div class="container mb-5">
+    <!-- TABS PRINCIPALES: PRODUCCIÓN | CALIDAD -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="produccion-main-tab" data-bs-toggle="tab" data-bs-target="#produccion-main-content" type="button" role="tab">
+          <i class="bi bi-boxes"></i> PRODUCCIÓN
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="calidad-main-tab" data-bs-toggle="tab" data-bs-target="#calidad-main-content" type="button" role="tab">
+          <i class="bi bi-clipboard-check"></i> CALIDAD
+        </button>
+      </li>
+    </ul>
+
+    <!-- CONTENIDO DE TABS PRINCIPALES -->
+    <div class="tab-content">
+      <!-- TAB PRINCIPAL: PRODUCCIÓN -->
+      <div class="tab-pane fade show active" id="produccion-main-content" role="tabpanel">
+        
+        <!-- SUB-TABS: BOLSAS | BOTELLONES -->
+        <ul class="nav nav-tabs mt-3" role="tablist" style="border-bottom: 2px solid #d1d5db;">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="bolsas-tab" data-bs-toggle="tab" data-bs-target="#bolsas-content" type="button" role="tab">
+              <i class="bi bi-bag"></i> BOLSAS
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="botellones-tab" data-bs-toggle="tab" data-bs-target="#botellones-content" type="button" role="tab">
+              <i class="bi bi-cup"></i> BOTELLONES
+            </button>
+          </li>
         </ul>
 
-        <!-- CONTENIDO DE TABS PRINCIPALES -->
+        <!-- CONTENIDO DE SUB-TABS -->
         <div class="tab-content">
-            <!-- TAB PRINCIPAL: PRODUCCIÓN -->
-            <div class="tab-pane fade show active" id="produccion-main-content" role="tabpanel">
-                
-                <!-- SUB-TABS: BOLSAS | BOTELLONES -->
-                <ul class="nav nav-tabs mt-3" role="tablist" style="border-bottom: 2px solid #d1d5db;">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="bolsas-tab" data-bs-toggle="tab" data-bs-target="#bolsas-content" type="button" role="tab">
-                            <i class="bi bi-bag"></i> BOLSAS
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="botellones-tab" data-bs-toggle="tab" data-bs-target="#botellones-content" type="button" role="tab">
-                            <i class="bi bi-cup"></i> BOTELLONES
-                        </button>
-                    </li>
-                </ul>
-
-                <!-- CONTENIDO DE SUB-TABS -->
-                <div class="tab-content">
-                    <!-- SUB-TAB: BOLSAS -->
-                    <div class="tab-pane fade show active" id="bolsas-content" role="tabpanel">
-                
-                <!-- SECCIÓN: INICIAR DÍA -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <span class="icon-title">
-                            <i class="bi bi-play-circle"></i> Iniciar Día - Control de Contador
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="row row-space">
-                            <div class="col-md-6">
-                                <label for="fecha_inicio_bolsas" class="form-label required">Fecha</label>
-                                <input type="date" class="form-control" id="fecha_inicio_bolsas" value="2025-11-12">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="contador_inicio" class="form-label required">Contador Inicial</label>
-                                <input type="number" class="form-control" id="contador_inicio" placeholder="Lectura del contador al iniciar" min="0">
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-primary" id="btn_iniciar_dia">
-                            <i class="bi bi-check-circle"></i> Iniciar Día
-                        </button>
-                    </div>
+          <!-- SUB-TAB: BOLSAS - REORGANIZADO -->
+          <div class="tab-pane fade show active" id="bolsas-content" role="tabpanel">
+            
+            <!-- SECCIÓN UNIFICADA: Iniciar Día + Cierre Contador -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-play-circle"></i> Control Diario de Contador
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="row row-space">
+                  <div class="col-md-3">
+                    <label for="fecha_bolsas" class="form-label required">Fecha</label>
+                    <input type="date" class="form-control" id="fecha_bolsas" value="2025-11-12">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="contador_inicio" class="form-label required">Contador Inicial</label>
+                    <input type="number" class="form-control" id="contador_inicio" placeholder="Lectura inicial" min="0">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="contador_cierre" class="form-label required">Contador Cierre</label>
+                    <input type="number" class="form-control" id="contador_cierre" placeholder="Lectura al cierre" min="0">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="diferencia_contador" class="form-label">Diferencia (Auto)</label>
+                    <input type="number" class="form-control" id="diferencia_contador" placeholder="Calculado automáticamente" readonly style="background-color: #f3f4f6;">
+                  </div>
                 </div>
 
-                <!-- ALERT DE ESTADO DEL DÍA -->
-                <div class="alert alert-info mt-3" id="estado_dia" style="display: none;">
-                    <i class="bi bi-info-circle"></i> <strong>Día iniciado:</strong> <span id="estado_dia_text"></span>
-                </div>
 
-                <!-- SECCIÓN: REGISTRAR BOBINA -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <span class="icon-title">
-                            <i class="bi bi-plus-circle"></i> Registrar Bobina
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="row row-space">
-                            <div class="col-md-6">
-                                <label for="fecha_bobina" class="form-label required">Fecha</label>
-                                <input type="date" class="form-control" id="fecha_bobina" value="2025-11-12">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="numero_bobina" class="form-label">Número de Bobina (Auto)</label>
-                                <input type="text" class="form-control" id="numero_bobina" placeholder="Generado automáticamente" readonly style="background-color: #f3f4f6;">
-                            </div>
-                        </div>
-
-                        <div class="row row-space">
-                            <div class="col-md-6">
-                                <label for="peso_bobina" class="form-label required">Peso de Bobina (kg)</label>
-                                <input type="number" class="form-control" id="peso_bobina" placeholder="Ej: 25.5" step="0.1" min="0">
-                            </div>
-                        </div>
-
-                        <button type="button" class="btn btn-success" id="btn_registrar_bobina">
-                            <i class="bi bi-save"></i> Registrar Bobina
-                        </button>
-                    </div>
-                </div>
-
-                <!-- SECCIÓN: RESUMEN DE BOBINAS REGISTRADAS -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <span class="icon-title">
-                            <i class="bi bi-table"></i> Bobinas Registradas del Día
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table" id="tabla_bobinas">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Número Bobina</th>
-                                        <th>Peso (kg)</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colspan="4" class="text-center text-muted" style="padding: 2rem;">
-                                            <i class="bi bi-inbox"></i> No hay bobinas registradas aún
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SECCIÓN: REGISTRAR PRODUCCIÓN DE BOLSAS -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <span class="icon-title">
-                            <i class="bi bi-bag-check"></i> Registrar Producción de Bolsas
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="row row-space">
-                            <div class="col-md-6">
-                                <label for="fecha_produccion" class="form-label required">Fecha</label>
-                                <input type="date" class="form-control" id="fecha_produccion" value="2025-11-12">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="bobina_produccion" class="form-label required">Número de Bobina</label>
-                                <select class="form-select" id="bobina_produccion">
-                                    <option value="">-- Selecciona una bobina --</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row row-space">
-                            <div class="col-md-6">
-                                <label for="bolsitas_producidas" class="form-label required">Bolsitas Producidas</label>
-                                <input type="number" class="form-control" id="bolsitas_producidas" placeholder="Total de bolsitas" min="0">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="bolsitas_rechazadas_prod" class="form-label required">Bolsitas Rechazadas</label>
-                                <input type="number" class="form-control" id="bolsitas_rechazadas_prod" placeholder="Defectuosas/rotas" min="0" value="0">
-                            </div>
-                        </div>
-
-                        <div class="row row-space">
-                            <div class="col-md-6">
-                                <label for="motivo_rechazo_bolsa" class="form-label required">Motivo Rechazo</label>
-                                <select class="form-select" id="motivo_rechazo_bolsa">
-                                    <option value="">-- Selecciona un motivo --</option>
-                                    <option value="Rotura en máquina">Rotura en máquina</option>
-                                    <option value="Densidad delgada">Densidad delgada</option>
-                                    <option value="Sello defectuoso">Sello defectuoso</option>
-                                    <option value="Rotura en venta">Rotura en venta</option>
-                                    <option value="Otro">Otro</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row row-space">
-                            <div class="col-md-6">
-                                <label for="packs_calculados" class="form-label">Packs Calculados (Auto)</label>
-                                <input type="number" class="form-control" id="packs_calculados" placeholder="Calculado: (bolsitas-rechazadas) / 35" readonly style="background-color: #f3f4f6;">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="packs_operador" class="form-label required">Packs que Empacó el Operador</label>
-                                <input type="number" class="form-control" id="packs_operador" placeholder="Cantidad real empacada" min="0">
-                            </div>
-                        </div>
-
-                        <!-- ALERT DE VALIDACIÓN -->
-                        <div class="alert alert-warning" id="alerta_packs" style="display: none; margin-bottom: 1rem; margin-top: 1rem;">
-                            <i class="bi bi-exclamation-triangle"></i> <strong>⚠️ Alerta de Packs:</strong> <span id="alerta_packs_text"></span>
-                        </div>
-
-                        <button type="button" class="btn btn-success" id="btn_registrar_produccion">
-                            <i class="bi bi-save"></i> Registrar Producción
-                        </button>
-                    </div>
-                </div>
-
-                <!-- SECCIÓN: RESUMEN DE PRODUCCIÓN DE BOLSAS -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <span class="icon-title">
-                            <i class="bi bi-table"></i> Resumen de Producción de Bolsas
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table" id="tabla_produccion">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Bobina</th>
-                                        <th>Bolsitas Prod.</th>
-                                        <th>Rechazadas</th>
-                                        <th>Packs Calc.</th>
-                                        <th>Packs Operador</th>
-                                        <th>Motivo</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colspan="8" class="text-center text-muted" style="padding: 2rem;">
-                                            <i class="bi bi-inbox"></i> No hay registros aún
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SECCIÓN: CERRAR DÍA -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <span class="icon-title">
-                            <i class="bi bi-stop-circle"></i> Cerrar Día - Validación de Contador
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="row row-space">
-                            <div class="col-md-6">
-                                <label for="contador_cierre" class="form-label required">Contador Cierre</label>
-                                <input type="number" class="form-control" id="contador_cierre" placeholder="Lectura del contador al cerrar" min="0">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="diferencia_contador" class="form-label">Diferencia Contador</label>
-                                <input type="number" class="form-control" id="diferencia_contador" placeholder="Calculado automáticamente" readonly style="background-color: #f3f4f6;">
-                            </div>
-                        </div>
-
-                        <div class="divider"></div>
-
-                        <!-- ESTADÍSTICAS FINALES -->
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="stat-box">
-                                    <div class="stat-label">Bobinas Registradas</div>
-                                    <div class="stat-value" id="stat_bobinas_totales">0</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stat-box">
-                                    <div class="stat-label">Bolsitas Producidas</div>
-                                    <div class="stat-value" id="stat_bolsitas_producidas">0</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stat-box">
-                                    <div class="stat-label">Packs Operador Total</div>
-                                    <div class="stat-value" id="stat_packs_operador_total">0</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stat-box">
-                                    <div class="stat-label">Factor de Ajuste</div>
-                                    <div class="stat-value" id="stat_factor_ajuste" style="color: var(--warning-color);">--</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="divider"></div>
-
-                        <button type="button" class="btn btn-warning" id="btn_cerrar_dia">
-                            <i class="bi bi-check-lg"></i> Cerrar Día
-                        </button>
-                    </div>
-                </div>
-
+              </div>
             </div>
 
-            <!-- TAB: BOTELLONES -->
-            <div class="tab-pane fade" id="botellones-content" role="tabpanel">
-
-                <!-- SECCIÓN: REGISTRAR LOTE -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <span class="icon-title">
-                            <i class="bi bi-plus-circle"></i> Registrar Lote de Botellones
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="row row-space">
-                            <div class="col-md-6">
-                                <label for="fecha_botellones" class="form-label required">Fecha</label>
-                                <input type="date" class="form-control" id="fecha_botellones" value="2025-11-12">
-                            </div>
-                            <div class="col-md-3">
-                                <label for="hora_inicio_bot" class="form-label required">Hora Inicio</label>
-                                <input type="time" class="form-control" id="hora_inicio_bot">
-                            </div>
-                            <div class="col-md-3">
-                                <label for="hora_cierre_bot" class="form-label required">Hora Cierre</label>
-                                <input type="time" class="form-control" id="hora_cierre_bot">
-                            </div>
-                        </div>
-
-                        <div class="row row-space">
-                            <div class="col-md-6">
-                                <label for="botellones_producidos" class="form-label required">Botellones Producidos</label>
-                                <input type="number" class="form-control" id="botellones_producidos" placeholder="Total de botellones" min="0">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="botellones_rechazados" class="form-label required">Botellones Rechazados</label>
-                                <input type="number" class="form-control" id="botellones_rechazados" placeholder="Defectuosos/rechazados" min="0" value="0">
-                            </div>
-                        </div>
-
-                        <div class="row row-space">
-                            <div class="col-md-6">
-                                <label for="motivo_rechazo_bot" class="form-label required">Motivo Rechazo</label>
-                                <select class="form-select" id="motivo_rechazo_bot">
-                                    <option value="">-- Selecciona un motivo --</option>
-                                    <option value="Rotura en llenado">Rotura en llenado</option>
-                                    <option value="Defecto de tapa">Defecto de tapa</option>
-                                    <option value="Mal sellado">Mal sellado</option>
-                                    <option value="Defecto de etiqueta">Defecto de etiqueta</option>
-                                    <option value="Otro">Otro</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row row-space">
-                            <div class="col-12">
-                                <label for="observaciones_bot" class="form-label">Observaciones</label>
-                                <textarea class="form-control" id="observaciones_bot" rows="2" placeholder="Notas adicionales..."></textarea>
-                            </div>
-                        </div>
-
-                        <button type="button" class="btn btn-success" id="btn_registrar_botellones">
-                            <i class="bi bi-save"></i> Registrar Lote
-                        </button>
-                    </div>
+            <!-- SECCIÓN: REGISTRAR BOBINA - SIN FECHA -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-plus-circle"></i> Registrar Bobina
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="row row-space">
+                  <div class="col-md-6">
+                    <label for="peso_bobina" class="form-label">Peso de Bobina (kg) <small style="color: #6b7280;">(Opcional)</small></label>
+                    <input type="number" class="form-control" id="peso_bobina" placeholder="Ej: 25.5 (si es bobina nueva)" step="0.1" min="0">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="numero_bobina" class="form-label">Número de Bobina (Auto) <small style="color: #6b7280;">(se genera si ingresas peso)</small></label>
+                    <input type="text" class="form-control" id="numero_bobina" placeholder="Se genera automáticamente" readonly style="background-color: #f3f4f6;">
+                  </div>
                 </div>
 
-                <!-- SECCIÓN: RESUMEN DE BOTELLONES -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <span class="icon-title">
-                            <i class="bi bi-table"></i> Resumen de Botellones Registrados
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table" id="tabla_botellones">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Hora Inicio</th>
-                                        <th>Hora Cierre</th>
-                                        <th>Producidos</th>
-                                        <th>Rechazados</th>
-                                        <th>Motivo</th>
-                                        <th>Observaciones</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colspan="8" class="text-center text-muted" style="padding: 2rem;">
-                                            <i class="bi bi-inbox"></i> No hay registros aún
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- SECCIÓN: ESTADÍSTICAS BOTELLONES -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <span class="icon-title">
-                            <i class="bi bi-graph-up"></i> Estadísticas del Día
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="stat-box">
-                                    <div class="stat-label">Total Botellones Producidos</div>
-                                    <div class="stat-value" id="stat_botellones_producidos">0</div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="stat-box">
-                                    <div class="stat-label">Total Rechazados</div>
-                                    <div class="stat-value" id="stat_botellones_rechazados_total" style="color: var(--danger-color);">0</div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="stat-box">
-                                    <div class="stat-label">Eficiencia</div>
-                                    <div class="stat-value" id="stat_eficiencia_botellones" style="color: var(--success-color);">100%</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+              </div>
             </div>
+
+            <!-- SECCIÓN: RESUMEN DE BOBINAS REGISTRADAS -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-table"></i> Bobinas Registradas del Día
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table" id="tabla_bobinas">
+                    <thead>
+                      <tr>
+                        <th>Número Bobina</th>
+                        <th>Peso (kg)</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="3" class="text-center text-muted" style="padding: 2rem;">
+                          <i class="bi bi-inbox"></i> No hay bobinas registradas aún
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECCIÓN: REGISTRAR PRODUCCIÓN DE BOLSAS - SIN FECHA -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-bag-check"></i> Registrar Producción de Bolsas
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="alert alert-info" style="margin-bottom: 1rem;">
+                  <i class="bi bi-info-circle"></i> <strong>ℹ️ Bobina:</strong> Crea una NUEVA con peso, o selecciona una EXISTENTE
+                </div>
+
+                <div class="row row-space">
+                  <div class="col-md-6">
+                    <label for="bobina_produccion" class="form-label required">Bobina * <small style="color: #6b7280;">(nueva o existente)</small></label>
+                    <select class="form-select" id="bobina_produccion">
+                      <option value="">-- Selecciona una bobina --</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="bolsitas_producidas" class="form-label required">Bolsitas Producidas</label>
+                    <input type="number" class="form-control" id="bolsitas_producidas" placeholder="Total de bolsitas" min="0">
+                  </div>
+                </div>
+
+                <div class="row row-space">
+                  <div class="col-md-6">
+                    <label for="bolsitas_rechazadas_prod" class="form-label required">Bolsitas Rechazadas</label>
+                    <input type="number" class="form-control" id="bolsitas_rechazadas_prod" placeholder="Defectuosas/rotas" min="0" value="0">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="motivo_rechazo_bolsa" class="form-label" id="label_motivo_bolsa">Motivo Rechazo</label>
+                    <select class="form-select" id="motivo_rechazo_bolsa">
+                      <option value="">-- Selecciona un motivo --</option>
+                      <option value="Rotura en máquina">Rotura en máquina</option>
+                      <option value="Densidad delgada">Densidad delgada</option>
+                      <option value="Sello defectuoso">Sello defectuoso</option>
+                      <option value="Rotura en venta">Rotura en venta</option>
+                      <option value="Otro">Otro</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row row-space">
+                  <div class="col-md-6">
+                    <label for="packs_calculados" class="form-label">Packs Calculados (Auto)</label>
+                    <input type="number" class="form-control" id="packs_calculados" placeholder="Calculado: (bolsitas-rechazadas) / 35" readonly style="background-color: #f3f4f6;">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="packs_operador" class="form-label required">Packs que Empacó el Operador</label>
+                    <input type="number" class="form-control" id="packs_operador" placeholder="Cantidad real empacada" min="0">
+                  </div>
+                </div>
+
+                <!-- ALERT DE VALIDACIÓN -->
+                <div class="alert alert-warning" id="alerta_packs" style="display: none; margin-bottom: 1rem; margin-top: 1rem;">
+                  <i class="bi bi-exclamation-triangle"></i> <strong>⚠️ Alerta de Packs:</strong> <span id="alerta_packs_text"></span>
+                </div>
+
+                <!-- UN SOLO BOTÓN DE GUARDAR -->
+                <button type="button" class="btn btn-success" id="btn_registrar_todo">
+                  <i class="bi bi-save"></i> Guardar Todo
+                </button>
+              </div>
+            </div>
+
+            <!-- SECCIÓN: RESUMEN DE PRODUCCIÓN DE BOLSAS -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-table"></i> Resumen de Producción de Bolsas
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table" id="tabla_produccion">
+                    <thead>
+                      <tr>
+                        <th>Bobina</th>
+                        <th>Bolsitas Prod.</th>
+                        <th>Rechazadas</th>
+                        <th>Packs Calc.</th>
+                        <th>Packs Operador</th>
+                        <th>Motivo</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="7" class="text-center text-muted" style="padding: 2rem;">
+                          <i class="bi bi-inbox"></i> No hay registros aún
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECCIÓN: ESTADÍSTICAS FINALES -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-graph-up"></i> Estadísticas del Día
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-3">
+                    <div class="stat-box">
+                      <div class="stat-label">Bobinas Registradas</div>
+                      <div class="stat-value" id="stat_bobinas_totales">0</div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="stat-box">
+                      <div class="stat-label">Bolsitas Producidas</div>
+                      <div class="stat-value" id="stat_bolsitas_producidas">0</div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="stat-box">
+                      <div class="stat-label">Packs Operador Total</div>
+                      <div class="stat-value" id="stat_packs_operador_total">0</div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="stat-box">
+                      <div class="stat-label">Factor de Ajuste</div>
+                      <div class="stat-value" id="stat_factor_ajuste" style="color: var(--warning-color);">--</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- TAB: BOTELLONES -->
+          <div class="tab-pane fade" id="botellones-content" role="tabpanel">
+
+            <!-- SECCIÓN: REGISTRAR LOTE -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-plus-circle"></i> Registrar Lote de Botellones
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="row row-space">
+                  <div class="col-md-6">
+                    <label for="fecha_botellones" class="form-label required">Fecha</label>
+                    <input type="date" class="form-control" id="fecha_botellones" value="2025-11-12">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="hora_inicio_bot" class="form-label required">Hora Inicio</label>
+                    <input type="time" class="form-control" id="hora_inicio_bot">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="hora_cierre_bot" class="form-label required">Hora Cierre</label>
+                    <input type="time" class="form-control" id="hora_cierre_bot">
+                  </div>
+                </div>
+
+                <div class="row row-space">
+                  <div class="col-md-6">
+                    <label for="botellones_producidos" class="form-label required">Botellones Producidos</label>
+                    <input type="number" class="form-control" id="botellones_producidos" placeholder="Total de botellones" min="0">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="botellones_rechazados" class="form-label required">Botellones Rechazados</label>
+                    <input type="number" class="form-control" id="botellones_rechazados" placeholder="Defectuosos/rechazados" min="0" value="0">
+                  </div>
+                </div>
+
+                <div class="row row-space">
+                  <div class="col-md-6">
+                    <label for="motivo_rechazo_bot" class="form-label" id="label_motivo_bot">Motivo Rechazo</label>
+                    <select class="form-select" id="motivo_rechazo_bot">
+                      <option value="">-- Selecciona un motivo --</option>
+                      <option value="Rotura en llenado">Rotura en llenado</option>
+                      <option value="Defecto de tapa">Defecto de tapa</option>
+                      <option value="Mal sellado">Mal sellado</option>
+                      <option value="Defecto de etiqueta">Defecto de etiqueta</option>
+                      <option value="Otro">Otro</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row row-space">
+                  <div class="col-12">
+                    <label for="observaciones_bot" class="form-label">Observaciones</label>
+                    <textarea class="form-control" id="observaciones_bot" rows="2" placeholder="Notas adicionales..."></textarea>
+                  </div>
+                </div>
+
+                <button type="button" class="btn btn-success" id="btn_registrar_botellones">
+                  <i class="bi bi-save"></i> Registrar Lote
+                </button>
+              </div>
+            </div>
+
+            <!-- SECCIÓN: RESUMEN DE BOTELLONES -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-table"></i> Resumen de Botellones Registrados
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table" id="tabla_botellones">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Hora Inicio</th>
+                        <th>Hora Cierre</th>
+                        <th>Producidos</th>
+                        <th>Rechazados</th>
+                        <th>Motivo</th>
+                        <th>Observaciones</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="8" class="text-center text-muted" style="padding: 2rem;">
+                          <i class="bi bi-inbox"></i> No hay registros aún
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECCIÓN: ESTADÍSTICAS BOTELLONES -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-graph-up"></i> Estadísticas del Día
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="stat-box">
+                      <div class="stat-label">Total Botellones Producidos</div>
+                      <div class="stat-value" id="stat_botellones_producidos">0</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="stat-box">
+                      <div class="stat-label">Total Rechazados</div>
+                      <div class="stat-value" id="stat_botellones_rechazados_total" style="color: var(--danger-color);">0</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="stat-box">
+                      <div class="stat-label">Eficiencia</div>
+                      <div class="stat-value" id="stat_eficiencia_botellones" style="color: var(--success-color);">100%</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
 
         </div>
+      </div>
+
+      <!-- TAB PRINCIPAL: CALIDAD -->
+      <div class="tab-pane fade" id="calidad-main-content" role="tabpanel">
+        
+        <!-- SECCIÓN: REGISTRAR PRUEBA DE CALIDAD -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <span class="icon-title">
+              <i class="bi bi-flask"></i> Registrar Prueba de Calidad Diaria
+            </span>
+          </div>
+          <div class="card-body">
+            <div class="row row-space">
+              <div class="col-md-6">
+                <label for="fecha_calidad" class="form-label required">Fecha</label>
+                <input type="date" class="form-control" id="fecha_calidad" value="2025-11-12">
+              </div>
+              <div class="col-md-6">
+                <label for="tds_calidad" class="form-label required">TDS (ppm)</label>
+                <input type="number" class="form-control" id="tds_calidad" placeholder="Total Dissolved Solids" step="0.1" min="0">
+              </div>
             </div>
 
-            <!-- TAB PRINCIPAL: CALIDAD -->
-            <div class="tab-pane fade" id="calidad-main-content" role="tabpanel">
-                
-                <!-- SECCIÓN: REGISTRAR PRUEBA DE CALIDAD -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <span class="icon-title">
-                            <i class="bi bi-flask"></i> Registrar Prueba de Calidad Diaria
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="row row-space">
-                            <div class="col-md-6">
-                                <label for="fecha_calidad" class="form-label required">Fecha</label>
-                                <input type="date" class="form-control" id="fecha_calidad" value="2025-11-12">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="tds_calidad" class="form-label required">TDS (ppm)</label>
-                                <input type="number" class="form-control" id="tds_calidad" placeholder="Total Dissolved Solids" step="0.1" min="0">
-                            </div>
-                        </div>
-
-                        <div class="row row-space">
-                            <div class="col-md-6">
-                                <label for="usm_calidad" class="form-label required">USM (µS/cm)</label>
-                                <input type="number" class="form-control" id="usm_calidad" placeholder="Conductividad" step="0.1" min="0">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="temperatura_calidad" class="form-label required">Temperatura (°C)</label>
-                                <input type="number" class="form-control" id="temperatura_calidad" placeholder="Temperatura del agua" step="0.1" min="-10" max="50">
-                            </div>
-                        </div>
-
-                        <div class="row row-space">
-                            <div class="col-md-6">
-                                <label for="ph_calidad" class="form-label required">PH</label>
-                                <input type="number" class="form-control" id="ph_calidad" placeholder="Escala 0-14" step="0.1" min="0" max="14">
-                            </div>
-                        </div>
-
-                        <div class="row row-space">
-                            <div class="col-12">
-                                <label for="observaciones_calidad" class="form-label">Observaciones</label>
-                                <textarea class="form-control" id="observaciones_calidad" rows="2" placeholder="Notas adicionales sobre la prueba..."></textarea>
-                            </div>
-                        </div>
-
-                        <button type="button" class="btn btn-success" id="btn_registrar_calidad">
-                            <i class="bi bi-save"></i> Registrar Prueba
-                        </button>
-                    </div>
-                </div>
-
-                <!-- SECCIÓN: RESUMEN DE PRUEBAS DE CALIDAD -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <span class="icon-title">
-                            <i class="bi bi-table"></i> Pruebas de Calidad Registradas
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table" id="tabla_calidad">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>TDS (ppm)</th>
-                                        <th>USM (µS/cm)</th>
-                                        <th>Temperatura (°C)</th>
-                                        <th>PH</th>
-                                        <th>Observaciones</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colspan="7" class="text-center text-muted" style="padding: 2rem;">
-                                            <i class="bi bi-inbox"></i> No hay registros aún
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SECCIÓN: ESTADÍSTICAS DE CALIDAD -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <span class="icon-title">
-                            <i class="bi bi-graph-up"></i> Estadísticas del Día
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="stat-box">
-                                    <div class="stat-label">TDS Promedio</div>
-                                    <div class="stat-value" id="stat_tds_promedio">--</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stat-box">
-                                    <div class="stat-label">USM Promedio</div>
-                                    <div class="stat-value" id="stat_usm_promedio">--</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stat-box">
-                                    <div class="stat-label">Temperatura Promedio</div>
-                                    <div class="stat-value" id="stat_temp_promedio">--</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stat-box">
-                                    <div class="stat-label">PH Promedio</div>
-                                    <div class="stat-value" id="stat_ph_promedio">--</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <div class="stat-label">Total de Pruebas del Día</div>
-                                <div style="font-size: 1.75rem; font-weight: 700; color: var(--primary-color);">
-                                    <span id="stat_total_pruebas">0</span> prueba(s)
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+            <div class="row row-space">
+              <div class="col-md-6">
+                <label for="usm_calidad" class="form-label required">USM (µS/cm)</label>
+                <input type="number" class="form-control" id="usm_calidad" placeholder="Conductividad" step="0.1" min="0">
+              </div>
+              <div class="col-md-6">
+                <label for="temperatura_calidad" class="form-label required">Temperatura (°C)</label>
+                <input type="number" class="form-control" id="temperatura_calidad" placeholder="Temperatura del agua" step="0.1" min="-10" max="50">
+              </div>
             </div>
 
+            <div class="row row-space">
+              <div class="col-md-6">
+                <label for="ph_calidad" class="form-label required">PH</label>
+                <input type="number" class="form-control" id="ph_calidad" placeholder="Escala 0-14" step="0.1" min="0" max="14">
+              </div>
+            </div>
+
+            <div class="row row-space">
+              <div class="col-12">
+                <label for="observaciones_calidad" class="form-label">Observaciones</label>
+                <textarea class="form-control" id="observaciones_calidad" rows="2" placeholder="Notas adicionales sobre la prueba..."></textarea>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-success" id="btn_registrar_calidad">
+              <i class="bi bi-save"></i> Registrar Prueba
+            </button>
+          </div>
         </div>
 
-    <!-- SCRIPT BOOTSTRAP -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- SECCIÓN: RESUMEN DE PRUEBAS DE CALIDAD -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <span class="icon-title">
+              <i class="bi bi-table"></i> Pruebas de Calidad Registradas
+            </span>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table" id="tabla_calidad">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>TDS (ppm)</th>
+                    <th>USM (µS/cm)</th>
+                    <th>Temperatura (°C)</th>
+                    <th>PH</th>
+                    <th>Observaciones</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colspan="7" class="text-center text-muted" style="padding: 2rem;">
+                      <i class="bi bi-inbox"></i> No hay registros aún
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
-    <!-- 🔐 SUPABASE Y AUTENTICACIÓN -->
+        <!-- SECCIÓN: ESTADÍSTICAS DE CALIDAD -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <span class="icon-title">
+              <i class="bi bi-graph-up"></i> Estadísticas del Día
+            </span>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="stat-box">
+                  <div class="stat-label">TDS Promedio</div>
+                  <div class="stat-value" id="stat_tds_promedio">--</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-box">
+                  <div class="stat-label">USM Promedio</div>
+                  <div class="stat-value" id="stat_usm_promedio">--</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-box">
+                  <div class="stat-label">Temperatura Promedio</div>
+                  <div class="stat-value" id="stat_temp_promedio">--</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-box">
+                  <div class="stat-label">PH Promedio</div>
+                  <div class="stat-value" id="stat_ph_promedio">--</div>
+                </div>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-12">
+                <div class="stat-label">Total de Pruebas del Día</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: var(--primary-color);">
+                  <span id="stat_total_pruebas">0</span> prueba(s)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  <!-- SCRIPT BOOTSTRAP -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- 🔐 SUPABASE Y AUTENTICACIÓN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="roles.js"></script>
@@ -1082,492 +1019,4 @@
   <script src="produccion.js"></script>
 
   </body>
-</html>
-    <!-- LÓGICA PROVISIONAL -->
-    <script>
-        // Array para almacenar registros en memoria (temporal, luego será Supabase)
-        let registrosBobinas = [];
-        let registrosProduccion = [];
-        let registrosBotellones = [];
-        let registrosCalidad = [];
-        let diaIniciado = false;
-        let contadorInicial = 0;
-        let numeroBobinaCounter = 0;
-
-        // FUNCIONES PARA BOBINAS
-        document.getElementById('btn_iniciar_dia').addEventListener('click', () => {
-            const contador = parseInt(document.getElementById('contador_inicio').value);
-            
-            if (!contador && contador !== 0) {
-                alert('Por favor ingresa el contador inicial');
-                return;
-            }
-
-            diaIniciado = true;
-            contadorInicial = contador;
-            numeroBobinaCounter = 0; // Reset del contador de bobinas
-            
-            const estadoDiv = document.getElementById('estado_dia');
-            const estadoText = document.getElementById('estado_dia_text');
-            estadoText.textContent = `Contador inicial: ${contador}`;
-            estadoDiv.style.display = 'block';
-
-            document.getElementById('btn_iniciar_dia').disabled = true;
-            alert('✅ Día iniciado correctamente');
-        });
-
-        document.getElementById('btn_registrar_bobina').addEventListener('click', () => {
-            if (!diaIniciado) {
-                alert('⚠️ Debes iniciar el día primero');
-                return;
-            }
-
-            const fecha = document.getElementById('fecha_bobina').value;
-            const pesoBobina = parseFloat(document.getElementById('peso_bobina').value);
-
-            if (!fecha || !pesoBobina || pesoBobina <= 0) {
-                alert('⚠️ Por favor completa los campos requeridos (peso debe ser > 0)');
-                return;
-            }
-
-            numeroBobinaCounter++;
-            const registro = {
-                id: Date.now(),
-                numeroBobina: numeroBobinaCounter,
-                fecha,
-                pesoBobina
-            };
-
-            registrosBobinas.push(registro);
-            agregarFilaBobina(registro);
-            actualizarSelectBobinas();
-            limpiarFormularioBobina();
-
-            alert('✅ Bobina #' + numeroBobinaCounter + ' registrada correctamente');
-        });
-
-        function agregarFilaBobina(registro) {
-            const tabla = document.getElementById('tabla_bobinas');
-            
-            if (tabla.querySelector('tbody tr td[colspan]')) {
-                tabla.querySelector('tbody').innerHTML = '';
-            }
-
-            const fila = document.createElement('tr');
-            fila.innerHTML = `
-                <td>${registro.fecha}</td>
-                <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">#${registro.numeroBobina}</span></td>
-                <td>${registro.pesoBobina.toFixed(1)}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-danger" onclick="eliminarBobina(${registro.id})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </td>
-            `;
-            tabla.querySelector('tbody').appendChild(fila);
-        }
-
-        function limpiarFormularioBobina() {
-            document.getElementById('fecha_bobina').value = new Date().toISOString().split('T')[0];
-            document.getElementById('peso_bobina').value = '';
-            document.getElementById('numero_bobina').value = '';
-        }
-
-        function actualizarSelectBobinas() {
-            const select = document.getElementById('bobina_produccion');
-            select.innerHTML = '<option value="">-- Selecciona una bobina --</option>';
-            
-            registrosBobinas.forEach(bobina => {
-                const option = document.createElement('option');
-                option.value = bobina.id;
-                option.textContent = `Bobina #${bobina.numeroBobina} - ${bobina.pesoBobina.toFixed(1)}kg`;
-                select.appendChild(option);
-            });
-        }
-
-        function eliminarBobina(id) {
-            registrosBobinas = registrosBobinas.filter(r => r.id !== id);
-            const tabla = document.getElementById('tabla_bobinas');
-            
-            if (registrosBobinas.length === 0) {
-                tabla.querySelector('tbody').innerHTML = `
-                    <tr>
-                        <td colspan="4" class="text-center text-muted" style="padding: 2rem;">
-                            <i class="bi bi-inbox"></i> No hay bobinas registradas aún
-                        </td>
-                    </tr>
-                `;
-            } else {
-                tabla.querySelector('tbody').innerHTML = '';
-                registrosBobinas.forEach(r => agregarFilaBobina(r));
-            }
-            
-            actualizarSelectBobinas();
-            actualizarEstadisticasFinales();
-        }
-
-        // FUNCIONES PARA PRODUCCIÓN DE BOLSAS
-        document.getElementById('bolsitas_producidas').addEventListener('change', calcularPacksProduccion);
-        document.getElementById('bolsitas_rechazadas_prod').addEventListener('change', calcularPacksProduccion);
-
-        function calcularPacksProduccion() {
-            const bolsitasProducidas = parseInt(document.getElementById('bolsitas_producidas').value) || 0;
-            const bolsitasRechazadas = parseInt(document.getElementById('bolsitas_rechazadas_prod').value) || 0;
-            
-            const bolsitasValidas = bolsitasProducidas - bolsitasRechazadas;
-            const packsCalculados = Math.floor(bolsitasValidas / 35);
-            const residuo = bolsitasValidas % 35;
-
-            document.getElementById('packs_calculados').value = packsCalculados;
-
-            // Mostrar alerta de validación
-            const alertaDiv = document.getElementById('alerta_packs');
-            const alertaText = document.getElementById('alerta_packs_text');
-
-            if (residuo > 0) {
-                alertaText.innerHTML = `Deberían ser <strong>${packsCalculados}</strong> packs completos. Hay ${residuo} bolsita(s) incompleta(s).`;
-                alertaDiv.style.display = 'block';
-            } else if (bolsitasValidas !== bolsitasProducidas) {
-                alertaText.innerHTML = `Bolsitas válidas: ${bolsitasValidas} (${bolsitasProducidas} - ${bolsitasRechazadas} rechazadas)`;
-                alertaDiv.style.display = 'block';
-            } else {
-                alertaDiv.style.display = 'none';
-            }
-        }
-
-        document.getElementById('btn_registrar_produccion').addEventListener('click', () => {
-            const fecha = document.getElementById('fecha_produccion').value;
-            const bobinaId = document.getElementById('bobina_produccion').value;
-            const bolsitasProducidas = parseInt(document.getElementById('bolsitas_producidas').value);
-            const bolsitasRechazadas = parseInt(document.getElementById('bolsitas_rechazadas_prod').value) || 0;
-            const motivoRechazo = document.getElementById('motivo_rechazo_bolsa').value;
-            const packsCalculados = parseInt(document.getElementById('packs_calculados').value) || 0;
-            const packsOperador = parseInt(document.getElementById('packs_operador').value);
-
-            if (!fecha || !bobinaId || !bolsitasProducidas || !motivoRechazo || !packsOperador) {
-                alert('⚠️ Por favor completa todos los campos requeridos');
-                return;
-            }
-
-            const bobina = registrosBobinas.find(b => b.id == bobinaId);
-            const registro = {
-                id: Date.now(),
-                fecha,
-                bobinaId,
-                numeroBobina: bobina.numeroBobina,
-                bolsitasProducidas,
-                bolsitasRechazadas,
-                motivoRechazo,
-                packsCalculados,
-                packsOperador
-            };
-
-            registrosProduccion.push(registro);
-            agregarFilaProduccion(registro);
-            limpiarFormularioProduccion();
-            actualizarEstadisticasFinales();
-
-            alert('✅ Producción registrada correctamente');
-        });
-
-        function agregarFilaProduccion(registro) {
-            const tabla = document.getElementById('tabla_produccion');
-            
-            if (tabla.querySelector('tbody tr td[colspan]')) {
-                tabla.querySelector('tbody').innerHTML = '';
-            }
-
-            const fila = document.createElement('tr');
-            const colorPacks = registro.packsCalculados === registro.packsOperador ? 'badge-success' : 'badge-warning';
-            fila.innerHTML = `
-                <td>${registro.fecha}</td>
-                <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">#${registro.numeroBobina}</span></td>
-                <td><span class="badge badge-success">${registro.bolsitasProducidas}</span></td>
-                <td><span class="badge badge-danger">${registro.bolsitasRechazadas}</span></td>
-                <td>${registro.packsCalculados}</td>
-                <td><span class="badge ${colorPacks}">${registro.packsOperador}</span></td>
-                <td>${registro.motivoRechazo}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-danger" onclick="eliminarProduccion(${registro.id})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </td>
-            `;
-            tabla.querySelector('tbody').appendChild(fila);
-        }
-
-        function limpiarFormularioProduccion() {
-            document.getElementById('fecha_produccion').value = new Date().toISOString().split('T')[0];
-            document.getElementById('bobina_produccion').value = '';
-            document.getElementById('bolsitas_producidas').value = '';
-            document.getElementById('bolsitas_rechazadas_prod').value = '0';
-            document.getElementById('motivo_rechazo_bolsa').value = '';
-            document.getElementById('packs_calculados').value = '';
-            document.getElementById('packs_operador').value = '';
-            document.getElementById('alerta_packs').style.display = 'none';
-        }
-
-        function eliminarProduccion(id) {
-            registrosProduccion = registrosProduccion.filter(r => r.id !== id);
-            const tabla = document.getElementById('tabla_produccion');
-            
-            if (registrosProduccion.length === 0) {
-                tabla.querySelector('tbody').innerHTML = `
-                    <tr>
-                        <td colspan="8" class="text-center text-muted" style="padding: 2rem;">
-                            <i class="bi bi-inbox"></i> No hay registros aún
-                        </td>
-                    </tr>
-                `;
-            } else {
-                tabla.querySelector('tbody').innerHTML = '';
-                registrosProduccion.forEach(r => agregarFilaProduccion(r));
-            }
-            
-            actualizarEstadisticasFinales();
-        }
-
-        function actualizarEstadisticasFinales() {
-            const totalBobinas = registrosBobinas.length;
-            const totalBolsitas = registrosProduccion.reduce((sum, r) => sum + r.bolsitasProducidas, 0);
-            const totalPacksOperador = registrosProduccion.reduce((sum, r) => sum + r.packsOperador, 0);
-
-            document.getElementById('stat_bobinas_totales').textContent = totalBobinas;
-            document.getElementById('stat_bolsitas_producidas').textContent = totalBolsitas;
-            document.getElementById('stat_packs_operador_total').textContent = totalPacksOperador;
-        }
-
-        document.getElementById('contador_cierre').addEventListener('change', () => {
-            const cierre = parseInt(document.getElementById('contador_cierre').value);
-            const diferencia = cierre - contadorInicial;
-            document.getElementById('diferencia_contador').value = diferencia;
-
-            const totalBolsitas = registrosProduccion.reduce((sum, r) => sum + r.bolsitasProducidas, 0);
-            if (diferencia > 0) {
-                const factor = (totalBolsitas / diferencia).toFixed(3);
-                document.getElementById('stat_factor_ajuste').textContent = factor;
-            }
-        });
-
-        document.getElementById('btn_cerrar_dia').addEventListener('click', () => {
-            if (!document.getElementById('contador_cierre').value) {
-                alert('⚠️ Ingresa el contador de cierre');
-                return;
-            }
-
-            alert('✅ Día cerrado correctamente. Los datos se guardarán en la base de datos.');
-            location.reload();
-        });
-
-        // FUNCIONES PARA BOTELLONES
-        document.getElementById('btn_registrar_botellones').addEventListener('click', () => {
-            const fecha = document.getElementById('fecha_botellones').value;
-            const horaInicio = document.getElementById('hora_inicio_bot').value;
-            const horaCierre = document.getElementById('hora_cierre_bot').value;
-            const botellonesProducidos = parseInt(document.getElementById('botellones_producidos').value);
-            const botellonesRechazados = parseInt(document.getElementById('botellones_rechazados').value) || 0;
-            const motivoRechazo = document.getElementById('motivo_rechazo_bot').value;
-            const observaciones = document.getElementById('observaciones_bot').value;
-
-            if (!fecha || !horaInicio || !horaCierre || !botellonesProducidos || !motivoRechazo) {
-                alert('⚠️ Por favor completa los campos requeridos');
-                return;
-            }
-
-            const registro = {
-                id: Date.now(),
-                fecha,
-                horaInicio,
-                horaCierre,
-                botellonesProducidos,
-                botellonesRechazados,
-                motivoRechazo,
-                observaciones
-            };
-
-            registrosBotellones.push(registro);
-            agregarFilaTablaBot(registro);
-            limpiarFormularioBotellones();
-            actualizarEstadisticasBotellones();
-
-            alert('✅ Lote de botellones registrado correctamente');
-        });
-
-        function agregarFilaTablaBot(registro) {
-            const tabla = document.getElementById('tabla_botellones');
-            
-            if (tabla.querySelector('tbody tr td[colspan]')) {
-                tabla.querySelector('tbody').innerHTML = '';
-            }
-
-            const fila = document.createElement('tr');
-            fila.innerHTML = `
-                <td>${registro.fecha}</td>
-                <td>${registro.horaInicio}</td>
-                <td>${registro.horaCierre}</td>
-                <td><span class="badge badge-success">${registro.botellonesProducidos}</span></td>
-                <td><span class="badge badge-danger">${registro.botellonesRechazados}</span></td>
-                <td>${registro.motivoRechazo}</td>
-                <td>${registro.observaciones || '--'}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-danger" onclick="eliminarRegistroBot(${registro.id})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </td>
-            `;
-            tabla.querySelector('tbody').appendChild(fila);
-        }
-
-        function limpiarFormularioBotellones() {
-            document.getElementById('fecha_botellones').value = new Date().toISOString().split('T')[0];
-            document.getElementById('hora_inicio_bot').value = '';
-            document.getElementById('hora_cierre_bot').value = '';
-            document.getElementById('botellones_producidos').value = '';
-            document.getElementById('botellones_rechazados').value = '0';
-            document.getElementById('motivo_rechazo_bot').value = '';
-            document.getElementById('observaciones_bot').value = '';
-        }
-
-        function actualizarEstadisticasBotellones() {
-            const totalProducidos = registrosBotellones.reduce((sum, r) => sum + r.botellonesProducidos, 0);
-            const totalRechazados = registrosBotellones.reduce((sum, r) => sum + r.botellonesRechazados, 0);
-            const eficiencia = totalProducidos > 0 ? (((totalProducidos - totalRechazados) / totalProducidos) * 100).toFixed(1) : 100;
-
-            document.getElementById('stat_botellones_producidos').textContent = totalProducidos;
-            document.getElementById('stat_botellones_rechazados_total').textContent = totalRechazados;
-            document.getElementById('stat_eficiencia_botellones').textContent = eficiencia + '%';
-        }
-
-        function eliminarRegistroBot(id) {
-            registrosBotellones = registrosBotellones.filter(r => r.id !== id);
-            location.reload(); // Simplificado, mejor usar DOM manipulation
-        }
-
-        // Inicializar fechas actuales
-        document.getElementById('fecha_botellones').value = new Date().toISOString().split('T')[0];
-        document.getElementById('fecha_calidad').value = new Date().toISOString().split('T')[0];
-        document.getElementById('fecha_inicio_bolsas').value = new Date().toISOString().split('T')[0];
-        document.getElementById('fecha_bobina').value = new Date().toISOString().split('T')[0];
-        document.getElementById('fecha_produccion').value = new Date().toISOString().split('T')[0];
-
-        // FUNCIONES PARA CALIDAD
-        document.getElementById('btn_registrar_calidad').addEventListener('click', () => {
-            const fecha = document.getElementById('fecha_calidad').value;
-            const tds = parseFloat(document.getElementById('tds_calidad').value);
-            const usm = parseFloat(document.getElementById('usm_calidad').value);
-            const temperatura = parseFloat(document.getElementById('temperatura_calidad').value);
-            const ph = parseFloat(document.getElementById('ph_calidad').value);
-            const observaciones = document.getElementById('observaciones_calidad').value;
-
-            if (!fecha || tds === '' || usm === '' || temperatura === '' || ph === '') {
-                alert('⚠️ Por favor completa todos los campos requeridos');
-                return;
-            }
-
-            // Validar rangos lógicos
-            if (ph < 0 || ph > 14) {
-                alert('⚠️ El PH debe estar entre 0 y 14');
-                return;
-            }
-
-            if (temperatura < -10 || temperatura > 50) {
-                alert('⚠️ La temperatura debe estar entre -10°C y 50°C');
-                return;
-            }
-
-            const registro = {
-                id: Date.now(),
-                fecha,
-                tds,
-                usm,
-                temperatura,
-                ph,
-                observaciones
-            };
-
-            registrosCalidad.push(registro);
-            agregarFilaTablaCalidad(registro);
-            limpiarFormularioCalidad();
-            actualizarEstadisticasCalidad();
-
-            alert('✅ Prueba de calidad registrada correctamente');
-        });
-
-        function agregarFilaTablaCalidad(registro) {
-            const tabla = document.getElementById('tabla_calidad');
-            
-            if (tabla.querySelector('tbody tr td[colspan]')) {
-                tabla.querySelector('tbody').innerHTML = '';
-            }
-
-            const fila = document.createElement('tr');
-            fila.innerHTML = `
-                <td>${registro.fecha}</td>
-                <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">${registro.tds.toFixed(2)}</span></td>
-                <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">${registro.usm.toFixed(2)}</span></td>
-                <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">${registro.temperatura.toFixed(1)}</span></td>
-                <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">${registro.ph.toFixed(2)}</span></td>
-                <td>${registro.observaciones || '--'}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-danger" onclick="eliminarRegistroCalidad(${registro.id})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </td>
-            `;
-            tabla.querySelector('tbody').appendChild(fila);
-        }
-
-        function limpiarFormularioCalidad() {
-            document.getElementById('fecha_calidad').value = new Date().toISOString().split('T')[0];
-            document.getElementById('tds_calidad').value = '';
-            document.getElementById('usm_calidad').value = '';
-            document.getElementById('temperatura_calidad').value = '';
-            document.getElementById('ph_calidad').value = '';
-            document.getElementById('observaciones_calidad').value = '';
-        }
-
-        function actualizarEstadisticasCalidad() {
-            if (registrosCalidad.length === 0) {
-                document.getElementById('stat_tds_promedio').textContent = '--';
-                document.getElementById('stat_usm_promedio').textContent = '--';
-                document.getElementById('stat_temp_promedio').textContent = '--';
-                document.getElementById('stat_ph_promedio').textContent = '--';
-                document.getElementById('stat_total_pruebas').textContent = '0';
-                return;
-            }
-
-            const tdsPromedio = (registrosCalidad.reduce((sum, r) => sum + r.tds, 0) / registrosCalidad.length).toFixed(2);
-            const usmPromedio = (registrosCalidad.reduce((sum, r) => sum + r.usm, 0) / registrosCalidad.length).toFixed(2);
-            const tempPromedio = (registrosCalidad.reduce((sum, r) => sum + r.temperatura, 0) / registrosCalidad.length).toFixed(1);
-            const phPromedio = (registrosCalidad.reduce((sum, r) => sum + r.ph, 0) / registrosCalidad.length).toFixed(2);
-
-            document.getElementById('stat_tds_promedio').textContent = tdsPromedio + ' ppm';
-            document.getElementById('stat_usm_promedio').textContent = usmPromedio + ' µS/cm';
-            document.getElementById('stat_temp_promedio').textContent = tempPromedio + ' °C';
-            document.getElementById('stat_ph_promedio').textContent = phPromedio;
-            document.getElementById('stat_total_pruebas').textContent = registrosCalidad.length;
-        }
-
-        function eliminarRegistroCalidad(id) {
-            registrosCalidad = registrosCalidad.filter(r => r.id !== id);
-            const tabla = document.getElementById('tabla_calidad');
-            
-            if (registrosCalidad.length === 0) {
-                tabla.querySelector('tbody').innerHTML = `
-                    <tr>
-                        <td colspan="7" class="text-center text-muted" style="padding: 2rem;">
-                            <i class="bi bi-inbox"></i> No hay registros aún
-                        </td>
-                    </tr>
-                `;
-            } else {
-                tabla.querySelector('tbody').innerHTML = '';
-                registrosCalidad.forEach(r => agregarFilaTablaCalidad(r));
-            }
-            
-            actualizarEstadisticasCalidad();
-        }
-    </script>
-
-</body>
 </html>

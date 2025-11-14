@@ -73,7 +73,20 @@ function setupRoleBasedUI(userRole) {
     console.log('✅ Elementos de dashboard y producción ocultados para vendedor');
   }
 
-   // Si NO es admin → ocultar elementos marcados como admin-only
+  // ==========================================
+  // MOSTRAR admin-only SI ES ADMIN
+  // ==========================================
+  if (userRole === 'admin') {
+    const adminElements = document.querySelectorAll('.admin-only');
+    console.log('👑 Mostrando elementos admin-only:', adminElements.length);
+    adminElements.forEach(el => {
+      el.style.display = 'inline-block';
+    });
+  }
+
+  // ==========================================
+  // OCULTAR admin-only SI NO ES ADMIN
+  // ==========================================
   if (userRole !== 'admin') {
     const adminElements = document.querySelectorAll('.admin-only');
     console.log('🔒 Ocultando elementos admin-only:', adminElements.length);

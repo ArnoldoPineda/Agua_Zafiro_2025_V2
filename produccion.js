@@ -1,7 +1,6 @@
 // ============================================
 // MÓDULO DE PRODUCCIÓN - AGUA ZAFIRO
-// Versión 2.0 - Completamente refactorizado
-// Compatible con arquitectura existente
+// Versión 2.5 (CORREGIDA - Peso Bobina VERDADERAMENTE OPCIONAL)
 // ============================================
 
 // Variables globales
@@ -12,15 +11,15 @@ let registrosCalidad = [];
 let diaIniciado = false;
 let contadorInicial = 0;
 let numeroBobinaCounter = 0;
-let supabaseClient = null;
 let currentUser = null;
+let fechaDiaActual = '';
 
 // ============================================
 // 1. INICIALIZACIÓN
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('🏭 Iniciando módulo de producción v2.0...');
+  console.log('🏭 Iniciando módulo de producción v2.5...');
   
   // Verificar autenticación
   currentUser = checkPagePermissions();
@@ -30,9 +29,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Verificar rol - Solo admin y produccion
+  // Verificar rol
   if (!['admin', 'produccion'].includes(currentUser.role)) {
-    console.error('❌ Acceso denegado - Rol insuficiente');
+    console.error('❌ Acceso denegado');
     mostrarAlertaPrincipal('❌ No tienes permiso para acceder a Producción', 'error');
     setTimeout(() => {
       window.location.href = '/';
@@ -42,18 +41,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   console.log('✅ Usuario autenticado:', currentUser.username, '- Rol:', currentUser.role);
 
-  // Inicializar Supabase
-  supabaseClient = window.supabaseClient || window.SupabaseProduccion?.supabase;
-  if (!supabaseClient) {
+  if (!window.supabaseClient) {
     console.error('❌ Supabase no está configurado');
     mostrarAlertaPrincipal('❌ Error: Supabase no configurado', 'error');
     return;
   }
 
-  // Configurar eventos
   configurarEventos();
-
-  console.log('✅ Módulo de producción iniciado correctamente');
+  console.log('✅ Módulo de producción v2.5 iniciado correctamente');
 });
 
 // ============================================
@@ -61,28 +56,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ============================================
 
 function configurarEventos() {
-  // BOLSAS - Iniciar día
-  const btnIniciarDia = document.getElementById('btn_iniciar_dia');
-  if (btnIniciarDia) {
-    btnIniciarDia.addEventListener('click', iniciarDia);
-  }
-
-  // BOLSAS - Registrar bobina
-  const btnRegistrarBobina = document.getElementById('btn_registrar_bobina');
-  if (btnRegistrarBobina) {
-    btnRegistrarBobina.addEventListener('click', registrarBobina);
-  }
-
-  // BOLSAS - Registrar producción
-  const btnRegistrarProduccion = document.getElementById('btn_registrar_produccion');
-  if (btnRegistrarProduccion) {
-    btnRegistrarProduccion.addEventListener('click', registrarProduccion);
-  }
-
-  // BOLSAS - Cerrar día
-  const btnCerrarDia = document.getElementById('btn_cerrar_dia');
-  if (btnCerrarDia) {
-    btnCerrarDia.addEventListener('click', cerrarDia);
+  // BOLSAS - Guardar todo (ÚNICO BOTÓN)
+  const btnRegistrarTodo = document.getElementById('btn_registrar_todo');
+  if (btnRegistrarTodo) {
+    btnRegistrarTodo.addEventListener('click', guardarTodo);
   }
 
   // BOTELLONES - Registrar lote
@@ -97,7 +74,7 @@ function configurarEventos() {
     btnRegistrarCalidad.addEventListener('click', registrarCalidad);
   }
 
-  // Listeners para cálculos automáticos
+  // Listeners para cálculos automáticos - BOLSAS
   const bolsitasProducidas = document.getElementById('bolsitas_producidas');
   const bolsitasRechazadas = document.getElementById('bolsitas_rechazadas_prod');
   
@@ -105,101 +82,93 @@ function configurarEventos() {
     bolsitasProducidas.addEventListener('change', calcularPacksProduccion);
   }
   if (bolsitasRechazadas) {
-    bolsitasRechazadas.addEventListener('change', calcularPacksProduccion);
+    bolsitasRechazadas.addEventListener('change', () => {
+      calcularPacksProduccion();
+      validarMotivoRechazo_Bolsa();
+    });
   }
 
+  // ============ LISTENER PARA AUTO-GENERAR NÚMERO DE BOBINA ============
+  const pesoBobinaInput = document.getElementById('peso_bobina');
+  if (pesoBobinaInput) {
+    pesoBobinaInput.addEventListener('change', generarNumeroBobina);
+  }
+
+  // Listeners para contador en BOLSAS
   const contadorCierre = document.getElementById('contador_cierre');
   if (contadorCierre) {
+    contadorCierre.addEventListener('input', calcularFactorAjuste);
     contadorCierre.addEventListener('change', calcularFactorAjuste);
+  }
+
+  // AGREGAR TAMBIÉN listener para contador inicial
+  const contadorInicio = document.getElementById('contador_inicio');
+  if (contadorInicio) {
+    contadorInicio.addEventListener('input', calcularFactorAjuste);
+    contadorInicio.addEventListener('change', calcularFactorAjuste);
+  }
+
+  // Listener para botellones rechazados - validar motivo
+  const botellonesRechazados = document.getElementById('botellones_rechazados');
+  if (botellonesRechazados) {
+    botellonesRechazados.addEventListener('change', validarMotivoRechazo_Botellones);
   }
 
   console.log('✅ Eventos configurados');
 }
 
 // ============================================
-// 3. SECCIÓN: BOLSAS - INICIAR DÍA
+// 3. VALIDACIONES CONDICIONALES
 // ============================================
 
-async function iniciarDia() {
-  const contador = parseInt(document.getElementById('contador_inicio').value);
-  
-  if (!contador && contador !== 0) {
-    mostrarAlerta('Por favor ingresa el contador inicial', 'error');
-    return;
+// BOLSAS: Motivo obligatorio SOLO si hay rechazadas
+function validarMotivoRechazo_Bolsa() {
+  const rechazadas = parseInt(document.getElementById('bolsitas_rechazadas_prod').value) || 0;
+  const labelMotivo = document.getElementById('label_motivo_bolsa');
+  const selectMotivo = document.getElementById('motivo_rechazo_bolsa');
+
+  if (rechazadas > 0) {
+    labelMotivo.classList.add('required');
+    selectMotivo.required = true;
+  } else {
+    labelMotivo.classList.remove('required');
+    selectMotivo.required = false;
   }
+}
 
-  try {
-    diaIniciado = true;
-    contadorInicial = contador;
-    numeroBobinaCounter = 0;
-    
-    const estadoDiv = document.getElementById('estado_dia');
-    const estadoText = document.getElementById('estado_dia_text');
-    estadoText.textContent = `Contador inicial: ${contador}`;
-    estadoDiv.style.display = 'block';
+// BOTELLONES: Motivo obligatorio SOLO si hay rechazados
+function validarMotivoRechazo_Botellones() {
+  const rechazados = parseInt(document.getElementById('botellones_rechazados').value) || 0;
+  const labelMotivo = document.getElementById('label_motivo_bot');
+  const selectMotivo = document.getElementById('motivo_rechazo_bot');
 
-    document.getElementById('btn_iniciar_dia').disabled = true;
-    
-    mostrarAlerta('✅ Día iniciado correctamente', 'success');
-    
-  } catch (error) {
-    console.error('❌ Error al iniciar día:', error);
-    mostrarAlerta('Error al iniciar el día', 'error');
+  if (rechazados > 0) {
+    labelMotivo.classList.add('required');
+    selectMotivo.required = true;
+  } else {
+    labelMotivo.classList.remove('required');
+    selectMotivo.required = false;
   }
 }
 
 // ============================================
-// 4. SECCIÓN: BOLSAS - REGISTRAR BOBINA
+// 4. AUXILIARES - BOBINAS
 // ============================================
 
-async function registrarBobina() {
-  if (!diaIniciado) {
-    mostrarAlerta('⚠️ Debes iniciar el día primero', 'error');
-    return;
-  }
-
-  const fecha = document.getElementById('fecha_bobina').value;
+function generarNumeroBobina() {
   const pesoBobina = parseFloat(document.getElementById('peso_bobina').value);
-
-  if (!fecha || !pesoBobina || pesoBobina <= 0) {
-    mostrarAlerta('Por favor completa los campos requeridos (peso > 0)', 'error');
-    return;
-  }
-
-  try {
-    numeroBobinaCounter++;
-
-    // Guardar en Supabase
-    const { data, error } = await supabaseClient
-      .from('control_bobinas')
-      .insert([{
-        fecha: fecha,
-        numero_bobina: numeroBobinaCounter,
-        peso_bobina: pesoBobina,
-        operador: currentUser.username,
-        created_by: currentUser.id
-      }])
-      .select();
-
-    if (error) throw error;
-
-    const registro = {
-      id: data[0].id,
-      numeroBobina: numeroBobinaCounter,
-      fecha,
-      pesoBobina
-    };
-
-    registrosBobinas.push(registro);
-    agregarFilaBobina(registro);
-    actualizarSelectBobinas();
-    limpiarFormularioBobina();
-
-    mostrarAlerta(`✅ Bobina #${numeroBobinaCounter} registrada correctamente`, 'success');
-
-  } catch (error) {
-    console.error('❌ Error al registrar bobina:', error);
-    mostrarAlerta('Error al registrar la bobina', 'error');
+  const numeroBobinaInput = document.getElementById('numero_bobina');
+  
+  if (pesoBobina && pesoBobina > 0) {
+    // Solo contar bobinas REALES (no temporales)
+    const bobinasReales = registrosBobinas.filter(b => !b.id.startsWith('temp_'));
+    const proximoNumero = bobinasReales.length + 1;
+    
+    numeroBobinaInput.value = `Bobina #${proximoNumero}`;
+    console.log(`✅ Bobina configurada: #${proximoNumero} - ${pesoBobina}kg`);
+    
+  } else {
+    numeroBobinaInput.value = '';
   }
 }
 
@@ -211,12 +180,18 @@ function agregarFilaBobina(registro) {
   }
 
   const fila = document.createElement('tr');
+  const esAdmin = currentUser.role === 'admin';
+  
   fila.innerHTML = `
-    <td>${registro.fecha}</td>
     <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">#${registro.numeroBobina}</span></td>
     <td>${registro.pesoBobina.toFixed(1)}</td>
     <td>
-      <button class="btn btn-sm btn-outline-danger" onclick="eliminarBobina('${registro.id}')">
+      ${esAdmin ? `
+        <button class="btn btn-sm btn-outline-warning" onclick="editarBobina('${registro.id}')">
+          <i class="bi bi-pencil"></i> Editar
+        </button>
+      ` : ''}
+      <button class="btn btn-sm btn-outline-danger" onclick="eliminarBobina('${registro.id}')" ${esAdmin ? '' : 'disabled'}>
         <i class="bi bi-trash"></i>
       </button>
     </td>
@@ -225,7 +200,6 @@ function agregarFilaBobina(registro) {
 }
 
 function limpiarFormularioBobina() {
-  document.getElementById('fecha_bobina').value = new Date().toISOString().split('T')[0];
   document.getElementById('peso_bobina').value = '';
   document.getElementById('numero_bobina').value = '';
 }
@@ -242,11 +216,51 @@ function actualizarSelectBobinas() {
   });
 }
 
+// ✅ EDITAR BOBINA
+async function editarBobina(id) {
+  const bobina = registrosBobinas.find(b => b.id === id);
+  if (!bobina) {
+    mostrarAlerta('Bobina no encontrada', 'error');
+    return;
+  }
+
+  const nuevoPeso = prompt(`Editar peso de Bobina #${bobina.numeroBobina}\n\nPeso actual: ${bobina.pesoBobina}kg\n\nNuevo peso:`, bobina.pesoBobina);
+  
+  if (nuevoPeso === null) return;
+  
+  const peso = parseFloat(nuevoPeso);
+  if (isNaN(peso) || peso <= 0) {
+    mostrarAlerta('El peso debe ser un número válido > 0', 'error');
+    return;
+  }
+
+  try {
+    const { error } = await window.supabaseClient
+      .from('control_bobinas')
+      .update({ peso_bobina: peso })
+      .eq('id', id);
+
+    if (error) throw error;
+
+    bobina.pesoBobina = peso;
+    
+    const tabla = document.getElementById('tabla_bobinas');
+    tabla.querySelector('tbody').innerHTML = '';
+    registrosBobinas.forEach(r => agregarFilaBobina(r));
+    
+    actualizarSelectBobinas();
+    mostrarAlerta('✅ Bobina actualizada correctamente', 'success');
+  } catch (error) {
+    console.error('❌ Error al editar bobina:', error);
+    mostrarAlerta('Error al editar: ' + error.message, 'error');
+  }
+}
+
 async function eliminarBobina(id) {
   if (!confirm('⚠️ ¿Estás seguro de eliminar esta bobina?')) return;
 
   try {
-    const { error } = await supabaseClient
+    const { error } = await window.supabaseClient
       .from('control_bobinas')
       .delete()
       .eq('id', id);
@@ -259,7 +273,7 @@ async function eliminarBobina(id) {
     if (registrosBobinas.length === 0) {
       tabla.querySelector('tbody').innerHTML = `
         <tr>
-          <td colspan="4" class="text-center text-muted" style="padding: 2rem;">
+          <td colspan="3" class="text-center text-muted" style="padding: 2rem;">
             <i class="bi bi-inbox"></i> No hay bobinas registradas aún
           </td>
         </tr>
@@ -278,8 +292,200 @@ async function eliminarBobina(id) {
 }
 
 // ============================================
-// 5. SECCIÓN: BOLSAS - REGISTRAR PRODUCCIÓN
+// 5. GUARDAR BOBINA EN BD
 // ============================================
+
+// ✅ GUARDAR BOBINA EN BD Y RETORNAR ID
+async function guardarBobina(pesoBobina, fechaActual) {
+  numeroBobinaCounter++;
+
+  const { data, error } = await window.supabaseClient
+    .from('control_bobinas')
+    .insert([{
+      fecha: fechaActual,
+      numero_bobina: numeroBobinaCounter,
+      peso_bobina: pesoBobina,
+      operador: currentUser.username,
+      created_by: currentUser.id  // Puede ser NULL si el usuario no existe
+    }])
+    .select();
+
+  if (error) throw error;
+  
+  console.log('✅ Bobina guardada en BD:', data[0]);
+  
+  return { 
+    id: data[0].id, 
+    numeroBobina: numeroBobinaCounter,
+    pesoBobina: pesoBobina
+  };
+}
+
+// ============================================
+// 6. GUARDAR TODO (BOBINA + PRODUCCIÓN) ✅ CORREGIDO v2.5
+// ============================================
+
+async function guardarTodo() {
+  // ✅ LIMPIAR BOBINAS TEMPORALES
+  const bobinaExistenteId = document.getElementById('bobina_produccion').value;
+  if (bobinaExistenteId && bobinaExistenteId.startsWith('temp_')) {
+    console.log('⚠️ Bobina temporal, limpiando...');
+    document.getElementById('bobina_produccion').value = '';
+  }
+
+  // ============ VALIDAR CONTROL DIARIO ============
+  const fecha = document.getElementById('fecha_bolsas').value;
+  const contadorIni = parseInt(document.getElementById('contador_inicio').value);
+  const contadorCierr = parseInt(document.getElementById('contador_cierre').value);
+
+  if (!fecha || (!contadorIni && contadorIni !== 0) || (!contadorCierr && contadorCierr !== 0)) {
+    mostrarAlerta('Por favor completa: Fecha, Contador Inicial y Contador Cierre', 'error');
+    return;
+  }
+
+  // ============ VALIDAR PRODUCCIÓN ============
+  const bolsitasProducidas = parseInt(document.getElementById('bolsitas_producidas').value);
+  const bolsitasRechazadas = parseInt(document.getElementById('bolsitas_rechazadas_prod').value) || 0;
+  const motivoRechazo = document.getElementById('motivo_rechazo_bolsa').value;
+  const packsCalculados = parseInt(document.getElementById('packs_calculados').value) || 0;
+  const packsOperador = parseInt(document.getElementById('packs_operador').value);
+
+  if (!bolsitasProducidas) {
+    mostrarAlerta('Por favor completa Bolsitas Producidas', 'error');
+    return;
+  }
+
+  if (bolsitasRechazadas > 0 && !motivoRechazo) {
+    mostrarAlerta('Debes seleccionar un motivo de rechazo', 'error');
+    return;
+  }
+
+  if ((!packsOperador && packsOperador !== 0) || packsOperador === '') {
+    mostrarAlerta('Por favor ingresa los Packs que empacó el operador', 'error');
+    return;
+  }
+
+  try {
+    // ========== DETERMINAR BOBINA (✅ VERDADERAMENTE OPCIONAL v2.5) ==========
+    const pesoBobina = parseFloat(document.getElementById('peso_bobina').value) || null;
+    
+    let bobinaId = null;              // ✅ INICIALIZA EN NULL
+    let numeroBobina = null;
+
+    // Caso 1: Crear bobina NUEVA (si hay peso)
+if (pesoBobina && pesoBobina > 0) {
+  try {
+    const bobinaNueva = await guardarBobina(pesoBobina, fecha);
+    bobinaId = bobinaNueva.id;
+    numeroBobina = bobinaNueva.numeroBobina;
+    
+    const registroBobina = {
+      id: bobinaId,
+      numeroBobina: numeroBobina,
+      pesoBobina: bobinaNueva.pesoBobina
+    };
+    registrosBobinas.push(registroBobina);
+    agregarFilaBobina(registroBobina);
+    actualizarSelectBobinas();
+    
+    // ✅ SELECCIONAR AUTOMÁTICAMENTE LA BOBINA RECIÉN CREADA
+    setTimeout(() => {
+      const selectBobina = document.getElementById('bobina_produccion');
+      selectBobina.value = bobinaId;
+      console.log(`✅ Bobina #${numeroBobina} seleccionada automáticamente en el select`);
+    }, 100);
+    
+  } catch (error) {
+    mostrarAlerta('Error al guardar bobina: ' + error.message, 'error');
+    return;
+  }
+}
+    // Caso 2: Usar bobina EXISTENTE (si está seleccionada)
+    else if (bobinaExistenteId) {
+      const bobinaExistente = registrosBobinas.find(b => b.id === bobinaExistenteId);
+      if (!bobinaExistente) {
+        mostrarAlerta('Por favor selecciona una bobina válida', 'error');
+        return;
+      }
+      bobinaId = bobinaExistenteId;
+      numeroBobina = bobinaExistente.numeroBobina;
+    }
+    // Caso 3: SIN BOBINA - ✅ PERMITE GRABAR (bobinaId = NULL)
+    // Simplemente continúa sin hacer nada más
+    
+    console.log('ℹ️ Bobina:', bobinaId ? `#${numeroBobina}` : 'SIN BOBINA (NULL)');
+
+    // ========== 2️⃣ GUARDAR/ACTUALIZAR CONTROL DE CONTADOR CON UPSERT ==========
+    const diferencia = contadorCierr - contadorIni;
+    const factorAjuste = diferencia > 0 ? (bolsitasProducidas / diferencia).toFixed(3) : 0;
+
+    const { error: errorContador } = await window.supabaseClient
+      .from('control_contador_diario')
+      .upsert([{
+        fecha: fecha,
+        contador_inicio: contadorIni,
+        contador_cierre: contadorCierr,
+        bolsitas_reales_registradas: bolsitasProducidas,
+        factor_ajuste: factorAjuste,
+        operador: currentUser.username
+      }], { 
+        onConflict: 'fecha'
+      });
+
+    if (errorContador) {
+      console.error('⚠️ Error al guardar contador:', errorContador);
+      throw errorContador;
+    }
+    
+    console.log('✅ Contador guardado/actualizado para:', fecha);
+
+    // 3️⃣ GUARDAR PRODUCCIÓN DE BOLSAS
+const { data: dataProduccion, error: errorProduccion } = await window.supabaseClient
+  .from('control_produccion_bolsas')
+  .insert([{
+    fecha: fecha,
+    bobina_id: bobinaId,  // ✅ Puede ser NULL
+    bolsitas_producidas: bolsitasProducidas,
+    bolsitas_rechazadas: bolsitasRechazadas,
+    motivo_rechazo: motivoRechazo || null,  // ✅ Puede ser NULL
+    packs_calculados: packsCalculados,
+    packs_operador: packsOperador,
+    operador: currentUser.username,
+    created_by: null  // ✅ CAMBIAR A NULL (para evitar foreign key error)
+  }])
+  .select();
+
+    if (errorProduccion) throw errorProduccion;
+
+    // ========== ACTUALIZAR INTERFAZ ==========
+    const registroProduccion = {
+      id: dataProduccion[0].id,
+      bobinaId: bobinaId,
+      numeroBobina: numeroBobina || '--',
+      bolsitasProducidas,
+      bolsitasRechazadas,
+      motivoRechazo,
+      packsCalculados,
+      packsOperador
+    };
+
+    registrosProduccion.push(registroProduccion);
+    agregarFilaProduccion(registroProduccion);
+    
+    limpiarFormularioBobina();
+    limpiarFormularioProduccion();
+    actualizarEstadisticasFinales();
+
+    const tipoGuardado = pesoBobina && pesoBobina > 0 ? 'Bobina Nueva + Producción' : 
+                         bobinaExistenteId ? 'Producción (bobina existente)' : 
+                         'Producción (sin bobina)';  // ✅ NUEVO
+    mostrarAlerta(`✅ ¡GUARDADO! ${tipoGuardado}`, 'success');
+
+  } catch (error) {
+    console.error('❌ Error al guardar TODO:', error);
+    mostrarAlerta('Error al guardar: ' + error.message, 'error');
+  }
+}
 
 function calcularPacksProduccion() {
   const bolsitasProducidas = parseInt(document.getElementById('bolsitas_producidas').value) || 0;
@@ -297,71 +503,11 @@ function calcularPacksProduccion() {
   if (residuo > 0) {
     alertaText.innerHTML = `Deberían ser <strong>${packsCalculados}</strong> packs. Hay ${residuo} bolsita(s) incompleta(s).`;
     alertaDiv.style.display = 'block';
-  } else if (bolsitasValidas !== bolsitasProducidas) {
+  } else if (bolsitasRechazadas > 0) {
     alertaText.innerHTML = `Bolsitas válidas: ${bolsitasValidas} (${bolsitasProducidas} - ${bolsitasRechazadas} rechazadas)`;
     alertaDiv.style.display = 'block';
   } else {
     alertaDiv.style.display = 'none';
-  }
-}
-
-async function registrarProduccion() {
-  const fecha = document.getElementById('fecha_produccion').value;
-  const bobinaId = document.getElementById('bobina_produccion').value;
-  const bolsitasProducidas = parseInt(document.getElementById('bolsitas_producidas').value);
-  const bolsitasRechazadas = parseInt(document.getElementById('bolsitas_rechazadas_prod').value) || 0;
-  const motivoRechazo = document.getElementById('motivo_rechazo_bolsa').value;
-  const packsCalculados = parseInt(document.getElementById('packs_calculados').value) || 0;
-  const packsOperador = parseInt(document.getElementById('packs_operador').value);
-
-  if (!fecha || !bobinaId || !bolsitasProducidas || !motivoRechazo || !packsOperador) {
-    mostrarAlerta('Por favor completa todos los campos requeridos', 'error');
-    return;
-  }
-
-  try {
-    const bobina = registrosBobinas.find(b => b.id === bobinaId);
-
-    // Guardar en Supabase
-    const { data, error } = await supabaseClient
-      .from('control_produccion_bolsas')
-      .insert([{
-        fecha: fecha,
-        bobina_id: bobinaId,
-        bolsitas_producidas: bolsitasProducidas,
-        bolsitas_rechazadas: bolsitasRechazadas,
-        motivo_rechazo: motivoRechazo,
-        packs_calculados: packsCalculados,
-        packs_operador: packsOperador,
-        operador: currentUser.username,
-        created_by: currentUser.id
-      }])
-      .select();
-
-    if (error) throw error;
-
-    const registro = {
-      id: data[0].id,
-      fecha,
-      bobinaId,
-      numeroBobina: bobina.numeroBobina,
-      bolsitasProducidas,
-      bolsitasRechazadas,
-      motivoRechazo,
-      packsCalculados,
-      packsOperador
-    };
-
-    registrosProduccion.push(registro);
-    agregarFilaProduccion(registro);
-    limpiarFormularioProduccion();
-    actualizarEstadisticasFinales();
-
-    mostrarAlerta('✅ Producción registrada correctamente', 'success');
-
-  } catch (error) {
-    console.error('❌ Error al registrar producción:', error);
-    mostrarAlerta('Error al registrar la producción', 'error');
   }
 }
 
@@ -374,16 +520,22 @@ function agregarFilaProduccion(registro) {
 
   const fila = document.createElement('tr');
   const colorPacks = registro.packsCalculados === registro.packsOperador ? 'badge-success' : 'badge-warning';
+  const esAdmin = currentUser.role === 'admin';
+  
   fila.innerHTML = `
-    <td>${registro.fecha}</td>
-    <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">#${registro.numeroBobina}</span></td>
+    <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">${registro.numeroBobina}</span></td>
     <td><span class="badge badge-success">${registro.bolsitasProducidas}</span></td>
     <td><span class="badge badge-danger">${registro.bolsitasRechazadas}</span></td>
     <td>${registro.packsCalculados}</td>
     <td><span class="badge ${colorPacks}">${registro.packsOperador}</span></td>
-    <td>${registro.motivoRechazo}</td>
+    <td>${registro.motivoRechazo || '--'}</td>
     <td>
-      <button class="btn btn-sm btn-outline-danger" onclick="eliminarProduccion('${registro.id}')">
+      ${esAdmin ? `
+        <button class="btn btn-sm btn-outline-warning" onclick="editarProduccion('${registro.id}')">
+          <i class="bi bi-pencil"></i> Editar
+        </button>
+      ` : ''}
+      <button class="btn btn-sm btn-outline-danger" onclick="eliminarProduccion('${registro.id}')" ${esAdmin ? '' : 'disabled'}>
         <i class="bi bi-trash"></i>
       </button>
     </td>
@@ -391,8 +543,47 @@ function agregarFilaProduccion(registro) {
   tabla.querySelector('tbody').appendChild(fila);
 }
 
+// ✅ EDITAR PRODUCCIÓN
+async function editarProduccion(id) {
+  const registro = registrosProduccion.find(r => r.id === id);
+  if (!registro) {
+    mostrarAlerta('Registro no encontrado', 'error');
+    return;
+  }
+
+  const nuevosPacks = prompt(`Editar Packs para Bobina #${registro.numeroBobina}\n\nPacks Operador actual: ${registro.packsOperador}\n\nNuevo valor:`, registro.packsOperador);
+  
+  if (nuevosPacks === null) return;
+  
+  const packs = parseInt(nuevosPacks);
+  if (isNaN(packs) || packs < 0) {
+    mostrarAlerta('Los packs deben ser un número válido ≥ 0', 'error');
+    return;
+  }
+
+  try {
+    const { error } = await window.supabaseClient
+      .from('control_produccion_bolsas')
+      .update({ packs_operador: packs })
+      .eq('id', id);
+
+    if (error) throw error;
+
+    registro.packsOperador = packs;
+    
+    const tabla = document.getElementById('tabla_produccion');
+    tabla.querySelector('tbody').innerHTML = '';
+    registrosProduccion.forEach(r => agregarFilaProduccion(r));
+    
+    actualizarEstadisticasFinales();
+    mostrarAlerta('✅ Producción actualizada correctamente', 'success');
+  } catch (error) {
+    console.error('❌ Error al editar producción:', error);
+    mostrarAlerta('Error al editar: ' + error.message, 'error');
+  }
+}
+
 function limpiarFormularioProduccion() {
-  document.getElementById('fecha_produccion').value = new Date().toISOString().split('T')[0];
   document.getElementById('bobina_produccion').value = '';
   document.getElementById('bolsitas_producidas').value = '';
   document.getElementById('bolsitas_rechazadas_prod').value = '0';
@@ -400,13 +591,14 @@ function limpiarFormularioProduccion() {
   document.getElementById('packs_calculados').value = '';
   document.getElementById('packs_operador').value = '';
   document.getElementById('alerta_packs').style.display = 'none';
+  validarMotivoRechazo_Bolsa();
 }
 
 async function eliminarProduccion(id) {
   if (!confirm('⚠️ ¿Estás seguro de eliminar este registro de producción?')) return;
 
   try {
-    const { error } = await supabaseClient
+    const { error } = await window.supabaseClient
       .from('control_produccion_bolsas')
       .delete()
       .eq('id', id);
@@ -419,7 +611,7 @@ async function eliminarProduccion(id) {
     if (registrosProduccion.length === 0) {
       tabla.querySelector('tbody').innerHTML = `
         <tr>
-          <td colspan="8" class="text-center text-muted" style="padding: 2rem;">
+          <td colspan="7" class="text-center text-muted" style="padding: 2rem;">
             <i class="bi bi-inbox"></i> No hay registros aún
           </td>
         </tr>
@@ -448,58 +640,30 @@ function actualizarEstadisticasFinales() {
 }
 
 function calcularFactorAjuste() {
-  const cierre = parseInt(document.getElementById('contador_cierre').value);
-  const diferencia = cierre - contadorInicial;
-  document.getElementById('diferencia_contador').value = diferencia;
-
-  const totalBolsitas = registrosProduccion.reduce((sum, r) => sum + r.bolsitasProducidas, 0);
-  if (diferencia > 0) {
-    const factor = (totalBolsitas / diferencia).toFixed(3);
-    document.getElementById('stat_factor_ajuste').textContent = factor;
-  }
-}
-
-async function cerrarDia() {
-  if (!document.getElementById('contador_cierre').value) {
-    mostrarAlerta('Ingresa el contador de cierre', 'error');
+  console.log('✅ calcularFactorAjuste() ejecutada');
+  
+  const contadorInicioElem = document.getElementById('contador_inicio');
+  const contadorCierreElem = document.getElementById('contador_cierre');
+  const diferenciElem = document.getElementById('diferencia_contador');
+  
+  if (!contadorInicioElem || !contadorCierreElem || !diferenciElem) {
+    console.error('❌ No se encontraron los elementos');
     return;
   }
 
-  try {
-    const cierre = parseInt(document.getElementById('contador_cierre').value);
-    const diferencia = cierre - contadorInicial;
-    const totalBolsitas = registrosProduccion.reduce((sum, r) => sum + r.bolsitasProducidas, 0);
+  const inicio = parseInt(contadorInicioElem.value) || 0;
+  const cierre = parseInt(contadorCierreElem.value) || 0;
+  const diferencia = cierre - inicio;
 
-    // Guardar contador diario en Supabase
-    const { error } = await supabaseClient
-      .from('control_contador_diario')
-      .insert([{
-        fecha: new Date().toISOString().split('T')[0],
-        contador_inicio: contadorInicial,
-        contador_cierre: cierre,
-        diferencia_contador: diferencia,
-        bolsitas_reales_registradas: totalBolsitas,
-        factor_ajuste: totalBolsitas / diferencia,
-        operador: currentUser.username,
-        created_by: currentUser.id
-      }]);
+  console.log(`🔢 Inicio: ${inicio}, Cierre: ${cierre}, Diferencia: ${diferencia}`);
 
-    if (error) throw error;
-
-    mostrarAlerta('✅ Día cerrado correctamente', 'success');
-    
-    setTimeout(() => {
-      location.reload();
-    }, 2000);
-
-  } catch (error) {
-    console.error('❌ Error al cerrar día:', error);
-    mostrarAlerta('Error al cerrar el día', 'error');
-  }
+  diferenciElem.value = diferencia;
+  
+  console.log(`✅ Diferencia mostrada: ${diferenciElem.value}`);
 }
 
 // ============================================
-// 6. SECCIÓN: BOTELLONES - REGISTRAR LOTE
+// 7. SECCIÓN: BOTELLONES - REGISTRAR LOTE
 // ============================================
 
 async function registrarBotellones() {
@@ -511,13 +675,18 @@ async function registrarBotellones() {
   const motivoRechazo = document.getElementById('motivo_rechazo_bot').value;
   const observaciones = document.getElementById('observaciones_bot').value;
 
-  if (!fecha || !horaInicio || !horaCierre || !botellonesProducidos || !motivoRechazo) {
+  if (!fecha || !horaInicio || !horaCierre || !botellonesProducidos) {
     mostrarAlerta('Por favor completa todos los campos requeridos', 'error');
     return;
   }
 
+  if (botellonesRechazados > 0 && !motivoRechazo) {
+    mostrarAlerta('Debes seleccionar un motivo de rechazo', 'error');
+    return;
+  }
+
   try {
-    const { data, error } = await supabaseClient
+    const { data, error } = await window.supabaseClient
       .from('control_botellones')
       .insert([{
         fecha: fecha,
@@ -525,7 +694,7 @@ async function registrarBotellones() {
         hora_cierre: horaCierre,
         botellones_producidos: botellonesProducidos,
         botellones_rechazados: botellonesRechazados,
-        motivo_rechazo: motivoRechazo,
+        motivo_rechazo: motivoRechazo || null,
         observaciones: observaciones || null,
         operador: currentUser.username,
         created_by: currentUser.id
@@ -554,7 +723,7 @@ async function registrarBotellones() {
 
   } catch (error) {
     console.error('❌ Error al registrar botellones:', error);
-    mostrarAlerta('Error al registrar el lote', 'error');
+    mostrarAlerta('Error al registrar el lote: ' + error.message, 'error');
   }
 }
 
@@ -566,21 +735,68 @@ function agregarFilaTablaBot(registro) {
   }
 
   const fila = document.createElement('tr');
+  const esAdmin = currentUser.role === 'admin';
+  
   fila.innerHTML = `
     <td>${registro.fecha}</td>
     <td>${registro.horaInicio}</td>
     <td>${registro.horaCierre}</td>
     <td><span class="badge badge-success">${registro.botellonesProducidos}</span></td>
     <td><span class="badge badge-danger">${registro.botellonesRechazados}</span></td>
-    <td>${registro.motivoRechazo}</td>
+    <td>${registro.motivoRechazo || '--'}</td>
     <td>${registro.observaciones || '--'}</td>
     <td>
-      <button class="btn btn-sm btn-outline-danger" onclick="eliminarRegistroBot('${registro.id}')">
+      ${esAdmin ? `
+        <button class="btn btn-sm btn-outline-warning" onclick="editarBotellones('${registro.id}')">
+          <i class="bi bi-pencil"></i> Editar
+        </button>
+      ` : ''}
+      <button class="btn btn-sm btn-outline-danger" onclick="eliminarRegistroBot('${registro.id}')" ${esAdmin ? '' : 'disabled'}>
         <i class="bi bi-trash"></i>
       </button>
     </td>
   `;
   tabla.querySelector('tbody').appendChild(fila);
+}
+
+// ✅ EDITAR BOTELLONES
+async function editarBotellones(id) {
+  const registro = registrosBotellones.find(r => r.id === id);
+  if (!registro) {
+    mostrarAlerta('Registro no encontrado', 'error');
+    return;
+  }
+
+  const nuevosBotellones = prompt(`Editar Botellones Producidos - ${registro.fecha}\n\nValor actual: ${registro.botellonesProducidos}\n\nNuevo valor:`, registro.botellonesProducidos);
+  
+  if (nuevosBotellones === null) return;
+  
+  const botellones = parseInt(nuevosBotellones);
+  if (isNaN(botellones) || botellones < 0) {
+    mostrarAlerta('Los botellones deben ser un número válido ≥ 0', 'error');
+    return;
+  }
+
+  try {
+    const { error } = await window.supabaseClient
+      .from('control_botellones')
+      .update({ botellones_producidos: botellones })
+      .eq('id', id);
+
+    if (error) throw error;
+
+    registro.botellonesProducidos = botellones;
+    
+    const tabla = document.getElementById('tabla_botellones');
+    tabla.querySelector('tbody').innerHTML = '';
+    registrosBotellones.forEach(r => agregarFilaTablaBot(r));
+    
+    actualizarEstadisticasBotellones();
+    mostrarAlerta('✅ Botellones actualizados correctamente', 'success');
+  } catch (error) {
+    console.error('❌ Error al editar botellones:', error);
+    mostrarAlerta('Error al editar: ' + error.message, 'error');
+  }
 }
 
 function limpiarFormularioBotellones() {
@@ -591,6 +807,7 @@ function limpiarFormularioBotellones() {
   document.getElementById('botellones_rechazados').value = '0';
   document.getElementById('motivo_rechazo_bot').value = '';
   document.getElementById('observaciones_bot').value = '';
+  validarMotivoRechazo_Botellones();
 }
 
 function actualizarEstadisticasBotellones() {
@@ -607,7 +824,7 @@ async function eliminarRegistroBot(id) {
   if (!confirm('⚠️ ¿Estás seguro de eliminar este lote?')) return;
 
   try {
-    const { error } = await supabaseClient
+    const { error } = await window.supabaseClient
       .from('control_botellones')
       .delete()
       .eq('id', id);
@@ -634,12 +851,12 @@ async function eliminarRegistroBot(id) {
     mostrarAlerta('✅ Lote eliminado', 'success');
   } catch (error) {
     console.error('❌ Error al eliminar:', error);
-    mostrarAlerta('Error al eliminar el lote', 'error');
+    mostrarAlerta('Error al eliminar el lote: ' + error.message, 'error');
   }
 }
 
 // ============================================
-// 7. SECCIÓN: CALIDAD - REGISTRAR PRUEBA
+// 8. SECCIÓN: CALIDAD - REGISTRAR PRUEBA
 // ============================================
 
 async function registrarCalidad() {
@@ -650,7 +867,7 @@ async function registrarCalidad() {
   const ph = parseFloat(document.getElementById('ph_calidad').value);
   const observaciones = document.getElementById('observaciones_calidad').value;
 
-  if (!fecha || tds === '' || usm === '' || temperatura === '' || ph === '') {
+  if (!fecha || isNaN(tds) || isNaN(usm) || isNaN(temperatura) || isNaN(ph)) {
     mostrarAlerta('Por favor completa todos los campos requeridos', 'error');
     return;
   }
@@ -666,7 +883,7 @@ async function registrarCalidad() {
   }
 
   try {
-    const { data, error } = await supabaseClient
+    const { data, error } = await window.supabaseClient
       .from('control_calidad_agua')
       .insert([{
         fecha: fecha,
@@ -702,7 +919,7 @@ async function registrarCalidad() {
 
   } catch (error) {
     console.error('❌ Error al registrar calidad:', error);
-    mostrarAlerta('Error al registrar la prueba', 'error');
+    mostrarAlerta('Error al registrar la prueba: ' + error.message, 'error');
   }
 }
 
@@ -714,6 +931,8 @@ function agregarFilaTablaCalidad(registro) {
   }
 
   const fila = document.createElement('tr');
+  const esAdmin = currentUser.role === 'admin';
+  
   fila.innerHTML = `
     <td>${registro.fecha}</td>
     <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">${registro.tds.toFixed(2)}</span></td>
@@ -722,12 +941,57 @@ function agregarFilaTablaCalidad(registro) {
     <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">${registro.ph.toFixed(2)}</span></td>
     <td>${registro.observaciones || '--'}</td>
     <td>
-      <button class="btn btn-sm btn-outline-danger" onclick="eliminarRegistroCalidad('${registro.id}')">
+      ${esAdmin ? `
+        <button class="btn btn-sm btn-outline-warning" onclick="editarCalidad('${registro.id}')">
+          <i class="bi bi-pencil"></i> Editar
+        </button>
+      ` : ''}
+      <button class="btn btn-sm btn-outline-danger" onclick="eliminarRegistroCalidad('${registro.id}')" ${esAdmin ? '' : 'disabled'}>
         <i class="bi bi-trash"></i>
       </button>
     </td>
   `;
   tabla.querySelector('tbody').appendChild(fila);
+}
+
+// ✅ EDITAR CALIDAD
+async function editarCalidad(id) {
+  const registro = registrosCalidad.find(r => r.id === id);
+  if (!registro) {
+    mostrarAlerta('Registro no encontrado', 'error');
+    return;
+  }
+
+  const nuevoTDS = prompt(`Editar TDS - ${registro.fecha}\n\nValor actual: ${registro.tds}\n\nNuevo valor:`, registro.tds);
+  
+  if (nuevoTDS === null) return;
+  
+  const tds = parseFloat(nuevoTDS);
+  if (isNaN(tds) || tds < 0) {
+    mostrarAlerta('El TDS debe ser un número válido ≥ 0', 'error');
+    return;
+  }
+
+  try {
+    const { error } = await window.supabaseClient
+      .from('control_calidad_agua')
+      .update({ tds: tds })
+      .eq('id', id);
+
+    if (error) throw error;
+
+    registro.tds = tds;
+    
+    const tabla = document.getElementById('tabla_calidad');
+    tabla.querySelector('tbody').innerHTML = '';
+    registrosCalidad.forEach(r => agregarFilaTablaCalidad(r));
+    
+    actualizarEstadisticasCalidad();
+    mostrarAlerta('✅ Calidad actualizada correctamente', 'success');
+  } catch (error) {
+    console.error('❌ Error al editar calidad:', error);
+    mostrarAlerta('Error al editar: ' + error.message, 'error');
+  }
 }
 
 function limpiarFormularioCalidad() {
@@ -765,7 +1029,7 @@ async function eliminarRegistroCalidad(id) {
   if (!confirm('⚠️ ¿Estás seguro de eliminar esta prueba?')) return;
 
   try {
-    const { error } = await supabaseClient
+    const { error } = await window.supabaseClient
       .from('control_calidad_agua')
       .delete()
       .eq('id', id);
@@ -792,12 +1056,12 @@ async function eliminarRegistroCalidad(id) {
     mostrarAlerta('✅ Prueba eliminada', 'success');
   } catch (error) {
     console.error('❌ Error al eliminar:', error);
-    mostrarAlerta('Error al eliminar la prueba', 'error');
+    mostrarAlerta('Error al eliminar la prueba: ' + error.message, 'error');
   }
 }
 
 // ============================================
-// 8. FUNCIONES AUXILIARES
+// 9. FUNCIONES AUXILIARES
 // ============================================
 
 function mostrarAlerta(mensaje, tipo = 'success') {
@@ -847,17 +1111,19 @@ function mostrarAlertaPrincipal(mensaje, tipo = 'error') {
 }
 
 // ============================================
-// 9. HACER FUNCIONES GLOBALES
+// 10. HACER FUNCIONES GLOBALES
 // ============================================
 
-window.registrarBobina = registrarBobina;
+window.editarBobina = editarBobina;
 window.eliminarBobina = eliminarBobina;
-window.registrarProduccion = registrarProduccion;
+window.editarProduccion = editarProduccion;
 window.eliminarProduccion = eliminarProduccion;
-window.cerrarDia = cerrarDia;
-window.registrarBotellones = registrarBotellones;
+window.editarBotellones = editarBotellones;
 window.eliminarRegistroBot = eliminarRegistroBot;
-window.registrarCalidad = registrarCalidad;
+window.editarCalidad = editarCalidad;
 window.eliminarRegistroCalidad = eliminarRegistroCalidad;
+window.guardarTodo = guardarTodo;
+window.registrarBotellones = registrarBotellones;
+window.registrarCalidad = registrarCalidad;
 
-console.log('✅ Módulo de Producción v2.0 cargado completamente');
+console.log('✅ Módulo de Producción v2.5 (CORREGIDA - Peso Bobina Opcional) cargado');

@@ -845,8 +845,8 @@
     <!-- SCRIPTS DE SUPABASE Y DATOS -->
     <script>
         // ===== CONFIGURACIÓN SUPABASE =====
-        const SUPABASE_URL = 'https://pmdrvzjnmlchevgjfwon.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZHJ2empubWxjaGV2Z2pmd29uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkwMjA3NDUsImV4cCI6MjA0NDU5Njc0NX0.5RGz7Fv_WY7_EEuFq8iI3V3dMJB_EczDkJlXCCG7z8Q';
+        const SUPABASE_URL = 'https://hjrplwxvyukevcljodyg.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqcnBsd3h2eXVrZXZjbGpvZHlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzUzMzQsImV4cCI6MjA3MzYxMTMzNH0.uJ-krjLrFVo7cHuIQQb1-x2wQzXwyZfcvg4XvnppkqE';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let charts = {};
@@ -895,7 +895,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             cargarInfoUsuario();
             inicializarFiltros();
-            cargarDatos();
+            // Aplicar filtro por defecto "Este mes" 
+            aplicarFiltroRapido();
             // Actualizar cada 30 segundos
             setInterval(cargarDatos, 30000);
         });
@@ -991,12 +992,12 @@
             const fechaHasta = filtroActual.fechaHasta || new Date().toISOString().split('T')[0];
 
             try {
-                // Cargar datos de bolsas
-                let queryBolsas = supabase
-                    .from('control_produccion_bolsas')
-                    .select('*')
-                    .gte('fecha', fechaDesde)
-                    .lte('fecha', fechaHasta);
+                // ✅ CORREGIDO v2.5 - Agregar filtros de fecha a queryBolsas
+                 let queryBolsas = supabase
+                 .from('control_produccion_bolsas')
+                 .select('*')
+                 .gte('fecha', fechaDesde)
+                 .lte('fecha', fechaHasta);
 
                 // Cargar datos de botellones
                 let queryBotellones = supabase
@@ -1015,6 +1016,11 @@
                 const { data: bolsas } = await queryBolsas;
                 const { data: botellones } = await queryBotellones;
                 const { data: calidad } = await queryCalidad;
+
+                console.log('✅ Datos cargados correctamente:');
+                console.log('Bolsas:', bolsas?.length || 0, 'registros');
+                console.log('Botellones:', botellones?.length || 0, 'registros');
+                console.log('Calidad:', calidad?.length || 0, 'registros');
 
                 actualizarEstadisticas(bolsas, botellones, calidad);
                 actualizarGraficas(bolsas, botellones, calidad);
@@ -1538,6 +1544,7 @@
 
             let horas = [];
             let eficiencia = [];
+            let colores = [];
 
             if (datos && datos.length > 0) {
                 datos.forEach(d => {
@@ -1545,10 +1552,20 @@
                     const rechazadas = d.bolsitas_rechazadas || 0;
                     const total = producidas + rechazadas;
                     const eff = total > 0 ? ((producidas / total) * 100).toFixed(1) : 0;
+                    const effNum = parseFloat(eff);
                     
                     horas.push(d.hora || '--:--');
-                    eficiencia.push(parseFloat(eff));
+                    eficiencia.push(effNum);
+                    
+                    if (effNum >= 90) colores.push('rgba(46, 204, 113, 0.8)');
+                    else if (effNum >= 80) colores.push('rgba(52, 152, 219, 0.8)');
+                    else if (effNum >= 70) colores.push('rgba(241, 196, 15, 0.8)');
+                    else colores.push('rgba(231, 76, 60, 0.8)');
                 });
+            } else {
+                horas = ['Sin datos'];
+                eficiencia = [0];
+                colores = ['rgba(189, 195, 199, 0.8)'];
             }
 
             if (charts.eficiencia) charts.eficiencia.destroy();
@@ -1560,13 +1577,7 @@
                     datasets: [{
                         label: 'Eficiencia (%)',
                         data: eficiencia,
-                        backgroundColor: (context) => {
-                            const value = context.parsed.y;
-                            if (value >= 90) return 'rgba(46, 204, 113, 0.8)';
-                            if (value >= 80) return 'rgba(52, 152, 219, 0.8)';
-                            if (value >= 70) return 'rgba(241, 196, 15, 0.8)';
-                            return 'rgba(231, 76, 60, 0.8)';
-                        },
+                        backgroundColor: colores,
                         borderColor: '#fff',
                         borderWidth: 2,
                         borderRadius: 6
@@ -1591,7 +1602,10 @@
                             borderColor: '#2ecc71',
                             borderWidth: 2,
                             callbacks: {
-                                label: (context) => `${context.parsed.y.toFixed(1)}% de eficiencia`
+                                label: (context) => {
+                                    const val = context.parsed.y || 0;
+                                    return `${val.toFixed(1)}% de eficiencia`;
+                                }
                             }
                         }
                     },

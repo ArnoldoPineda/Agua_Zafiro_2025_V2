@@ -878,7 +878,12 @@ if (typeof setupRoleBasedUI === 'function') {
     window.showNotification = showNotification;
 
     console.log('💧 Agua Zafiro - Sistema con autenticación iniciado correctamente');
-    console.log('📊 Módulos disponibles según permisos: Capturador, Dashboard, Calendario');
+console.log('📊 Módulos disponibles según permisos: Capturador, Dashboard, Calendario');
+
+// 🎯 Redireccionar a produccion.html si no hay usuario autenticado
+if (!SupabaseAuth.getCurrentUser()) {
+    window.location.href = 'produccion.html';
+}
   </script>
   <!-- Al final del body, ANTES de </body> -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
