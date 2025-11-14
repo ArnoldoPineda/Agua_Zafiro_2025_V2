@@ -112,7 +112,7 @@ function checkPagePermissions() {
     const pagePermissions = {
         'dashboard.html': ['admin'],                              // Solo admin
         'capturador.html': ['admin', 'vendedor'],                // Admin y vendedores
-        'calendario-ventas.html': ['admin', 'vendedor'],           // Admin y vendedores
+        'calendario-ventas.html': ['admin', 'vendedor'],                // Admin y vendedores
         'produccion.html': ['admin', 'produccion']               // NUEVO: Admin y producción
     };
 
