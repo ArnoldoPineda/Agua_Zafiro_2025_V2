@@ -422,25 +422,25 @@
       <div class="status"><i class="fas fa-circle"></i> Sistema Activo</div>
       
       <button class="btn import admin-only" onclick="iniciarImportacionDirecta()">
-        <i class="fas fa-upload"></i> Importar
-      </button>      
-      <button class="btn export admin-only" onclick="iniciarExportacion()">
-        <i class="fas fa-download"></i> Exportar
-      </button>
-      
-      <a href="capturador.html" class="nav-btn">
-        <i class="fas fa-clipboard-list"></i>
-        <span>Capturador</span>
-      </a>
-      <a href="calendario-ventas.html" class="nav-btn">
+  <i class="fas fa-upload"></i> Importar
+</button>      
+<button class="btn export admin-only" onclick="iniciarExportacion()">
+  <i class="fas fa-download"></i> Exportar
+</button>
+
+<a href="capturador.html" class="nav-btn admin-only">
+  <i class="fas fa-clipboard-list"></i>
+  <span>Capturador</span>
+</a>
+<a href="calendario-ventas.html" class="nav-btn admin-only">
   <i class="fas fa-calendar-alt"></i>
   <span>Calendario Ventas</span>
 </a>
-      <a href="dashboard.html" class="nav-btn">
-        <i class="fas fa-chart-line"></i>
-        <span>Dashboard</span>
-      </a>
-      <a href="calendario-produccion.html" class="nav-btn">
+<a href="dashboard.html" class="nav-btn admin-only">
+  <i class="fas fa-chart-line"></i>
+  <span>Dashboard</span>
+</a>
+<a href="calendario-produccion.html" class="nav-btn admin-only">
   <i class="fas fa-calendar-alt"></i>
   Calendario
 </a>
@@ -688,7 +688,7 @@
                     </thead>
                     <tbody>
                       <tr>
-                        <td colspan="7" class="text-center text-muted" style="padding: 2rem;">
+                        <td colspan="11" class="text-center text-muted" style="padding: 2rem;">
                           <i class="bi bi-inbox"></i> No hay registros aún
                         </td>
                       </tr>
@@ -993,7 +993,7 @@
   </thead>
                 <tbody>
                   <tr>
-                    <td colspan="7" class="text-center text-muted" style="padding: 2rem;">
+                    <td colspan="11" class="text-center text-muted" style="padding: 2rem;">
                       <i class="bi bi-inbox"></i> No hay registros aún
                     </td>
                   </tr>
@@ -1065,5 +1065,14 @@
   <script src="proteccion-produccion.js"></script> 
   <script src="produccion.js"></script>
 
+  <script>
+  // Ocultar botones solo-admin
+  const rol = localStorage.getItem('rolUsuario');
+  if (rol !== 'admin') {
+    document.querySelectorAll('.admin-only').forEach(el => {
+      el.style.display = 'none';
+    });
+  }
+</script>
   </body>
 </html>

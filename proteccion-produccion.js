@@ -1,20 +1,25 @@
-// 🛡️ PROTECCIÓN DE PRODUCCIÓN - REDIRIGIR A INDEX SI NO HAY USUARIO
-(function() {
-  setTimeout(() => {
-    const currentUser = SupabaseAuth?.getCurrentUser();
-    
-    if (!currentUser) {
-      console.log('🚫 Acceso no autenticado a produccion.html - Redirigiendo a index.html');
-      window.location.href = 'index.html';
-      return;
-    }
-    
-    if (!['admin', 'produccion'].includes(currentUser.role)) {
-      console.log(`🚫 Rol ${currentUser.role} no tiene acceso a producción`);
-      window.location.href = 'index.html';
-      return;
-    }
-    
-    console.log(`✅ Usuario ${currentUser.username} autorizado en producción`);
-  }, 300);
-})();
+<!-- BOTONES IMPORT/EXPORT -->
+<button class="btn import admin-only" onclick="iniciarImportacionDirecta()">
+  <i class="fas fa-upload"></i> Importar
+</button>      
+<button class="btn export admin-only" onclick="iniciarExportacion()">
+  <i class="fas fa-download"></i> Exportar
+</button>
+
+<!-- ENLACES NAVBAR -->
+<a href="capturador.html" class="nav-btn admin-only">
+  <i class="fas fa-clipboard-list"></i>
+  <span>Capturador</span>
+</a>
+<a href="calendario-ventas.html" class="nav-btn admin-only">
+  <i class="fas fa-calendar-alt"></i>
+  <span>Calendario Ventas</span>
+</a>
+<a href="dashboard.html" class="nav-btn admin-only">
+  <i class="fas fa-chart-line"></i>
+  <span>Dashboard</span>
+</a>
+<a href="calendario-produccion.html" class="nav-btn admin-only">
+  <i class="fas fa-calendar-alt"></i>
+  Calendario
+</a>
