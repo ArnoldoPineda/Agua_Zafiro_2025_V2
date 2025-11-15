@@ -402,7 +402,7 @@
   <div class="calendar-container">
     <!-- Header -->
     <div class="calendar-header">
-      <button class="nav-btn" onclick="window.location.href='produccion.html'" style="margin-right: 20px;">
+      <button class="nav-btn" onclick="irAProduccion()" style="margin-right: 20px;">
         <i class="fas fa-arrow-left"></i> Volver a Producción
       </button>
       <h1><i class="fas fa-water"></i> Calendario de Producción</h1>
@@ -479,14 +479,32 @@
 
     const nombresDias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
+    // ✅ FUNCIÓN PARA NAVEGAR SIN LOOP
+    function irAProduccion() {
+      console.log('🔄 Navegando a produccion.html...');
+      window.location.href = 'produccion.html';
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
       console.log('🗓️ Iniciando Calendario de Producción...');
       
       try {
+        // ✅ RESETEAR SIEMPRE AL MES ACTUAL (SOLUCIÓN PARA EL INDEX)
+        const hoy = new Date();
+        mesActual = hoy.getMonth();
+        anoActual = hoy.getFullYear();
+        diaHoy = hoy.getDate();
+        console.log(`📅 Variables reseteadas: ${nombresMeses[mesActual]} ${anoActual}, Día actual: ${diaHoy}`);
+        
+        // Pequeño delay para asegurar que Supabase esté listo
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         // Verificar permisos
         const currentUser = SupabaseAuth?.getCurrentUser();
         if (!currentUser) {
           console.warn('⚠️ Usuario no autenticado');
+          // Redirigir al login si no hay usuario
+          setTimeout(() => window.location.href = 'index.html', 2000);
           return;
         }
 
@@ -562,74 +580,32 @@
     }
 
     function generarCalendario() {
-  const grid = document.getElementById('calendarGrid');
-  const title = document.getElementById('monthTitle');
+      const grid = document.getElementById('calendarGrid');
+      const title = document.getElementById('monthTitle');
 
-  title.textContent = `${nombresMeses[mesActual]} ${anoActual}`;
-  grid.innerHTML = '';
+      title.textContent = `${nombresMeses[mesActual]} ${anoActual}`;
+      grid.innerHTML = '';
 
-  // Headers de días
-  nombresDias.forEach(dia => {
-    const header = document.createElement('div');
-    header.className = 'day-header';
-    header.textContent = dia;
-    grid.appendChild(header);
-  });
+      // Headers de días
+      nombresDias.forEach(dia => {
+        const header = document.createElement('div');
+        header.className = 'day-header';
+        header.textContent = dia;
+        grid.appendChild(header);
+      });
 
-  const primerDia = new Date(anoActual, mesActual, 1).getDay();
-  const diasEnMes = new Date(anoActual, mesActual + 1, 0).getDate();
+      const primerDia = new Date(anoActual, mesActual, 1).getDay();
+      const diasEnMes = new Date(anoActual, mesActual + 1, 0).getDate();
 
-  console.log(`📅 Noviembre 2025: Primer día = ${primerDia} (0=dom, 6=sab), Días en mes = ${diasEnMes}`);
+      // ✅ AGREGAR CELDAS VACÍAS AL INICIO
+      for (let i = 0; i < primerDia; i++) {
+        const celdaVacia = document.createElement('div');
+        celdaVacia.className = 'calendar-day';
+        celdaVacia.style.background = '#fafafa';
+        grid.appendChild(celdaVacia);
+      }
 
-  // ✅ AGREGAR CELDAS VACÍAS DEL MES ANTERIOR (CORRECCIÓN CRÍTICA)
-  for (let i = 0; i < primerDia; i++) {
-    const celdaVacia = document.createElement('div');
-    celdaVacia.className = 'calendar-day sin-datos';
-    grid.appendChild(celdaVacia);
-  }
-
-  // Días del mes actual
-  for (let dia = 1; dia <= diasEnMes; dia++) {
-    const fecha = `${anoActual}-${String(mesActual + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-    const tieneRegistro = registrosDelMes[fecha];
-    const esHoy = (dia === diaHoy && mesActual === new Date().getMonth() && anoActual === new Date().getFullYear());
-
-    const celda = document.createElement('div');
-    let clase = 'sin-datos';
-
-    if (esHoy) clase = 'hoy';
-    else if (tieneRegistro) clase = 'con-datos';
-
-    celda.className = `calendar-day ${clase}`;
-    celda.onclick = () => mostrarDetallesDia(fecha, tieneRegistro);
-
-    const numDiv = document.createElement('div');
-    numDiv.className = 'day-number';
-    numDiv.textContent = dia;
-    celda.appendChild(numDiv);
-
-    if (tieneRegistro && clase === 'con-datos') {
-      const dot = document.createElement('div');
-      dot.style.textAlign = 'center';
-      dot.style.marginTop = '5px';
-      dot.innerHTML = '<span class="info-dot"></span>';
-      celda.appendChild(dot);
-
-      const resumen = document.createElement('div');
-      resumen.className = 'day-summary';
-      const totalBolsas = tieneRegistro.bolsas ? tieneRegistro.bolsas.reduce((s, b) => s + (b.bolsitas_producidas || 0), 0) : 0;
-      resumen.textContent = `📦 ${totalBolsas} bolsas`;
-      celda.appendChild(resumen);
-    }
-
-    grid.appendChild(celda);
-  }
-}
-
-// Días del mes actual
-for (let dia = 1; dia <= diasEnMes; dia++) {
-  const fecha = `${anoActual}-${String(mesActual + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-
+      // Días del mes actual
       for (let dia = 1; dia <= diasEnMes; dia++) {
         const fecha = `${anoActual}-${String(mesActual + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
         const tieneRegistro = registrosDelMes[fecha];
@@ -745,7 +721,7 @@ for (let dia = 1; dia <= diasEnMes; dia++) {
           html += '<div class="details"><h4><i class="fas fa-flask"></i> Calidad del Agua</h4>';
           registro.calidad.forEach(c => {
             html += `
-              <p>• TDS: ${c.tds} ppm | pH: ${c.ph} | Temp: ${c.temperatura}°C</p>
+              <p>• TDS: ${c.tds} ppm | pH: ${c.ph !== null ? c.ph : '--'} | Temp: ${c.temperatura}°C</p>
             `;
           });
           html += '</div>';
@@ -753,21 +729,21 @@ for (let dia = 1; dia <= diasEnMes; dia++) {
 
         modalBody.innerHTML = html;
 
-        // Botones de acciones - Verificar admin en tiempo real
+        // Botones de acciones - Verificar permisos
         console.log('👉 Verificando permisos para botones');
         console.log('   esAdmin:', esAdmin);
         
         const currentUser = SupabaseAuth?.getCurrentUser();
-        console.log('   currentUser:', currentUser);
         console.log('   currentUser.role:', currentUser?.role);
         
-        const isAdmin = esAdmin || (currentUser && currentUser.role === 'admin');
-        console.log('   isAdmin final:', isAdmin);
+        // Admin O Encargado de Producción pueden editar/eliminar
+        const puedeEditar = esAdmin || (currentUser && (currentUser.role === 'admin' || currentUser.role === 'production'));
+        console.log('   puedeEditar:', puedeEditar);
         
         let acciones = '<button class="action-btn close" onclick="cerrarModal()">Cerrar</button>';
         
-        if (isAdmin) {
-          console.log('✅ Mostrando botones de admin');
+        if (puedeEditar) {
+          console.log('✅ Mostrando botones de editar/eliminar');
           acciones = `
             <button class="action-btn edit" onclick="editarDia('${fecha}')">
               <i class="fas fa-edit"></i> Editar
@@ -778,7 +754,7 @@ for (let dia = 1; dia <= diasEnMes; dia++) {
             <button class="action-btn close" onclick="cerrarModal()">Cerrar</button>
           `;
         } else {
-          console.log('❌ Usuario no es admin, solo mostrando Cerrar');
+          console.log('❌ Usuario no tiene permisos para editar/eliminar');
         }
 
         modalActions.innerHTML = acciones;
