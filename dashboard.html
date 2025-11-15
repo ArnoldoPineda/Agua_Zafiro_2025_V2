@@ -465,8 +465,8 @@ const datosDemo = {
 document.addEventListener("DOMContentLoaded", async function() {
   console.log('📊 Inicializando Dashboard...');
   
+  // ===== INICIALIZACIÓN PRINCIPAL =====
   conexionSupabase = await inicializarSupabase();
-  
   crearControlesPeriodo();
   
   if (conexionSupabase) {
@@ -479,7 +479,40 @@ document.addEventListener("DOMContentLoaded", async function() {
   actualizarGraficas(datosActuales);
   
   console.log('✅ Dashboard inicializado');
+
+  // ===== ESCUCHAR CAMBIOS EN FILTROS DE GRÁFICAS =====
+  const periodoProductoSelect = document.getElementById('periodoProducto');
+  if (periodoProductoSelect) {
+    periodoProductoSelect.addEventListener('change', function() {
+      console.log('📊 Período de productos cambió a:', this.value);
+      actualizarGraficas(datosActuales);
+    });
+  }
+
+  const tipoVentaSelect = document.getElementById('tipoVenta');
+  if (tipoVentaSelect) {
+    tipoVentaSelect.addEventListener('change', function() {
+      console.log('👥 Tipo de venta cambió a:', this.value);
+      actualizarGraficaVendedores(datosActuales);
+    });
+  }
+
+  const periodoEvolucionSelect = document.getElementById('periodoEvolucion');
+  if (periodoEvolucionSelect) {
+    periodoEvolucionSelect.addEventListener('change', function() {
+      console.log('📈 Período de evolución cambió a:', this.value);
+      actualizarGraficaEvolucion(datosActuales);
+    });
+  }
+
+  // ===== EXPORTAR A EXCEL =====
+  const btnExportar = document.querySelector('.btn.export');
+  if (btnExportar) {
+    btnExportar.addEventListener('click', exportarAExcel);
+    console.log('✅ Botón de exportar vinculado correctamente');
+  }
 });
+
 function crearControlesPeriodo() {
   const statsSection = document.getElementById('statsSection');
   if (!statsSection) return;
@@ -1041,7 +1074,7 @@ function actualizarGraficaProductos(datos) {
     }
   });
 }
-
+   
 function actualizarGraficaVendedores(datos) {
   const ctx = document.getElementById('ventasChart');
   if (!ctx) return;
