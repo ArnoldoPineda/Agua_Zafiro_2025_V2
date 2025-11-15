@@ -765,6 +765,23 @@
                 <div class="stat-value" id="botellones-producidos">0</div>
                 <div class="stat-change">Hoy</div>
             </div>
+
+            <!-- Aditivos: Sales al Ozono -->
+            <div class="stat-card calidad">
+                <div class="stat-icon"><i class="fas fa-flask-vial"></i></div>
+                <div class="stat-label">Días con Sales al Ozono</div>
+                <div class="stat-value" id="dias-sales-ozono">0</div>
+                <div class="stat-change">En período</div>
+            </div>
+
+            <!-- Aditivos: Silice -->
+            <div class="stat-card calidad">
+                <div class="stat-icon"><i class="fas fa-droplet"></i></div>
+                <div class="stat-label">Días con Silice</div>
+                <div class="stat-value" id="dias-silice">0</div>
+                <div class="stat-change">En período</div>
+            </div>
+        </div>
         </div>
 
         <!-- GRÁFICAS PRINCIPALES -->
@@ -815,6 +832,44 @@
 
             <!-- GRÁFICA 5: CALIDAD DEL AGUA -->
             <div class="chart-container full-width">
+                <!-- GRÁFICA 5B: USO DE ADITIVOS -->
+            <div class="chart-container">
+                <div class="chart-title">
+                    <i class="fas fa-flask-vial"></i>
+                    Uso de Aditivos (Sales & Silice)
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="chartAditivos"></canvas>
+                </div>
+            </div>
+
+            <!-- TABLA: HISTORIAL DE ADITIVOS -->
+            <div class="chart-container full-width">
+                <div class="chart-title">
+                    <i class="fas fa-history"></i>
+                    Historial de Aditivos Utilizados
+                </div>
+                <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; position: sticky; top: 0;">
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #667eea;">Fecha</th>
+                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #667eea;">¿Sales al Ozono?</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #667eea;">Obs. Sales</th>
+                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #667eea;">¿Silice?</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #667eea;">Obs. Silice</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-aditivos">
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 20px; color: #7f8c8d;">
+                                    <i class="fas fa-inbox"></i> Cargando datos...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
                 <div class="chart-title">
                     <i class="fas fa-water"></i>
                     Parámetros de Calidad del Agua
@@ -1071,6 +1126,7 @@
             actualizarGraficaMotivos(bolsas);
             actualizarGraficaCalidad(calidad);
             actualizarGraficaEficiencia(bolsas);
+            actualizarAditivos(calidad);  // ← NUEVA LÍNEA
         }
 
         // ===== GRÁFICA 1: BOLSITAS =====
@@ -1633,6 +1689,155 @@
                 }
             });
         }
+        // ===== ACTUALIZAR ADITIVOS =====
+        function actualizarAditivos(calidad) {
+            // Contar días con sales y silice
+            let diasSales = 0;
+            let diasSilice = 0;
+            let registrosAditivos = [];
+
+            if (calidad && calidad.length > 0) {
+                calidad.forEach(d => {
+                    if (d.usa_sales_ozono === true) diasSales++;
+                    if (d.usa_silice === true) diasSilice++;
+                    
+                    registrosAditivos.push({
+                        fecha: d.fecha,
+                        usaSales: d.usa_sales_ozono,
+                        obsSales: d.observacion_sales_ozono,
+                        usaSilice: d.usa_silice,
+                        obsSilice: d.observacion_silice
+                    });
+                });
+            }
+
+            // Actualizar estadísticas
+            document.getElementById('dias-sales-ozono').textContent = diasSales;
+            document.getElementById('dias-silice').textContent = diasSilice;
+
+            // Actualizar gráfica
+            actualizarGraficaAditivos(calidad);
+            
+            // Actualizar tabla
+            actualizarTablaAditivos(registrosAditivos);
+        }
+
+        // ===== GRÁFICA: ADITIVOS =====
+        function actualizarGraficaAditivos(datos) {
+            const ctx = document.getElementById('chartAditivos').getContext('2d');
+
+            let fechas = [];
+            let sales = [];
+            let silice = [];
+
+            if (datos && datos.length > 0) {
+                datos.forEach(d => {
+                    fechas.push(d.fecha);
+                    sales.push(d.usa_sales_ozono === true ? 1 : 0);
+                    silice.push(d.usa_silice === true ? 1 : 0);
+                });
+            }
+
+            if (charts.aditivos) charts.aditivos.destroy();
+
+            charts.aditivos = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: fechas,
+                    datasets: [
+                        {
+                            label: 'Sales al Ozono',
+                            data: sales,
+                            backgroundColor: 'rgba(52, 152, 219, 0.8)',
+                            borderColor: '#3498db',
+                            borderWidth: 2,
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'Silice',
+                            data: silice,
+                            backgroundColor: 'rgba(46, 204, 113, 0.8)',
+                            borderColor: '#2ecc71',
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1,
+                            ticks: {
+                                callback: (value) => value === 1 ? 'Sí' : 'No'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: { size: 11 }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                font: { size: 12, weight: 'bold' },
+                                padding: 15,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                            padding: 12,
+                            callbacks: {
+                                label: (context) => {
+                                    return context.parsed.y === 1 ? '✅ Utilizado' : '❌ No utilizado';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ===== TABLA: HISTORIAL ADITIVOS =====
+        function actualizarTablaAditivos(registros) {
+            const tbody = document.getElementById('tbody-aditivos');
+            
+            if (!registros || registros.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 20px; color: #7f8c8d;">
+                            <i class="fas fa-inbox"></i> No hay registros de aditivos
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = registros.map(r => `
+                <tr style="border-bottom: 1px solid #ecf0f1; transition: background 0.2s;">
+                    <td style="padding: 12px; font-weight: bold; color: #2c3e50;">${r.fecha}</td>
+                    <td style="padding: 12px; text-align: center;">
+                        ${r.usaSales === true ? '<span style="color: #2ecc71; font-weight: bold;">✅ Sí</span>' : '<span style="color: #e74c3c;">❌ No</span>'}
+                    </td>
+                    <td style="padding: 12px; color: #555;">${r.obsSales ? r.obsSales : '--'}</td>
+                    <td style="padding: 12px; text-align: center;">
+                        ${r.usaSilice === true ? '<span style="color: #2ecc71; font-weight: bold;">✅ Sí</span>' : '<span style="color: #e74c3c;">❌ No</span>'}
+                    </td>
+                    <td style="padding: 12px; color: #555;">${r.obsSilice ? r.obsSilice : '--'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Actualizar en la función cargarDatos existente
+        // Reemplaza la línea:
+        //     actualizarGraficas(bolsas, botellones, calidad);
+        // POR:
+        //     actualizarGraficas(bolsas, botellones, calidad);
+        //     actualizarAditivos(calidad);
     </script>
 </body>
 </html>
