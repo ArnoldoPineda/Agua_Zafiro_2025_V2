@@ -113,7 +113,11 @@ function configurarEventos() {
   if (botellonesRechazados) {
     botellonesRechazados.addEventListener('change', validarMotivoRechazo_Botellones);
   }
-
+// ✅ CARGAR DATOS DEL DÍA
+  cargarBobinasDelDiaActual();
+  cargarProduccionesDelDiaActual();
+  cargarBotellonesDelDiaActual();
+  cargarCalidadDelDiaActual();
   console.log('✅ Eventos configurados');
 }
 
@@ -865,8 +869,14 @@ async function registrarCalidad() {
   const usm = parseFloat(document.getElementById('usm_calidad').value);
   const temperatura = parseFloat(document.getElementById('temperatura_calidad').value);
   const phInput = document.getElementById('ph_calidad').value;
-  const ph = phInput ? parseFloat(phInput) : null; // ✅ PH opcional
+  const ph = phInput ? parseFloat(phInput) : null;
   const observaciones = document.getElementById('observaciones_calidad').value;
+  
+  // ✅ NUEVOS CAMPOS
+  const usaSalesOzono = document.querySelector('input[name="usa_sales_ozono"]:checked')?.value === 'true' || null;
+  const observacionSalesOzono = document.getElementById('observacion_sales_ozono').value || null;
+  const usaSilice = document.querySelector('input[name="usa_silice"]:checked')?.value === 'true' || null;
+  const observacionSilice = document.getElementById('observacion_silice').value || null;
 
   // ✅ PH ahora es OPCIONAL
   if (!fecha || isNaN(tds) || isNaN(usm) || isNaN(temperatura)) {
@@ -892,19 +902,23 @@ async function registrarCalidad() {
 
   try {
     const { data, error } = await window.supabaseClient
-      .from('control_calidad_agua')
-      .insert([{
-        fecha: fecha,
-        tds: tds,
-        usm: usm,
-        temperatura: temperatura,
-        ph: ph,
-        observaciones: observaciones || null,
-        cumple_estandares: tds <= 150 && ph >= 6.5 && ph <= 8.5,
-        analista: currentUser.username,
-        created_by: currentUser.id
-      }])
-      .select();
+  .from('control_calidad_agua')
+  .insert([{
+    fecha: fecha,
+    tds: tds,
+    usm: usm,
+    temperatura: temperatura,
+    ph: ph,
+    observaciones: observaciones || null,
+    usa_sales_ozono: usaSalesOzono,
+    observacion_sales_ozono: observacionSalesOzono,
+    usa_silice: usaSilice,
+    observacion_silice: observacionSilice,
+    cumple_estandares: tds <= 150 && ph >= 6.5 && ph <= 8.5,
+    analista: currentUser.username,
+    created_by: currentUser.id
+  }])
+  .select();
 
     if (error) throw error;
 
@@ -948,8 +962,12 @@ function agregarFilaTablaCalidad(registro) {
     <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">${registro.temperatura.toFixed(1)}</span></td>
     <td><span class="badge badge-info" style="background-color: #dbeafe; color: #1e40af;">${registro.ph !== null ? registro.ph.toFixed(2) : '--'}</span></td>
     <td>${registro.observaciones || '--'}</td>
-    <td>
-      ${esAdmin ? `
+<td>${registro.usa_sales_ozono ? '✅ Sí' : (registro.usa_sales_ozono === false ? '❌ No' : '--')}</td>
+<td>${registro.observacion_sales_ozono || '--'}</td>
+<td>${registro.usa_silice ? '✅ Sí' : (registro.usa_silice === false ? '❌ No' : '--')}</td>
+<td>${registro.observacion_silice || '--'}</td>
+<td>
+  ${esAdmin ? `
         <button class="btn btn-sm btn-outline-warning" onclick="editarCalidad('${registro.id}')">
           <i class="bi bi-pencil"></i> Editar
         </button>
@@ -1010,6 +1028,32 @@ function limpiarFormularioCalidad() {
   document.getElementById('ph_calidad').value = '';
   document.getElementById('observaciones_calidad').value = '';
 }
+// ✅ HABILITAR/DESHABILITAR CAMPOS DE OBSERVACIÓN
+document.querySelectorAll('input[name="usa_sales_ozono"]').forEach(radio => {
+  radio.addEventListener('change', function() {
+    const observacionInput = document.getElementById('observacion_sales_ozono');
+    if (this.value === 'true') {
+      observacionInput.disabled = false;
+      observacionInput.focus();
+    } else {
+      observacionInput.disabled = true;
+      observacionInput.value = '';
+    }
+  });
+});
+
+document.querySelectorAll('input[name="usa_silice"]').forEach(radio => {
+  radio.addEventListener('change', function() {
+    const observacionInput = document.getElementById('observacion_silice');
+    if (this.value === 'true') {
+      observacionInput.disabled = false;
+      observacionInput.focus();
+    } else {
+      observacionInput.disabled = true;
+      observacionInput.value = '';
+    }
+  });
+});
 
 function actualizarEstadisticasCalidad() {
   if (registrosCalidad.length === 0) {
@@ -1134,4 +1178,172 @@ window.guardarTodo = guardarTodo;
 window.registrarBotellones = registrarBotellones;
 window.registrarCalidad = registrarCalidad;
 
+// ============================================
+// CARGAR BOBINAS DEL DÍA Y AUTO-SELECCIONAR LA ÚLTIMA
+// ============================================
+
+async function cargarBobinasDelDiaActual() {
+  try {
+    const fechaHoy = new Date().toISOString().split('T')[0];
+    console.log(`📦 Cargando bobinas del día actual: ${fechaHoy}`);
+    
+    const { data, error } = await window.supabaseClient
+      .from('control_bobinas')
+      .select('*')
+      .eq('fecha', fechaHoy)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    
+    if (data && data.length > 0) {
+      console.log(`✅ Bobinas encontradas: ${data.length}`);
+      
+      registrosBobinas = data.map(bobina => ({
+        id: bobina.id,
+        numeroBobina: bobina.numero_bobina,
+        pesoBobina: bobina.peso_bobina,
+        fecha: bobina.fecha,
+        operador: bobina.operador
+      }));
+      
+      actualizarSelectBobinas();
+      
+      if (registrosBobinas.length > 0) {
+        const ultimaBobina = registrosBobinas[0];
+        const selectBobina = document.getElementById('bobina_produccion');
+        selectBobina.value = ultimaBobina.id;
+        
+        console.log(`🎯 Última bobina seleccionada: #${ultimaBobina.numeroBobina} - ${ultimaBobina.pesoBobina}kg`);
+      }
+      
+      document.getElementById('tabla_bobinas').querySelector('tbody').innerHTML = '';
+      registrosBobinas.forEach(r => agregarFilaBobina(r));
+    }
+    
+  } catch (error) {
+    console.error('❌ Error cargando bobinas del día:', error);
+  }
+}
+
+async function cargarProduccionesDelDiaActual() {
+  try {
+    const fechaHoy = new Date().toISOString().split('T')[0];
+    console.log(`🏭 Cargando producciones del día: ${fechaHoy}`);
+    
+    const { data, error } = await window.supabaseClient
+      .from('control_produccion_bolsas')
+      .select('*')
+      .eq('fecha', fechaHoy)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    
+    if (data && data.length > 0) {
+      console.log(`✅ Producciones encontradas: ${data.length}`);
+      
+      registrosProduccion = data.map(prod => ({
+        id: prod.id,
+        bobinaId: prod.bobina_id,
+        numeroBobina: registrosBobinas.find(b => b.id === prod.bobina_id)?.numeroBobina || '--',
+        bolsitasProducidas: prod.bolsitas_producidas,
+        bolsitasRechazadas: prod.bolsitas_rechazadas,
+        motivoRechazo: prod.motivo_rechazo,
+        packsCalculados: prod.packs_calculados,
+        packsOperador: prod.packs_operador
+      }));
+      
+      document.getElementById('tabla_produccion').querySelector('tbody').innerHTML = '';
+      registrosProduccion.forEach(r => agregarFilaProduccion(r));
+      
+      actualizarEstadisticasFinales();
+    }
+    
+  } catch (error) {
+    console.error('❌ Error cargando producciones:', error);
+  }
+}
+
+async function cargarBotellonesDelDiaActual() {
+  try {
+    const fechaHoy = new Date().toISOString().split('T')[0];
+    console.log(`🍾 Cargando botellones del día: ${fechaHoy}`);
+    
+    const { data, error } = await window.supabaseClient
+      .from('control_botellones')
+      .select('*')
+      .eq('fecha', fechaHoy)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    
+    if (data && data.length > 0) {
+      console.log(`✅ Botellones encontrados: ${data.length}`);
+      
+      registrosBotellones = data.map(bot => ({
+        id: bot.id,
+        fecha: bot.fecha,
+        horaInicio: bot.hora_inicio,
+        horaCierre: bot.hora_cierre,
+        botellonesProducidos: bot.botellones_producidos,
+        botellonesRechazados: bot.botellones_rechazados,
+        motivoRechazo: bot.motivo_rechazo,
+        observaciones: bot.observaciones
+      }));
+      
+      document.getElementById('tabla_botellones').querySelector('tbody').innerHTML = '';
+      registrosBotellones.forEach(r => agregarFilaTablaBot(r));
+      
+      actualizarEstadisticasBotellones();
+    }
+    
+  } catch (error) {
+    console.error('❌ Error cargando botellones:', error);
+  }
+}
+
+async function cargarCalidadDelDiaActual() {
+  try {
+    const fechaHoy = new Date().toISOString().split('T')[0];
+    console.log(`🧪 Cargando calidad del día: ${fechaHoy}`);
+    
+    const { data, error } = await window.supabaseClient
+      .from('control_calidad_agua')
+      .select('*')
+      .eq('fecha', fechaHoy)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    
+    if (data && data.length > 0) {
+      console.log(`✅ Pruebas de calidad encontradas: ${data.length}`);
+      
+      registrosCalidad = data.map(cal => ({
+  id: cal.id,
+  fecha: cal.fecha,
+  tds: cal.tds,
+  usm: cal.usm,
+  temperatura: cal.temperatura,
+  ph: cal.ph,
+  observaciones: cal.observaciones,
+  usa_sales_ozono: cal.usa_sales_ozono,
+  observacion_sales_ozono: cal.observacion_sales_ozono,
+  usa_silice: cal.usa_silice,
+  observacion_silice: cal.observacion_silice
+}));
+      
+      document.getElementById('tabla_calidad').querySelector('tbody').innerHTML = '';
+      registrosCalidad.forEach(r => agregarFilaTablaCalidad(r));
+      
+      actualizarEstadisticasCalidad();
+    }
+    
+  } catch (error) {
+    console.error('❌ Error cargando calidad:', error);
+  }
+}
 console.log('✅ Módulo de Producción v2.5 (CORREGIDA - Peso Bobina Opcional) cargado');
+// Hacer globales las nuevas funciones de carga
+window.cargarBobinasDelDiaActual = cargarBobinasDelDiaActual;
+window.cargarProduccionesDelDiaActual = cargarProduccionesDelDiaActual;
+window.cargarBotellonesDelDiaActual = cargarBotellonesDelDiaActual;
+window.cargarCalidadDelDiaActual = cargarCalidadDelDiaActual;

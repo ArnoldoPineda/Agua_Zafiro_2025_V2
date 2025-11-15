@@ -912,11 +912,53 @@
             </div>
 
             <div class="row row-space">
-              <div class="col-12">
-                <label for="observaciones_calidad" class="form-label">Observaciones</label>
-                <textarea class="form-control" id="observaciones_calidad" rows="2" placeholder="Notas adicionales sobre la prueba..."></textarea>
-              </div>
-            </div>
+  <div class="col-12">
+    <label for="observaciones_calidad" class="form-label">Observaciones Generales</label>
+    <textarea class="form-control" id="observaciones_calidad" rows="2" placeholder="Notas adicionales sobre la prueba..."></textarea>
+  </div>
+</div>
+
+<!-- ✅ NUEVOS CAMPOS: SALES AL OZONO -->
+<div class="row row-space">
+  <div class="col-md-6">
+    <label for="usa_sales_ozono" class="form-label">¿Se usó Sales al Ozono? <small style="color: #6b7280;">(Opcional)</small></label>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <div>
+        <input type="radio" id="sales_si" name="usa_sales_ozono" value="true"> 
+        <label for="sales_si" style="margin: 0; font-weight: normal;">Sí</label>
+      </div>
+      <div>
+        <input type="radio" id="sales_no" name="usa_sales_ozono" value="false"> 
+        <label for="sales_no" style="margin: 0; font-weight: normal;">No</label>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <label for="observacion_sales_ozono" class="form-label">Cantidad/Observación Sales</label>
+    <input type="text" class="form-control" id="observacion_sales_ozono" placeholder="Ej: 2 litros, dosis alta, etc." disabled>
+  </div>
+</div>
+
+<!-- ✅ NUEVOS CAMPOS: SILICE -->
+<div class="row row-space">
+  <div class="col-md-6">
+    <label for="usa_silice" class="form-label">¿Se usó Silice? <small style="color: #6b7280;">(Opcional)</small></label>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <div>
+        <input type="radio" id="silice_si" name="usa_silice" value="true"> 
+        <label for="silice_si" style="margin: 0; font-weight: normal;">Sí</label>
+      </div>
+      <div>
+        <input type="radio" id="silice_no" name="usa_silice" value="false"> 
+        <label for="silice_no" style="margin: 0; font-weight: normal;">No</label>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <label for="observacion_silice" class="form-label">Cantidad/Observación Silice</label>
+    <input type="text" class="form-control" id="observacion_silice" placeholder="Ej: 1 kilo, cantidad normal, etc." disabled>
+  </div>
+</div>
 
             <button type="button" class="btn btn-success" id="btn_registrar_calidad">
               <i class="bi bi-save"></i> Registrar Prueba
@@ -934,17 +976,21 @@
           <div class="card-body">
             <div class="table-responsive">
               <table class="table" id="tabla_calidad">
-                <thead>
-                  <tr>
-                    <th>Fecha</th>
-                    <th>TDS (ppm)</th>
-                    <th>USM (µS/cm)</th>
-                    <th>Temperatura (°C)</th>
-                    <th>PH</th>
-                    <th>Observaciones</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>TDS (ppm)</th>
+      <th>USM (µS/cm)</th>
+      <th>Temperatura (°C)</th>
+      <th>PH</th>
+      <th>Observaciones</th>
+      <th>¿Sales Ozono?</th>
+      <th>Obs. Sales</th>
+      <th>¿Silice?</th>
+      <th>Obs. Silice</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
                 <tbody>
                   <tr>
                     <td colspan="7" class="text-center text-muted" style="padding: 2rem;">
@@ -1016,6 +1062,7 @@
   <script src="auth.js"></script>
   
   <!-- 🏭 PRODUCCIÓN -->
+  <script src="proteccion-produccion.js"></script> 
   <script src="produccion.js"></script>
 
   </body>
