@@ -511,6 +511,55 @@ function autoFillCreditos() {
   });
 }
 
+// 🔒 VARIABLE PARA EVITAR DUPLICADOS
+let guardandoRegistro = false;
+
+async function guardarRegistro() {
+  // ✅ BLOQUEAR SI YA ESTÁ GUARDANDO
+  if (guardandoRegistro) {
+    console.warn('⚠️ Ya hay un guardado en progreso, ignorando nuevo click');
+    return;
+  }
+
+  if (!validarDatos(true)) {
+    return;
+  }
+
+  const btnGuardar = document.getElementById('btnGuardar');
+  const originalText = btnGuardar.innerHTML;
+  
+  try {
+    // ✅ MARCAR COMO GUARDANDO INMEDIATAMENTE
+    guardandoRegistro = true;
+    btnGuardar.innerHTML = '⏳ Guardando en Supabase...';
+    btnGuardar.disabled = true;
+    
+    const datos = recopilarDatos();
+    console.log('Guardando registro en Supabase:', datos);
+    
+    const result = await SupabaseData.saveRegistroDiario(datos.fecha, datos);
+    
+    if (result.success) {
+      alert('✅ ¡Registro guardado correctamente en la base de datos Supabase!');
+      console.log('✅ Registro guardado exitosamente:', result.data);
+      setTimeout(() => {
+        location.reload();
+      }, 500);
+    } else {
+      throw new Error(result.error || 'Error desconocido al guardar');
+    }
+    
+  } catch (error) {
+    console.error('❌ Error al guardar en Supabase:', error);
+    alert('❌ Error al guardar: ' + error.message);
+    
+    // ✅ PERMITIR REINTENTAR
+    guardandoRegistro = false;
+    btnGuardar.innerHTML = originalText;
+    btnGuardar.disabled = false;
+  }
+}
+
 function setupEventListeners() {
   const cajaInicialInput = document.getElementById('cajaInicial');
   if (cajaInicialInput) {
