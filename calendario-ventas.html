@@ -935,6 +935,10 @@
       
       title.textContent = fechaTexto.charAt(0).toUpperCase() + fechaTexto.slice(1);
       
+      // 🔧 LIMPIAR CONTENIDO ANTERIOR - AÑADE ESTAS DOS LÍNEAS
+      readOnlyContent.innerHTML = '';
+      editForm.innerHTML = '';
+      
       // Mostrar vista de solo lectura
       readOnlyContent.style.display = 'block';
       editForm.classList.remove('active');
@@ -1140,72 +1144,6 @@ function cargarDatosEnFormulario(fecha) {
     agregarCreditoEdit();
   }
 }
-function cargarDatosEnFormulario(fecha) {
-  
-  // ... función siguiente que ya existe  
-      
-      modoEdicion = true;
-      const modalContent = document.getElementById('modalContent');
-      const readOnlyContent = document.getElementById('readOnlyContent');
-      const editForm = document.getElementById('editForm');
-      const actions = document.getElementById('modalActions');
-      
-      // Cambiar a modo edición
-      modalContent.className = 'modal-content edit-mode';
-      readOnlyContent.style.display = 'none';
-      editForm.classList.add('active');
-      
-      // Cargar datos en el formulario
-      cargarDatosEnFormulario(fechaEditando);
-      
-      // Cambiar botones
-      actions.innerHTML = `
-        <button class="quick-action-btn success" onclick="guardarCambios()">💾 Guardar Cambios</button>
-        <button class="quick-action-btn" onclick="cancelarEdicion()">❌ Cancelar</button>
-      `;
-    }
-
-    function cargarDatosEnFormulario(fecha) {
-      const registro = registrosDelMes[fecha] || {};
-      
-      // Información básica
-      document.getElementById('editFecha').value = fecha;
-      document.getElementById('editCajaInicial').value = registro.cajaInicial || 0;
-      document.getElementById('editObservaciones').value = registro.observaciones || '';
-      
-      // Cargar ventas
-      const ventasContainer = document.getElementById('editVentas');
-      ventasContainer.innerHTML = '';
-      if (registro.ventas && registro.ventas.length > 0) {
-        registro.ventas.forEach(venta => {
-          agregarVentaEdit(venta);
-        });
-      } else {
-        agregarVentaEdit();
-      }
-      
-      // Cargar gastos
-      const gastosContainer = document.getElementById('editGastos');
-      gastosContainer.innerHTML = '';
-      if (registro.gastos && registro.gastos.length > 0) {
-        registro.gastos.forEach(gasto => {
-          agregarGastoEdit(gasto);
-        });
-      } else {
-        agregarGastoEdit();
-      }
-      
-      // Cargar créditos
-      const creditosContainer = document.getElementById('editCreditos');
-      creditosContainer.innerHTML = '';
-      if (registro.creditos && registro.creditos.length > 0) {
-        registro.creditos.forEach(credito => {
-          agregarCreditoEdit(credito);
-        });
-      } else {
-        agregarCreditoEdit();
-      }
-    }
 
     function agregarVentaEdit(datos = {}) {
       const container = document.getElementById('editVentas');
