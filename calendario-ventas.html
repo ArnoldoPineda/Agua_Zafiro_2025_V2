@@ -1582,7 +1582,7 @@ function mostrarModalExportacion() {
     
     // Agregar event listeners
     const radios = modal.querySelectorAll('input[name="rangoExport"]');
-    const rangoPersonalizado = modal.getElementById('rangoPersonalizado');
+    const rangoPersonalizado = document.getElementById('rangoPersonalizado');
     
     radios.forEach(radio => {
         radio.addEventListener('change', function() {
@@ -1593,8 +1593,8 @@ function mostrarModalExportacion() {
                 const hoy = new Date();
                 const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
                 
-                modal.getElementById('fechaInicio').value = inicioMes.toISOString().split('T')[0];
-                modal.getElementById('fechaFin').value = hoy.toISOString().split('T')[0];
+                document.getElementById('fechaInicio').value = inicioMes.toISOString().split('T')[0];
+                document.getElementById('fechaFin').value = hoy.toISOString().split('T')[0];
             } else {
                 rangoPersonalizado.style.display = 'none';
             }
@@ -1637,8 +1637,8 @@ async function procesarExportacion() {
                 break;
                 
             case 'rango':
-                fechaInicio = modal.getElementById('fechaInicio').value;
-                fechaFin = modal.getElementById('fechaFin').value;
+                fechaInicio = document.getElementById('fechaInicio').value;
+                fechaFin = document.getElementById('fechaFin').value;
                 
                 if (!fechaInicio || !fechaFin) {
                     alert('❌ Debe seleccionar ambas fechas para el rango personalizado');

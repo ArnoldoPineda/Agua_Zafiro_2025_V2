@@ -245,9 +245,35 @@
   <!-- BOTONES -->
   <div class="footer-actions">
     <button id="btnGuardar" class="btn save">💾 Guardar Registro Completo</button>
+    
+    <script>
+    // 🛡️ Protección contra clicks duplicados
+    let guardando = false;
+    
+    document.getElementById('btnGuardar').addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        if (guardando) {
+            console.warn('⚠️ Ya hay un guardado en progreso');
+            return;
+        }
+        
+        guardando = true;
+        
+        try {
+            await guardarRegistro();
+            console.log('✅ Guardado exitoso');
+        } catch (error) {
+            console.error('❌ Error:', error);
+        } finally {
+            setTimeout(() => { guardando = false; }, 2000);
+        }
+    });
+    </script>
+    
     <button id="btnLimpiar" class="btn">🧹 Limpiar Todo</button>
     <button id="btnValidar" class="btn">✅ Validar Datos</button>
-  </div>
+</div>
 
  <script>
 // 🔐 FUNCIÓN DE CERRAR SESIÓN COMPLETA Y CORREGIDA
