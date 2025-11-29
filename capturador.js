@@ -511,11 +511,12 @@ function autoFillCreditos() {
   });
 }
 
-// 🔒 VARIABLE PARA EVITAR DUPLICADOS
+// ✅ VARIABLE GLOBAL PARA EVITAR GUARDADOS DUPLICADOS
 let guardandoRegistro = false;
 
+// ✅ ÚNICA DEFINICIÓN DE GUARDAR REGISTRO CON PROTECCIÓN
 async function guardarRegistro() {
-  // ✅ BLOQUEAR SI YA ESTÁ GUARDANDO
+  // 🔒 BLOQUEAR SI YA ESTÁ GUARDANDO
   if (guardandoRegistro) {
     console.warn('⚠️ Ya hay un guardado en progreso, ignorando nuevo click');
     return;
@@ -529,22 +530,24 @@ async function guardarRegistro() {
   const originalText = btnGuardar.innerHTML;
   
   try {
-    // ✅ MARCAR COMO GUARDANDO INMEDIATAMENTE
+    // 🔒 MARCAR COMO GUARDANDO INMEDIATAMENTE
     guardandoRegistro = true;
     btnGuardar.innerHTML = '⏳ Guardando en Supabase...';
     btnGuardar.disabled = true;
     
     const datos = recopilarDatos();
-    console.log('Guardando registro en Supabase:', datos);
+    console.log('💾 Guardando registro en Supabase:', datos);
     
     const result = await SupabaseData.saveRegistroDiario(datos.fecha, datos);
     
     if (result.success) {
       alert('✅ ¡Registro guardado correctamente en la base de datos Supabase!');
       console.log('✅ Registro guardado exitosamente:', result.data);
+      
+      // Recargar con delay seguro
       setTimeout(() => {
-        location.reload();
-      }, 500);
+        window.location.href = window.location.pathname;
+      }, 800);
     } else {
       throw new Error(result.error || 'Error desconocido al guardar');
     }
@@ -553,7 +556,7 @@ async function guardarRegistro() {
     console.error('❌ Error al guardar en Supabase:', error);
     alert('❌ Error al guardar: ' + error.message);
     
-    // ✅ PERMITIR REINTENTAR
+    // 🔓 PERMITIR REINTENTAR
     guardandoRegistro = false;
     btnGuardar.innerHTML = originalText;
     btnGuardar.disabled = false;
@@ -583,52 +586,9 @@ function setupEventListeners() {
   }
 }
 
-async function guardarRegistro() {
-  if (!validarDatos(true)) {
-    return;
-  }
-
-  const btnGuardar = document.getElementById('btnGuardar');
-  const originalText = btnGuardar.innerHTML;
-  
-  try {
-    // Cambiar botón a estado "guardando"
-    btnGuardar.innerHTML = '⏳ Guardando en Supabase...';
-    btnGuardar.disabled = true;
-    
-    const datos = recopilarDatos();
-    console.log('Guardando registro en Supabase:', datos);
-    
-    // Guardar realmente en Supabase
-    const result = await SupabaseData.saveRegistroDiario(datos.fecha, datos);
-    
-    if (result.success) {
-      // Mostrar confirmación exitosa
-      alert('✅ ¡Registro guardado correctamente en la base de datos Supabase!\n\nEl capturador se limpiará automáticamente para continuar.');
-      
-      console.log('✅ Registro guardado exitosamente:', result.data);
-      
-      // Limpiar automáticamente el formulario
-      setTimeout(() => {
-        location.reload();
-      }, 500);
-    } else {
-      throw new Error(result.error || 'Error desconocido al guardar');
-    }
-    
-  } catch (error) {
-    console.error('❌ Error al guardar en Supabase:', error);
-    alert('❌ Error al guardar el registro en la base de datos.\n\nError: ' + error.message + '\n\nPor favor intente nuevamente.');
-    
-    // Restaurar botón
-    btnGuardar.innerHTML = originalText;
-    btnGuardar.disabled = false;
-  }
-}
-
 function limpiarTodo() {
   if (confirm('¿Está seguro de limpiar todos los datos?')) {
-    location.reload();
+    window.location.href = window.location.pathname;
   }
 }
 
@@ -682,7 +642,7 @@ function recopilarDatos() {
   };
 }
 
-console.log('✅ Capturador.js cargado correctamente - Créditos con botón manual, Ventas y Gastos con auto-generación');
+console.log('✅ Capturador.js cargado correctamente - Sin duplicación de guardarRegistro()');
 
 // ===== FUNCIONES MEJORADAS PARA FOTOS =====
 function seleccionarOpcionFoto(numero) {
