@@ -774,13 +774,22 @@
       .lte('fecha', fechaFin)
       .order('fecha', { ascending: true });
     
-    if (error) {
-      console.error('❌ Error cargando registros:', error);
-      registrosDelMes = {};
-      return;
-    }
-    
-    registrosDelMes = {};
+       if (error) {
+     console.error('❌ Error cargando registros:', error);
+     registrosDelMes = {};
+     return;
+   }
+   
+   registrosDelMes = {};
+   
+   // 🔍 DEBUG - Ver datos crudos
+   console.log('📊 DATOS CRUDOS DE SUPABASE:');
+   console.log('Registros totales:', records);
+   if (records && records.length > 0) {
+     console.log('Primer registro:', records[0]);
+     console.log('Ventas del primer registro:', records[0].sales);
+     console.log('Cantidad de ventas:', records[0].sales?.length);
+   }
     
     // Procesar datos directamente
     if (records && records.length > 0) {
