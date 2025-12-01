@@ -3,6 +3,9 @@ let ventasCount = 0;
 let gastosCount = 0;
 let creditosCount = 0;
 
+// ✅ VARIABLE GLOBAL PARA EVITAR GUARDADOS DUPLICADOS - AL INICIO
+let guardandoRegistro = false;
+
 const vendedores = ['Brayan', 'Ariel', 'Bodega'];
 const ciudades = ['Comayagua', 'Siguatepeque', 'Ajuterique', 'El Rosario', 'Flores', 'Zambrano', 'El Pantanal', 'Bodega'];
 const productos = ['Botellones', 'Bolsas'];
@@ -511,10 +514,7 @@ function autoFillCreditos() {
   });
 }
 
-// ✅ VARIABLE GLOBAL PARA EVITAR GUARDADOS DUPLICADOS
-let guardandoRegistro = false;
-
-// ✅ ÚNICA DEFINICIÓN DE GUARDAR REGISTRO CON PROTECCIÓN
+// ✅ ÚNICA FUNCIÓN GUARDAR - CON PROTECCIÓN CONTRA CLICKS MÚLTIPLES
 async function guardarRegistro() {
   // 🔒 BLOQUEAR SI YA ESTÁ GUARDANDO
   if (guardandoRegistro) {
@@ -544,9 +544,9 @@ async function guardarRegistro() {
       alert('✅ ¡Registro guardado correctamente en la base de datos Supabase!');
       console.log('✅ Registro guardado exitosamente:', result.data);
       
-      // Recargar con delay seguro
+      // ✅ RECARGAR DE FORMA SEGURA SIN LOOP INFINITO
       setTimeout(() => {
-        window.location.href = window.location.pathname;
+        window.location.href = window.location.pathname + '?reload=' + Date.now();
       }, 800);
     } else {
       throw new Error(result.error || 'Error desconocido al guardar');
@@ -642,7 +642,7 @@ function recopilarDatos() {
   };
 }
 
-console.log('✅ Capturador.js cargado correctamente - Sin duplicación de guardarRegistro()');
+console.log('✅ Capturador.js cargado correctamente - SIN DUPLICACIÓN');
 
 // ===== FUNCIONES MEJORADAS PARA FOTOS =====
 function seleccionarOpcionFoto(numero) {
