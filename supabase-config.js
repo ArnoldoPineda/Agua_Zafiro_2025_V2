@@ -362,6 +362,26 @@ const SupabaseData = {
       console.error('❌ Error guardando registro diario:', error);
       return { success: false, error: error.message };
     }
+  },
+
+  // 📋 FUNCIÓN PARA OBTENER CATÁLOGOS
+  async getCatalogs() {
+    try {
+      console.log('📋 Obteniendo catálogos...');
+      
+      const catalogs = {
+        vendedores: ['Brayan', 'Ariel', 'Bodega'],
+        ciudades: ['Comayagua', 'Siguatepeque', 'Ajuterique', 'El Rosario', 'Flores', 'Zambrano', 'El Pantanal', 'Bodega'],
+        productos: ['Botellones', 'Bolsas'],
+        gastos: ['Combustible', 'Planilla Omar', 'Planilla Tomas', 'Planilla Brayan', 'Sales', 'Bobinas', 'Edgardo', 'Arreglo Vehículo', 'Arreglo Bodega', 'Electricidad', 'Cuota del Camión', 'Transferencia', 'Chapeada', 'Flete', 'Alquiler Vehículo', 'Préstamos Personales', 'Abonos a Deudas', 'Otros'],
+        creditos: ['CORRAL LA VILLA', 'CORRAL TAMPISQUE', 'TRANSFERENCIAS POR VENTAS', 'OTROS']
+      };
+      
+      return { success: true, data: catalogs };
+    } catch (error) {
+      console.error('❌ Error:', error);
+      return { success: false, error: error.message };
+    }
   }
 };
 
