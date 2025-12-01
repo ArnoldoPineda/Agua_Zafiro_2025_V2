@@ -725,24 +725,48 @@
       console.log('✅ Calendario inicializado correctamente');
     });
 
+    // ✅ FUNCIÓN CORREGIDA 1
     async function cargarCatalogos() {
-      console.log('📋 Cargando catálogos desde Supabase...');
+      console.log('📋 Cargando catálogos...');
       
       try {
-        const tipos = ['vendedores', 'ciudades', 'productos', 'gastos', 'creditos'];
+        // Llamar a la función getCatalogs() de supabase-config.js
+        const resultado = await SupabaseData.getCatalogs();
         
-        for (const tipo of tipos) {
-          const result = await SupabaseData.getCatalogs(tipo);
-          if (result.success) {
-            catalogosData[tipo] = result.data.map(item => item.valor);
-            console.log(`✅ ${tipo}: ${result.data.length} elementos`);
-          } else {
-            console.error(`❌ Error cargando ${tipo}:`, result.error);
-            catalogosData[tipo] = [];
-          }
+        if (resultado.success && resultado.data) {
+          catalogosData = resultado.data;
+          
+          console.log('✅ Catálogos cargados correctamente:');
+          console.log('   - Vendedores:', catalogosData.vendedores?.length);
+          console.log('   - Ciudades:', catalogosData.ciudades?.length);
+          console.log('   - Productos:', catalogosData.productos?.length);
+          console.log('   - Gastos:', catalogosData.gastos?.length);
+          console.log('   - Créditos:', catalogosData.creditos?.length);
+          
+          return true;
+        } else {
+          console.warn('⚠️ Error cargando catálogos:', resultado.error);
+          // Usar valores por defecto en caso de error
+          catalogosData = {
+            vendedores: ['Brayan', 'Ariel', 'Bodega'],
+            ciudades: ['Comayagua', 'Siguatepeque', 'Ajuterique', 'El Rosario', 'Flores', 'Zambrano', 'El Pantanal', 'Bodega'],
+            productos: ['Botellones', 'Bolsas'],
+            gastos: ['Combustible', 'Planilla Omar', 'Planilla Tomas', 'Planilla Brayan', 'Sales', 'Bobinas', 'Edgardo', 'Arreglo Vehículo', 'Arreglo Bodega', 'Electricidad', 'Cuota del Camión', 'Transferencia', 'Chapeada', 'Flete', 'Alquiler Vehículo', 'Préstamos Personales', 'Abonos a Deudas', 'Otros'],
+            creditos: ['CORRAL LA VILLA', 'CORRAL TAMPISQUE', 'TRANSFERENCIAS POR VENTAS', 'OTROS']
+          };
+          return true;
         }
       } catch (error) {
-        console.error('❌ Error cargando catálogos:', error);
+        console.error('❌ Error en cargarCatalogos():', error);
+        // Usar valores por defecto
+        catalogosData = {
+          vendedores: ['Brayan', 'Ariel', 'Bodega'],
+          ciudades: ['Comayagua', 'Siguatepeque', 'Ajuterique', 'El Rosario', 'Flores', 'Zambrano', 'El Pantanal', 'Bodega'],
+          productos: ['Botellones', 'Bolsas'],
+          gastos: ['Combustible', 'Planilla Omar', 'Planilla Tomas', 'Planilla Brayan', 'Sales', 'Bobinas', 'Edgardo', 'Arreglo Vehículo', 'Arreglo Bodega', 'Electricidad', 'Cuota del Camión', 'Transferencia', 'Chapeada', 'Flete', 'Alquiler Vehículo', 'Préstamos Personales', 'Abonos a Deudas', 'Otros'],
+          creditos: ['CORRAL LA VILLA', 'CORRAL TAMPISQUE', 'TRANSFERENCIAS POR VENTAS', 'OTROS']
+        };
+        return true;
       }
     }
 
@@ -944,7 +968,7 @@
       
       title.textContent = fechaTexto.charAt(0).toUpperCase() + fechaTexto.slice(1);
       
-      // 🔧 LIMPIAR CONTENIDO ANTERIOR - AÑADE ESTAS DOS LÍNEAS
+      // 🔧 LIMPIAR CONTENIDO ANTERIOR
       readOnlyContent.innerHTML = '';
       editForm.innerHTML = '';
       
@@ -1112,118 +1136,190 @@ async function eliminarDia() {
   }
 }
 
+// ✅ FUNCIÓN CORREGIDA 2
 function cargarDatosEnFormulario(fecha) {
+  console.log('📝 Cargando datos en formulario para fecha:', fecha);
+  
   const registro = registrosDelMes[fecha] || {};
   
-  // Información básica
-  document.getElementById('editFecha').value = fecha;
-  document.getElementById('editCajaInicial').value = registro.cajaInicial || 0;
-  document.getElementById('editObservaciones').value = registro.observaciones || '';
+  // 🔧 VALIDAR QUE LOS ELEMENTOS EXISTAN ANTES DE ASIGNAR
+  const fechaInput = document.getElementById('editFecha');
+  const cajaInput = document.getElementById('editCajaInicial');
+  const obsInput = document.getElementById('editObservaciones');
+  
+  if (!fechaInput || !cajaInput || !obsInput) {
+    console.error('❌ ERROR: Elementos del formulario no encontrados en el DOM');
+    console.error('   - editFecha existe:', !!fechaInput);
+    console.error('   - editCajaInicial existe:', !!cajaInput);
+    console.error('   - editObservaciones existe:', !!obsInput);
+    alert('Error: No se pudo cargar el formulario de edición. Recargue la página.');
+    return;
+  }
+  
+  // ✅ ASIGNAR VALORES DE FORMA SEGURA
+  try {
+    fechaInput.value = fecha;
+    cajaInput.value = registro.cajaInicial || 0;
+    obsInput.value = registro.observaciones || '';
+    console.log('✅ Datos básicos cargados correctamente');
+  } catch (error) {
+    console.error('❌ Error asignando valores básicos:', error);
+  }
   
   // Cargar ventas
   const ventasContainer = document.getElementById('editVentas');
+  if (!ventasContainer) {
+    console.error('❌ ERROR: Contenedor de ventas no encontrado');
+    return;
+  }
+  
   ventasContainer.innerHTML = '';
   if (registro.ventas && registro.ventas.length > 0) {
-    registro.ventas.forEach(venta => {
+    registro.ventas.forEach((venta, index) => {
+      console.log(`   Cargando venta ${index + 1}:`, venta);
       agregarVentaEdit(venta);
     });
+    console.log(`✅ ${registro.ventas.length} ventas cargadas`);
   } else {
     agregarVentaEdit();
+    console.log('   (Sin ventas, agregada fila vacía)');
   }
   
   // Cargar gastos
   const gastosContainer = document.getElementById('editGastos');
+  if (!gastosContainer) {
+    console.error('❌ ERROR: Contenedor de gastos no encontrado');
+    return;
+  }
+  
   gastosContainer.innerHTML = '';
   if (registro.gastos && registro.gastos.length > 0) {
-    registro.gastos.forEach(gasto => {
+    registro.gastos.forEach((gasto, index) => {
+      console.log(`   Cargando gasto ${index + 1}:`, gasto);
       agregarGastoEdit(gasto);
     });
+    console.log(`✅ ${registro.gastos.length} gastos cargados`);
   } else {
     agregarGastoEdit();
+    console.log('   (Sin gastos, agregada fila vacía)');
   }
   
   // Cargar créditos
   const creditosContainer = document.getElementById('editCreditos');
+  if (!creditosContainer) {
+    console.error('❌ ERROR: Contenedor de créditos no encontrado');
+    return;
+  }
+  
   creditosContainer.innerHTML = '';
   if (registro.creditos && registro.creditos.length > 0) {
-    registro.creditos.forEach(credito => {
+    registro.creditos.forEach((credito, index) => {
+      console.log(`   Cargando crédito ${index + 1}:`, credito);
       agregarCreditoEdit(credito);
     });
+    console.log(`✅ ${registro.creditos.length} créditos cargados`);
   } else {
     agregarCreditoEdit();
+    console.log('   (Sin créditos, agregada fila vacía)');
   }
+  
+  console.log('✅ Todos los datos del formulario han sido cargados correctamente');
 }
 
-    function agregarVentaEdit(datos = {}) {
-      const container = document.getElementById('editVentas');
-      const ventaDiv = document.createElement('div');
-      ventaDiv.className = 'mini-registro';
-      
-      const vendedores = catalogosData.vendedores || ['Brayan', 'Ariel', 'Bodega'];
-      const ciudades = catalogosData.ciudades || ['Comayagua', 'Siguatepeque'];
-      const productos = catalogosData.productos || ['Botellones', 'Bolsas'];
-      
-      ventaDiv.innerHTML = `
-        <select class="vendedor" onchange="calcularTotalEdit(this)">
-          <option value="">Vendedor...</option>
-          ${vendedores.map(v => `<option value="${v}" ${datos.vendedor === v ? 'selected' : ''}>${v}</option>`).join('')}
-        </select>
-        <select class="ciudad" onchange="calcularTotalEdit(this)">
-          <option value="">Ciudad...</option>
-          ${ciudades.map(c => `<option value="${c}" ${datos.ciudad === c ? 'selected' : ''}>${c}</option>`).join('')}
-        </select>
-        <select class="producto" onchange="autoSetPriceEdit(this)">
-          <option value="">Producto...</option>
-          ${productos.map(p => `<option value="${p}" ${datos.producto === p ? 'selected' : ''}>${p}</option>`).join('')}
-        </select>
-        <input type="number" placeholder="Cant." class="cantidad" value="${datos.cantidad || ''}" min="1" onchange="calcularTotalEdit(this)">
-        <input type="number" placeholder="Precio" class="precio" value="${datos.precio || ''}" step="0.01" min="0.01" onchange="calcularTotalEdit(this)">
-        <input type="number" placeholder="Total" class="total" value="${datos.total || ''}" readonly>
-        <button type="button" class="remove-btn" onclick="eliminarRegistroEdit(this)">🗑️</button>
-      `;
-      
-      container.appendChild(ventaDiv);
-    }
+// ✅ FUNCIÓN CORREGIDA 3
+function agregarVentaEdit(datos = {}) {
+  const container = document.getElementById('editVentas');
+  
+  if (!container) {
+    console.error('❌ ERROR: Contenedor editVentas no existe');
+    return;
+  }
+  
+  const ventaDiv = document.createElement('div');
+  ventaDiv.className = 'mini-registro';
+  
+  // ✅ USAR CATÁLOGOS CARGADOS O VALORES POR DEFECTO
+  const vendedores = catalogosData?.vendedores || ['Brayan', 'Ariel', 'Bodega'];
+  const ciudades = catalogosData?.ciudades || ['Comayagua', 'Siguatepeque', 'Ajuterique', 'El Rosario', 'Flores', 'Zambrano', 'El Pantanal', 'Bodega'];
+  const productos = catalogosData?.productos || ['Botellones', 'Bolsas'];
+  
+  ventaDiv.innerHTML = `
+    <select class="vendedor" onchange="calcularTotalEdit(this)">
+      <option value="">Vendedor...</option>
+      ${vendedores.map(v => `<option value="${v}" ${datos.vendedor === v ? 'selected' : ''}>${v}</option>`).join('')}
+    </select>
+    <select class="ciudad" onchange="calcularTotalEdit(this)">
+      <option value="">Ciudad...</option>
+      ${ciudades.map(c => `<option value="${c}" ${datos.ciudad === c ? 'selected' : ''}>${c}</option>`).join('')}
+    </select>
+    <select class="producto" onchange="autoSetPriceEdit(this)">
+      <option value="">Producto...</option>
+      ${productos.map(p => `<option value="${p}" ${datos.producto === p ? 'selected' : ''}>${p}</option>`).join('')}
+    </select>
+    <input type="number" placeholder="Cant." class="cantidad" value="${datos.cantidad || ''}" min="1" onchange="calcularTotalEdit(this)">
+    <input type="number" placeholder="Precio" class="precio" value="${datos.precio || ''}" step="0.01" min="0.01" onchange="calcularTotalEdit(this)">
+    <input type="number" placeholder="Total" class="total" value="${datos.total || ''}" readonly>
+    <button type="button" class="remove-btn" onclick="eliminarRegistroEdit(this)">🗑️</button>
+  `;
+  
+  container.appendChild(ventaDiv);
+}
 
-    function agregarGastoEdit(datos = {}) {
-      const container = document.getElementById('editGastos');
-      const gastoDiv = document.createElement('div');
-      gastoDiv.className = 'mini-registro';
-      
-      const categoriasGastos = catalogosData.gastos || ['Combustible', 'Planilla Omar'];
-      
-      gastoDiv.innerHTML = `
-        <select class="categoria">
-          <option value="">Categoría...</option>
-          ${categoriasGastos.map(c => `<option value="${c}" ${datos.categoria === c ? 'selected' : ''}>${c}</option>`).join('')}
-        </select>
-        <input type="text" placeholder="Descripción" class="descripcion" value="${datos.descripcion || ''}">
-        <input type="number" placeholder="Monto" class="monto" value="${datos.monto || ''}" step="0.01" min="0.01">
-        <button type="button" class="remove-btn" onclick="eliminarRegistroEdit(this)">🗑️</button>
-      `;
-      
-      container.appendChild(gastoDiv);
-    }
+// ✅ FUNCIÓN CORREGIDA 4
+function agregarGastoEdit(datos = {}) {
+  const container = document.getElementById('editGastos');
+  
+  if (!container) {
+    console.error('❌ ERROR: Contenedor editGastos no existe');
+    return;
+  }
+  
+  const gastoDiv = document.createElement('div');
+  gastoDiv.className = 'mini-registro';
+  
+  // ✅ USAR CATÁLOGOS CARGADOS O VALORES POR DEFECTO
+  const categoriasGastos = catalogosData?.gastos || ['Combustible', 'Planilla Omar', 'Planilla Tomas', 'Planilla Brayan', 'Sales', 'Bobinas', 'Edgardo', 'Arreglo Vehículo', 'Arreglo Bodega', 'Electricidad', 'Cuota del Camión', 'Transferencia', 'Chapeada', 'Flete', 'Alquiler Vehículo', 'Préstamos Personales', 'Abonos a Deudas', 'Otros'];
+  
+  gastoDiv.innerHTML = `
+    <select class="categoria">
+      <option value="">Categoría...</option>
+      ${categoriasGastos.map(c => `<option value="${c}" ${datos.categoria === c ? 'selected' : ''}>${c}</option>`).join('')}
+    </select>
+    <input type="text" placeholder="Descripción" class="descripcion" value="${datos.descripcion || ''}">
+    <input type="number" placeholder="Monto" class="monto" value="${datos.monto || ''}" step="0.01" min="0.01">
+    <button type="button" class="remove-btn" onclick="eliminarRegistroEdit(this)">🗑️</button>
+  `;
+  
+  container.appendChild(gastoDiv);
+}
 
-    function agregarCreditoEdit(datos = {}) {
-      const container = document.getElementById('editCreditos');
-      const creditoDiv = document.createElement('div');
-      creditoDiv.className = 'mini-registro';
-      
-      const categoriasCreditos = catalogosData.creditos || ['CORRAL LA VILLA', 'OTROS'];
-      
-      creditoDiv.innerHTML = `
-        <select class="categoria">
-          <option value="">Categoría...</option>
-          ${categoriasCreditos.map(c => `<option value="${c}" ${datos.categoria === c ? 'selected' : ''}>${c}</option>`).join('')}
-        </select>
-        <input type="text" placeholder="Detalle" class="detalle" value="${datos.detalle || ''}">
-        <input type="number" placeholder="Monto" class="monto" value="${datos.monto || ''}" step="0.01" min="0.01">
-        <button type="button" class="remove-btn" onclick="eliminarRegistroEdit(this)">🗑️</button>
-      `;
-      
-      container.appendChild(creditoDiv);
-    }
+// ✅ FUNCIÓN CORREGIDA 5
+function agregarCreditoEdit(datos = {}) {
+  const container = document.getElementById('editCreditos');
+  
+  if (!container) {
+    console.error('❌ ERROR: Contenedor editCreditos no existe');
+    return;
+  }
+  
+  const creditoDiv = document.createElement('div');
+  creditoDiv.className = 'mini-registro';
+  
+  // ✅ USAR CATÁLOGOS CARGADOS O VALORES POR DEFECTO
+  const categoriasCreditos = catalogosData?.creditos || ['CORRAL LA VILLA', 'CORRAL TAMPISQUE', 'TRANSFERENCIAS POR VENTAS', 'OTROS'];
+  
+  creditoDiv.innerHTML = `
+    <select class="categoria">
+      <option value="">Categoría...</option>
+      ${categoriasCreditos.map(c => `<option value="${c}" ${datos.categoria === c ? 'selected' : ''}>${c}</option>`).join('')}
+    </select>
+    <input type="text" placeholder="Detalle" class="detalle" value="${datos.detalle || ''}">
+    <input type="number" placeholder="Monto" class="monto" value="${datos.monto || ''}" step="0.01" min="0.01">
+    <button type="button" class="remove-btn" onclick="eliminarRegistroEdit(this)">🗑️</button>
+  `;
+  
+  container.appendChild(creditoDiv);
+}
 
     function autoSetPriceEdit(selectElement) {
       const producto = selectElement.value;
