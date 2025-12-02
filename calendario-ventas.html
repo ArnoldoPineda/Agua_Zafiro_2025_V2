@@ -968,9 +968,8 @@
       
       title.textContent = fechaTexto.charAt(0).toUpperCase() + fechaTexto.slice(1);
       
-      // 🔧 LIMPIAR CONTENIDO ANTERIOR
+      // 🔧 LIMPIAR SOLO CONTENIDO DE LECTURA (NO el formulario!)
       readOnlyContent.innerHTML = '';
-      editForm.innerHTML = '';
       
       // Mostrar vista de solo lectura
       readOnlyContent.style.display = 'block';
