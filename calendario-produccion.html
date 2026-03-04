@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calendario de Producción - Agua Zafiro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .calendar-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .calendar-header h1 {
+      color: #2c3e50;
+      margin: 0;
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .nav-btn:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+    }
+
+    .month-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #2c3e50;
+      min-width: 200px;
+      text-align: center;
+    }
+
+    .legend {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 15px;
+      background: white;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid white;
+    }
+
+    .legend-color.con-datos { background: #10b981; }
+    .legend-color.hoy { background: #f59e0b; }
+    .legend-color.sin-datos { background: #e5e7eb; }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background: #e5e7eb;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .day-header {
+      background: #374151;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .calendar-day {
+      background: #f9fafb;
+      min-height: 100px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .calendar-day:hover {
+      transform: scale(1.02);
+      z-index: 10;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .calendar-day.con-datos {
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+      border-left: 4px solid #10b981;
+    }
+
+    .calendar-day.hoy {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border-left: 4px solid #f59e0b;
+      font-weight: 700;
+    }
+
+    .calendar-day.sin-datos {
+      background: #f3f4f6;
+      color: #9ca3af;
+    }
+
+    .day-number {
+      font-size: 18px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .calendar-day.hoy .day-number {
+      color: #92400e;
+    }
+
+    .calendar-day.sin-datos .day-number {
+      color: #9ca3af;
+    }
+
+    .day-summary {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 5px;
+      text-align: center;
+    }
+
+    .calendar-day.con-datos .day-summary {
+      color: #065f46;
+      font-weight: 600;
+    }
+
+    .info-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      display: inline-block;
+    }
+
+    /* MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .modal-header h2 {
+      color: #2c3e50;
+      margin: 0;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #6b7280;
+    }
+
+    .modal-close:hover {
+      color: #ef4444;
+    }
+
+    .resumen-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 600;
+      background: #f3f4f6;
+    }
+
+    .card.bolsas {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      color: #1e40af;
+    }
+
+    .card.botellones {
+      background: linear-gradient(135deg, #fed7aa, #fdba74);
+      color: #92400e;
+    }
+
+    .card.calidad {
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      color: #166534;
+    }
+
+    .details {
+      margin-bottom: 20px;
+    }
+
+    .details h4 {
+      color: #374151;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .details p {
+      margin: 5px 0;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .action-btn.edit {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .action-btn.edit:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+    }
+
+    .action-btn.delete {
+      background: #ef4444;
+      color: white;
+    }
+
+    .action-btn.delete:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+    }
+
+    .action-btn.close {
+      background: #6b7280;
+      color: white;
+    }
+
+    .action-btn.close:hover {
+      background: #4b5563;
+    }
+
+    .admin-only {
+      display: none;
+    }
+
+    .admin-only.visible {
+      display: flex;
+    }
+
+    @media (max-width: 768px) {
+      .calendar-grid {
+        gap: 0;
+      }
+
+      .calendar-day {
+        min-height: 80px;
+        padding: 8px;
+      }
+
+      .calendar-header {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .legend {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .modal-content {
+        width: 95%;
+        padding: 20px;
+      }
+
+      .resumen-cards {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .day-summary {
+        font-size: 10px;
+      }
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6b7280;
+    }
+
+    .no-data i {
+      font-size: 48px;
+      color: #d1d5db;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="calendar-container">
+    <!-- Header -->
+    <div class="calendar-header">
+      <button class="nav-btn" onclick="irAProduccion()" style="margin-right: 20px;">
+        <i class="fas fa-arrow-left"></i> Volver a Producción
+      </button>
+      <h1><i class="fas fa-water"></i> Calendario de Producción</h1>
+      <div class="calendar-nav">
+        <button class="nav-btn" onclick="cambiarMes(-1)"><i class="fas fa-chevron-left"></i> Anterior</button>
+        <button class="nav-btn" onclick="cambiarMes(1)">Siguiente <i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+
+    <!-- Mes y Año -->
+    <div style="text-align: center; margin-bottom: 20px;">
+      <div class="month-title" id="monthTitle">Noviembre 2025</div>
+    </div>
+
+    <!-- Leyenda -->
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color con-datos"></div>
+        <span>Con datos registrados</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color hoy"></div>
+        <span>Día actual</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color sin-datos"></div>
+        <span>Sin datos</span>
+      </div>
+    </div>
+
+    <!-- Calendario -->
+    <div class="calendar-grid" id="calendarGrid">
+      <!-- Generado por JavaScript -->
+    </div>
+  </div>
+
+  <!-- Modal de Detalles -->
+  <div class="modal" id="dayModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Detalles del Día</h2>
+        <button class="modal-close" onclick="cerrarModal()">×</button>
+      </div>
+
+      <div id="modalBody">
+        <!-- Contenido dinámico -->
+      </div>
+
+      <div class="modal-actions" id="modalActions">
+        <!-- Botones dinámicos -->
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="roles.js"></script>
+
+  <script>
+    // ===== CALENDARIO DE PRODUCCIÓN =====
+
+    let mesActual = new Date().getMonth();
+    let anoActual = new Date().getFullYear();
+    let diaHoy = new Date().getDate();
+    let esAdmin = false;
+    let registrosDelMes = {};
+    let fechaSeleccionada = null;
+
+    const nombresMeses = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+
+    const nombresDias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+
+    // ✅ FUNCIÓN PARA NAVEGAR SIN LOOP
+    function irAProduccion() {
+      console.log('🔄 Navegando a produccion.html...');
+      window.location.href = 'produccion.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      console.log('🗓️ Iniciando Calendario de Producción...');
+      
+      try {
+        // ✅ RESETEAR SIEMPRE AL MES ACTUAL (SOLUCIÓN PARA EL INDEX)
+        const hoy = new Date();
+        mesActual = hoy.getMonth();
+        anoActual = hoy.getFullYear();
+        diaHoy = hoy.getDate();
+        console.log(`📅 Variables reseteadas: ${nombresMeses[mesActual]} ${anoActual}, Día actual: ${diaHoy}`);
+        
+        // Pequeño delay para asegurar que Supabase esté listo
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Verificar permisos
+        const currentUser = SupabaseAuth?.getCurrentUser();
+        if (!currentUser) {
+          console.warn('⚠️ Usuario no autenticado');
+          // Redirigir al login si no hay usuario
+          setTimeout(() => window.location.href = 'index.html', 2000);
+          return;
+        }
+
+        esAdmin = currentUser.role === 'admin';
+        console.log('🔒 Usuario actual:', currentUser.username);
+        console.log('🔒 Rol:', currentUser.role);
+        console.log('🔒 Es Admin:', esAdmin);
+
+        // Generar calendario con datos del mes actual
+        console.log(`📅 Cargando datos de ${nombresMeses[mesActual]} ${anoActual}...`);
+        await cargarRegistrosDelMes();
+        generarCalendario();
+        
+        console.log('✅ Calendario cargado correctamente');
+      } catch (error) {
+        console.error('❌ Error iniciando calendario:', error);
+      }
+    });
+
+    async function cargarRegistrosDelMes() {
+      console.log(`📊 Cargando registros de ${nombresMeses[mesActual]} ${anoActual}...`);
+
+      try {
+        const primerDia = new Date(anoActual, mesActual, 1);
+        const ultimoDia = new Date(anoActual, mesActual + 1, 0);
+
+        const fechaInicio = primerDia.toISOString().split('T')[0];
+        const fechaFin = ultimoDia.toISOString().split('T')[0];
+
+        // Cargar bolsas
+        const { data: bolsas } = await supabaseClient
+          .from('control_produccion_bolsas')
+          .select('*')
+          .gte('fecha', fechaInicio)
+          .lte('fecha', fechaFin);
+
+        // Cargar botellones
+        const { data: botellones } = await supabaseClient
+          .from('control_botellones')
+          .select('*')
+          .gte('fecha', fechaInicio)
+          .lte('fecha', fechaFin);
+
+        // Cargar calidad
+        const { data: calidad } = await supabaseClient
+          .from('control_calidad_agua')
+          .select('*')
+          .gte('fecha', fechaInicio)
+          .lte('fecha', fechaFin);
+
+        // Agrupar por fecha
+        registrosDelMes = {};
+
+        (bolsas || []).forEach(b => {
+          if (!registrosDelMes[b.fecha]) registrosDelMes[b.fecha] = {};
+          registrosDelMes[b.fecha].bolsas = (registrosDelMes[b.fecha].bolsas || []).concat(b);
+        });
+
+        (botellones || []).forEach(b => {
+          if (!registrosDelMes[b.fecha]) registrosDelMes[b.fecha] = {};
+          registrosDelMes[b.fecha].botellones = (registrosDelMes[b.fecha].botellones || []).concat(b);
+        });
+
+        (calidad || []).forEach(c => {
+          if (!registrosDelMes[c.fecha]) registrosDelMes[c.fecha] = {};
+          registrosDelMes[c.fecha].calidad = (registrosDelMes[c.fecha].calidad || []).concat(c);
+        });
+
+        console.log(`✅ Cargados datos de ${Object.keys(registrosDelMes).length} días`);
+      } catch (error) {
+        console.error('❌ Error cargando registros:', error);
+      }
+    }
+
+    function generarCalendario() {
+      const grid = document.getElementById('calendarGrid');
+      const title = document.getElementById('monthTitle');
+
+      title.textContent = `${nombresMeses[mesActual]} ${anoActual}`;
+      grid.innerHTML = '';
+
+      // Headers de días
+      nombresDias.forEach(dia => {
+        const header = document.createElement('div');
+        header.className = 'day-header';
+        header.textContent = dia;
+        grid.appendChild(header);
+      });
+
+      const primerDia = new Date(anoActual, mesActual, 1).getDay();
+      const diasEnMes = new Date(anoActual, mesActual + 1, 0).getDate();
+
+      // ✅ AGREGAR CELDAS VACÍAS AL INICIO
+      for (let i = 0; i < primerDia; i++) {
+        const celdaVacia = document.createElement('div');
+        celdaVacia.className = 'calendar-day';
+        celdaVacia.style.background = '#fafafa';
+        grid.appendChild(celdaVacia);
+      }
+
+      // Días del mes actual
+      for (let dia = 1; dia <= diasEnMes; dia++) {
+        const fecha = `${anoActual}-${String(mesActual + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+        const tieneRegistro = registrosDelMes[fecha];
+        const esHoy = (dia === diaHoy && mesActual === new Date().getMonth() && anoActual === new Date().getFullYear());
+
+        const celda = document.createElement('div');
+        let clase = 'sin-datos';
+
+        if (esHoy) clase = 'hoy';
+        else if (tieneRegistro) clase = 'con-datos';
+
+        celda.className = `calendar-day ${clase}`;
+        celda.onclick = () => mostrarDetallesDia(fecha, tieneRegistro);
+
+        const numDiv = document.createElement('div');
+        numDiv.className = 'day-number';
+        numDiv.textContent = dia;
+        celda.appendChild(numDiv);
+
+        if (tieneRegistro && clase === 'con-datos') {
+          const dot = document.createElement('div');
+          dot.style.textAlign = 'center';
+          dot.style.marginTop = '5px';
+          dot.innerHTML = '<span class="info-dot"></span>';
+          celda.appendChild(dot);
+
+          const resumen = document.createElement('div');
+          resumen.className = 'day-summary';
+          const totalBolsas = tieneRegistro.bolsas ? tieneRegistro.bolsas.reduce((s, b) => s + (b.bolsitas_producidas || 0), 0) : 0;
+          resumen.textContent = `📦 ${totalBolsas} bolsas`;
+          celda.appendChild(resumen);
+        }
+
+        grid.appendChild(celda);
+      }
+    }
+
+    function mostrarDetallesDia(fecha, registro) {
+      fechaSeleccionada = fecha;
+      const modal = document.getElementById('dayModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
+      const modalActions = document.getElementById('modalActions');
+
+      const fechaObj = new Date(fecha + 'T00:00:00');
+      const fechaTexto = fechaObj.toLocaleDateString('es-HN', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+
+      modalTitle.textContent = fechaTexto.charAt(0).toUpperCase() + fechaTexto.slice(1);
+
+      if (!registro) {
+        modalBody.innerHTML = `
+          <div class="no-data">
+            <i class="fas fa-inbox"></i>
+            <p>No hay datos registrados para este día</p>
+          </div>
+        `;
+        modalActions.innerHTML = '<button class="action-btn close" onclick="cerrarModal()">Cerrar</button>';
+      } else {
+        // Resumen
+        const bolsasTotal = registro.bolsas ? registro.bolsas.reduce((s, b) => s + (b.bolsitas_producidas || 0), 0) : 0;
+        const botellonesTotal = registro.botellones ? registro.botellones.reduce((s, b) => s + (b.botellones_producidos || 0), 0) : 0;
+        const pruebasCalidad = registro.calidad ? registro.calidad.length : 0;
+
+        let html = `
+          <div class="resumen-cards">
+            <div class="card bolsas">
+              <div style="font-size: 24px;">📦</div>
+              <div>${bolsasTotal}</div>
+              <div style="font-size: 12px;">Bolsitas</div>
+            </div>
+            <div class="card botellones">
+              <div style="font-size: 24px;">🍾</div>
+              <div>${botellonesTotal}</div>
+              <div style="font-size: 12px;">Botellones</div>
+            </div>
+            <div class="card calidad">
+              <div style="font-size: 24px;">🧪</div>
+              <div>${pruebasCalidad}</div>
+              <div style="font-size: 12px;">Pruebas</div>
+            </div>
+          </div>
+        `;
+
+        // Detalles de Bolsas
+        if (registro.bolsas && registro.bolsas.length > 0) {
+          html += '<div class="details"><h4><i class="fas fa-cube"></i> Bolsas</h4>';
+          registro.bolsas.forEach(b => {
+            html += `
+              <p>• Producidas: ${b.bolsitas_producidas} | Rechazadas: ${b.bolsitas_rechazadas} | Packs: ${b.packs_operador}</p>
+            `;
+          });
+          html += '</div>';
+        }
+
+        // Detalles de Botellones
+        if (registro.botellones && registro.botellones.length > 0) {
+          html += '<div class="details"><h4><i class="fas fa-bottle-water"></i> Botellones</h4>';
+          registro.botellones.forEach(b => {
+            html += `
+              <p>• Producidos: ${b.botellones_producidos} | Rechazados: ${b.botellones_rechazados}</p>
+            `;
+          });
+          html += '</div>';
+        }
+
+        // Detalles de Calidad
+        if (registro.calidad && registro.calidad.length > 0) {
+          html += '<div class="details"><h4><i class="fas fa-flask"></i> Calidad del Agua</h4>';
+          registro.calidad.forEach(c => {
+            html += `
+              <p>• TDS: ${c.tds} ppm | pH: ${c.ph !== null ? c.ph : '--'} | Temp: ${c.temperatura}°C</p>
+            `;
+          });
+          html += '</div>';
+        }
+
+        modalBody.innerHTML = html;
+
+        // Botones de acciones - Verificar permisos
+        console.log('👉 Verificando permisos para botones');
+        console.log('   esAdmin:', esAdmin);
+        
+        const currentUser = SupabaseAuth?.getCurrentUser();
+        console.log('   currentUser.role:', currentUser?.role);
+        
+        // Admin O Encargado de Producción pueden editar/eliminar
+        const puedeEditar = esAdmin || (currentUser && (currentUser.role === 'admin' || currentUser.role === 'production'));
+        console.log('   puedeEditar:', puedeEditar);
+        
+        let acciones = '<button class="action-btn close" onclick="cerrarModal()">Cerrar</button>';
+        
+        if (puedeEditar) {
+          console.log('✅ Mostrando botones de editar/eliminar');
+          acciones = `
+            <button class="action-btn edit" onclick="editarDia('${fecha}')">
+              <i class="fas fa-edit"></i> Editar
+            </button>
+            <button class="action-btn delete" onclick="eliminarDia('${fecha}')">
+              <i class="fas fa-trash"></i> Eliminar
+            </button>
+            <button class="action-btn close" onclick="cerrarModal()">Cerrar</button>
+          `;
+        } else {
+          console.log('❌ Usuario no tiene permisos para editar/eliminar');
+        }
+
+        modalActions.innerHTML = acciones;
+      }
+
+      modal.style.display = 'block';
+    }
+
+    function editarDia(fecha) {
+      // Redirigir a produccion.html con la fecha como parámetro
+      window.location.href = `produccion.html?editar=${fecha}`;
+    }
+
+    async function eliminarDia(fecha) {
+      if (!esAdmin) {
+        alert('Solo administradores pueden eliminar datos');
+        return;
+      }
+
+      const confirmar = confirm(
+        `⚠️ ¿Está seguro que desea ELIMINAR PERMANENTEMENTE todos los datos de producción del ${fecha}?\n\nEsta acción no se puede deshacer.`
+      );
+
+      if (!confirmar) return;
+
+      try {
+        console.log(`🗑️ Eliminando datos de ${fecha}...`);
+
+        // Eliminar de todas las tablas
+        await Promise.all([
+          supabaseClient.from('control_produccion_bolsas').delete().eq('fecha', fecha),
+          supabaseClient.from('control_botellones').delete().eq('fecha', fecha),
+          supabaseClient.from('control_calidad_agua').delete().eq('fecha', fecha),
+          supabaseClient.from('control_contador_diario').delete().eq('fecha', fecha)
+        ]);
+
+        console.log('✅ Datos eliminados correctamente');
+        
+        // Actualizar calendario
+        delete registrosDelMes[fecha];
+        generarCalendario();
+        cerrarModal();
+
+        alert('✅ Datos del día eliminados correctamente');
+      } catch (error) {
+        console.error('❌ Error eliminando datos:', error);
+        alert('Error al eliminar: ' + error.message);
+      }
+    }
+
+    function cerrarModal() {
+      document.getElementById('dayModal').style.display = 'none';
+      fechaSeleccionada = null;
+    }
+
+    function cambiarMes(direccion) {
+      mesActual += direccion;
+
+      if (mesActual > 11) {
+        mesActual = 0;
+        anoActual++;
+      } else if (mesActual < 0) {
+        mesActual = 11;
+        anoActual--;
+      }
+
+      cargarRegistrosDelMes().then(() => {
+        generarCalendario();
+      });
+    }
+
+    // Cerrar modal al hacer clic fuera
+    window.onclick = (event) => {
+      const modal = document.getElementById('dayModal');
+      if (event.target === modal) {
+        cerrarModal();
+      }
+    }
+  </script>
+</body>
+
+</html>

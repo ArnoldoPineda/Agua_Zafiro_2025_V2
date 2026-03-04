@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Producción - Agua Zafiro</title>
+    
+    <!-- LINKS CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+      /* NAVBAR UNIFICADO */
+      .navbar {
+        background: linear-gradient(90deg, #1e3a8a 0%, #1e40af 100%) !important;
+        padding: 0.75rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        margin-bottom: 0;
+      }
+
+      .navbar h1 {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .status {
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .status i {
+        color: #10b981;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+
+      .btn {
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn.import {
+        background: #10b981;
+        color: white;
+      }
+
+      .btn.import:hover {
+        background: #059669;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      }
+
+      .btn.export {
+        background: #a855f7;
+        color: white;
+      }
+
+      .btn.export:hover {
+        background: #9333ea;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+      }
+
+      .nav-btn {
+        color: white;
+        text-decoration: none;
+        padding: 0.6rem 1rem;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-bottom: 3px solid transparent;
+      }
+
+      .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+      }
+
+      .nav-btn.active {
+        border-bottom: 3px solid #fbbf24;
+        background: rgba(251, 191, 36, 0.1);
+      }
+
+      .user-info {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .user-name {
+        font-weight: 700;
+        color: white;
+      }
+
+      .user-role {
+        color: #fbbf24;
+        font-weight: 600;
+      }
+
+      .logout-btn {
+        background: #ef4444;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 6px;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .logout-btn:hover {
+        background: #dc2626;
+        transform: scale(1.05);
+      }
+
+      /* ESTILOS PRINCIPALES */
+      :root {
+        --primary-color: #1e40af;
+        --success-color: #059669;
+        --warning-color: #d97706;
+        --danger-color: #dc2626;
+      }
+
+      body {
+        background-color: #f9fafb;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #1e3a8a 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .header h1 {
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .nav-tabs {
+        border-bottom: 2px solid #e5e7eb;
+        gap: 1rem;
+      }
+
+      .nav-link {
+        color: #6b7280;
+        border: none;
+        border-bottom: 3px solid transparent;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .nav-link:hover {
+        color: var(--primary-color);
+      }
+
+      .nav-link.active {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+        background: none;
+      }
+
+      .card {
+        border: none;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+        border-radius: 8px;
+      }
+
+      .card-header {
+        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        border-bottom: 1px solid #d1d5db;
+        padding: 1rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .form-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+      }
+
+      .form-control, .form-select {
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 0.65rem 0.75rem;
+        font-size: 0.95rem;
+      }
+
+      .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(30, 64, 175, 0.15);
+      }
+
+      .btn-primary {
+        background-color: var(--primary-color);
+        border: none;
+      }
+
+      .btn-primary:hover {
+        background-color: #1e3a8a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+      }
+
+      .btn-success {
+        background-color: var(--success-color);
+        border: none;
+      }
+
+      .btn-success:hover {
+        background-color: #047857;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+      }
+
+      .btn-warning {
+        background-color: var(--warning-color);
+        border: none;
+        color: white;
+      }
+
+      .btn-warning:hover {
+        background-color: #b45309;
+        transform: translateY(-2px);
+      }
+
+      .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+      }
+
+      .alert {
+        border: none;
+        border-radius: 6px;
+        border-left: 4px solid;
+      }
+
+      .alert-info {
+        border-left-color: var(--primary-color);
+        background-color: #dbeafe;
+        color: #1e40af;
+      }
+
+      .alert-warning {
+        border-left-color: var(--warning-color);
+        background-color: #fef3c7;
+        color: #92400e;
+      }
+
+      .alert-success {
+        border-left-color: var(--success-color);
+        background-color: #d1fae5;
+        color: #065f46;
+      }
+
+      .table {
+        font-size: 0.95rem;
+      }
+
+      .table thead {
+        background-color: #f3f4f6;
+        border-bottom: 2px solid #d1d5db;
+      }
+
+      .table th {
+        font-weight: 600;
+        color: var(--primary-color);
+        padding: 1rem 0.75rem;
+      }
+
+      .table td {
+        padding: 0.75rem;
+        vertical-align: middle;
+      }
+
+      .table tbody tr {
+        border-bottom: 1px solid #e5e7eb;
+        transition: background-color 0.2s ease;
+      }
+
+      .table tbody tr:hover {
+        background-color: #f9fafb;
+      }
+
+      .badge {
+        font-weight: 600;
+        padding: 0.5rem 0.75rem;
+        border-radius: 4px;
+      }
+
+      .badge-success {
+        background-color: #d1fae5;
+        color: #065f46;
+      }
+
+      .badge-danger {
+        background-color: #fee2e2;
+        color: #991b1b;
+      }
+
+      .badge-warning {
+        background-color: #fef3c7;
+        color: #92400e;
+      }
+
+      .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 1.5rem 0 1rem 0;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e5e7eb;
+      }
+
+      .stat-box {
+        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        padding: 1.25rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--primary-color);
+      }
+
+      .stat-label {
+        font-size: 0.85rem;
+        color: #6b7280;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-top: 0.5rem;
+      }
+
+      .required::after {
+        content: " *";
+        color: #dc2626;
+        font-weight: bold;
+      }
+
+      .row-space {
+        margin-bottom: 1rem;
+      }
+
+      .divider {
+        height: 2px;
+        background: linear-gradient(90deg, #e5e7eb, transparent);
+        margin: 1.5rem 0;
+      }
+
+      .icon-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .hidden-field {
+        display: none;
+      }
+    </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <h1>💧 Agua Zafiro</h1>
+    <div class="nav-actions">
+      <div class="status"><i class="fas fa-circle"></i> Sistema Activo</div>
+      
+      <button class="btn import admin-only" onclick="iniciarImportacionDirecta()">
+  <i class="fas fa-upload"></i> Importar
+</button>      
+<button class="btn export admin-only" onclick="iniciarExportacion()">
+  <i class="fas fa-download"></i> Exportar
+</button>
+
+<a href="capturador.html" class="nav-btn admin-only">
+  <i class="fas fa-clipboard-list"></i>
+  <span>Capturador</span>
+</a>
+<a href="calendario-ventas.html" class="nav-btn admin-only">
+  <i class="fas fa-calendar-alt"></i>
+  <span>Calendario Ventas</span>
+</a>
+<a href="dashboard.html" class="nav-btn admin-only">
+  <i class="fas fa-chart-line"></i>
+  <span>Dashboard</span>
+</a>
+<a href="calendario-produccion.html" class="nav-btn admin-only">
+  <i class="fas fa-calendar-alt"></i>
+  Calendario
+</a>
+
+      <div style="display: flex; gap: 0;">
+        <a href="produccion.html" class="nav-btn active produccion-access">
+          <i class="fas fa-clipboard-list"></i>
+          <span>Capturador Prod</span>
+        </a>
+        
+        <a href="dashboard-produccion.html" class="nav-btn produccion-access">
+          <i class="fas fa-chart-bar"></i>
+          <span>Dashboard Prod</span>
+        </a>
+      </div>
+      
+      <a href="calendario-produccion.html" class="nav-btn produccion-access">
+  <i class="fas fa-calendar-alt"></i>
+  <span>Calendario</span>
+</a>
+
+      <div class="user-info">
+        <span class="user-name">Usuario</span> | 
+        <span class="user-role">Rol</span>
+      </div>
+      
+      <button class="btn logout-btn" onclick="logout()" title="Cerrar Sesión">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
+    </div>
+  </nav> 
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="container">
+      <h1><i class="bi bi-boxes"></i> Control de Producción Diaria</h1>
+      <p class="mb-0" style="font-size: 0.95rem; opacity: 0.9;">Agua Zafiro - Gestión de Bolsas y Botellones</p>
+    </div>
+  </div>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <div class="container mb-5">
+    <!-- TABS PRINCIPALES: PRODUCCIÓN | CALIDAD -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="produccion-main-tab" data-bs-toggle="tab" data-bs-target="#produccion-main-content" type="button" role="tab">
+          <i class="bi bi-boxes"></i> PRODUCCIÓN
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="calidad-main-tab" data-bs-toggle="tab" data-bs-target="#calidad-main-content" type="button" role="tab">
+          <i class="bi bi-clipboard-check"></i> CALIDAD
+        </button>
+      </li>
+    </ul>
+
+    <!-- CONTENIDO DE TABS PRINCIPALES -->
+    <div class="tab-content">
+      <!-- TAB PRINCIPAL: PRODUCCIÓN -->
+      <div class="tab-pane fade show active" id="produccion-main-content" role="tabpanel">
+        
+        <!-- SUB-TABS: BOLSAS | BOTELLONES -->
+        <ul class="nav nav-tabs mt-3" role="tablist" style="border-bottom: 2px solid #d1d5db;">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="bolsas-tab" data-bs-toggle="tab" data-bs-target="#bolsas-content" type="button" role="tab">
+              <i class="bi bi-bag"></i> BOLSAS
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="botellones-tab" data-bs-toggle="tab" data-bs-target="#botellones-content" type="button" role="tab">
+              <i class="bi bi-cup"></i> BOTELLONES
+            </button>
+          </li>
+        </ul>
+
+        <!-- CONTENIDO DE SUB-TABS -->
+        <div class="tab-content">
+          <!-- SUB-TAB: BOLSAS - REORGANIZADO -->
+          <div class="tab-pane fade show active" id="bolsas-content" role="tabpanel">
+            
+            <!-- SECCIÓN UNIFICADA: Iniciar Día + Cierre Contador -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-play-circle"></i> Control Diario de Contador
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="row row-space">
+                  <div class="col-md-3">
+                    <label for="fecha_bolsas" class="form-label required">Fecha</label>
+                    <input type="date" class="form-control" id="fecha_bolsas" value="2025-11-12">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="contador_inicio" class="form-label required">Contador Inicial</label>
+                    <input type="number" class="form-control" id="contador_inicio" placeholder="Lectura inicial" min="0">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="contador_cierre" class="form-label required">Contador Cierre</label>
+                    <input type="number" class="form-control" id="contador_cierre" placeholder="Lectura al cierre" min="0">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="diferencia_contador" class="form-label">Diferencia (Auto)</label>
+                    <input type="number" class="form-control" id="diferencia_contador" placeholder="Calculado automáticamente" readonly style="background-color: #f3f4f6;">
+                  </div>
+                </div>
+
+
+              </div>
+            </div>
+
+            <!-- SECCIÓN: REGISTRAR BOBINA - SIN FECHA -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-plus-circle"></i> Registrar Bobina
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="row row-space">
+                  <div class="col-md-6">
+                    <label for="peso_bobina" class="form-label">Peso de Bobina (kg) <small style="color: #6b7280;">(Opcional)</small></label>
+                    <input type="number" class="form-control" id="peso_bobina" placeholder="Ej: 25.5 (si es bobina nueva)" step="0.1" min="0">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="numero_bobina" class="form-label">Número de Bobina (Auto) <small style="color: #6b7280;">(se genera si ingresas peso)</small></label>
+                    <input type="text" class="form-control" id="numero_bobina" placeholder="Se genera automáticamente" readonly style="background-color: #f3f4f6;">
+                  </div>
+                </div>
+
+
+              </div>
+            </div>
+
+            <!-- SECCIÓN: RESUMEN DE BOBINAS REGISTRADAS -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-table"></i> Bobinas Registradas del Día
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table" id="tabla_bobinas">
+                    <thead>
+                      <tr>
+                        <th>Número Bobina</th>
+                        <th>Peso (kg)</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="3" class="text-center text-muted" style="padding: 2rem;">
+                          <i class="bi bi-inbox"></i> No hay bobinas registradas aún
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECCIÓN: REGISTRAR PRODUCCIÓN DE BOLSAS - SIN FECHA -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-bag-check"></i> Registrar Producción de Bolsas
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="alert alert-info" style="margin-bottom: 1rem;">
+                  <i class="bi bi-info-circle"></i> <strong>ℹ️ Bobina:</strong> Crea una NUEVA con peso, o selecciona una EXISTENTE
+                </div>
+
+                <div class="row row-space">
+                  <div class="col-md-6">
+                    <label for="bobina_produccion" class="form-label required">Bobina * <small style="color: #6b7280;">(nueva o existente)</small></label>
+                    <select class="form-select" id="bobina_produccion">
+                      <option value="">-- Selecciona una bobina --</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="bolsitas_producidas" class="form-label required">Bolsitas Producidas</label>
+                    <input type="number" class="form-control" id="bolsitas_producidas" placeholder="Total de bolsitas" min="0">
+                  </div>
+                </div>
+
+                <div class="row row-space">
+                  <div class="col-md-6">
+                    <label for="bolsitas_rechazadas_prod" class="form-label required">Bolsitas Rechazadas</label>
+                    <input type="number" class="form-control" id="bolsitas_rechazadas_prod" placeholder="Defectuosas/rotas" min="0" value="0">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="motivo_rechazo_bolsa" class="form-label" id="label_motivo_bolsa">Motivo Rechazo</label>
+                    <select class="form-select" id="motivo_rechazo_bolsa">
+                      <option value="">-- Selecciona un motivo --</option>
+                      <option value="Rotura en máquina">Rotura en máquina</option>
+                      <option value="Densidad delgada">Densidad delgada</option>
+                      <option value="Sello defectuoso">Sello defectuoso</option>
+                      <option value="Rotura en venta">Rotura en venta</option>
+                      <option value="Otro">Otro</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row row-space">
+                  <div class="col-md-6">
+                    <label for="packs_calculados" class="form-label">Packs Calculados (Auto)</label>
+                    <input type="number" class="form-control" id="packs_calculados" placeholder="Calculado: (bolsitas-rechazadas) / 35" readonly style="background-color: #f3f4f6;">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="packs_operador" class="form-label required">Packs que Empacó el Operador</label>
+                    <input type="number" class="form-control" id="packs_operador" placeholder="Cantidad real empacada" min="0">
+                  </div>
+                </div>
+
+                <!-- ALERT DE VALIDACIÓN -->
+                <div class="alert alert-warning" id="alerta_packs" style="display: none; margin-bottom: 1rem; margin-top: 1rem;">
+                  <i class="bi bi-exclamation-triangle"></i> <strong>⚠️ Alerta de Packs:</strong> <span id="alerta_packs_text"></span>
+                </div>
+
+                <!-- UN SOLO BOTÓN DE GUARDAR -->
+                <button type="button" class="btn btn-success" id="btn_registrar_todo">
+                  <i class="bi bi-save"></i> Guardar Todo
+                </button>
+              </div>
+            </div>
+
+            <!-- SECCIÓN: RESUMEN DE PRODUCCIÓN DE BOLSAS -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-table"></i> Resumen de Producción de Bolsas
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table" id="tabla_produccion">
+                    <thead>
+                      <tr>
+                        <th>Bobina</th>
+                        <th>Bolsitas Prod.</th>
+                        <th>Rechazadas</th>
+                        <th>Packs Calc.</th>
+                        <th>Packs Operador</th>
+                        <th>Motivo</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="11" class="text-center text-muted" style="padding: 2rem;">
+                          <i class="bi bi-inbox"></i> No hay registros aún
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECCIÓN: ESTADÍSTICAS FINALES -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-graph-up"></i> Estadísticas del Día
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-3">
+                    <div class="stat-box">
+                      <div class="stat-label">Bobinas Registradas</div>
+                      <div class="stat-value" id="stat_bobinas_totales">0</div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="stat-box">
+                      <div class="stat-label">Bolsitas Producidas</div>
+                      <div class="stat-value" id="stat_bolsitas_producidas">0</div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="stat-box">
+                      <div class="stat-label">Packs Operador Total</div>
+                      <div class="stat-value" id="stat_packs_operador_total">0</div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="stat-box">
+                      <div class="stat-label">Factor de Ajuste</div>
+                      <div class="stat-value" id="stat_factor_ajuste" style="color: var(--warning-color);">--</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- TAB: BOTELLONES -->
+          <div class="tab-pane fade" id="botellones-content" role="tabpanel">
+
+            <!-- SECCIÓN: REGISTRAR LOTE -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-plus-circle"></i> Registrar Lote de Botellones
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="row row-space">
+                  <div class="col-md-6">
+                    <label for="fecha_botellones" class="form-label required">Fecha</label>
+                    <input type="date" class="form-control" id="fecha_botellones" value="2025-11-12">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="hora_inicio_bot" class="form-label required">Hora Inicio</label>
+                    <input type="time" class="form-control" id="hora_inicio_bot">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="hora_cierre_bot" class="form-label required">Hora Cierre</label>
+                    <input type="time" class="form-control" id="hora_cierre_bot">
+                  </div>
+                </div>
+
+                <div class="row row-space">
+                  <div class="col-md-6">
+                    <label for="botellones_producidos" class="form-label required">Botellones Producidos</label>
+                    <input type="number" class="form-control" id="botellones_producidos" placeholder="Total de botellones" min="0">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="botellones_rechazados" class="form-label required">Botellones Rechazados</label>
+                    <input type="number" class="form-control" id="botellones_rechazados" placeholder="Defectuosos/rechazados" min="0" value="0">
+                  </div>
+                </div>
+
+                <div class="row row-space">
+                  <div class="col-md-6">
+                    <label for="motivo_rechazo_bot" class="form-label" id="label_motivo_bot">Motivo Rechazo</label>
+                    <select class="form-select" id="motivo_rechazo_bot">
+                      <option value="">-- Selecciona un motivo --</option>
+                      <option value="Rotura en llenado">Rotura en llenado</option>
+                      <option value="Defecto de tapa">Defecto de tapa</option>
+                      <option value="Mal sellado">Mal sellado</option>
+                      <option value="Defecto de etiqueta">Defecto de etiqueta</option>
+                      <option value="Otro">Otro</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row row-space">
+                  <div class="col-12">
+                    <label for="observaciones_bot" class="form-label">Observaciones</label>
+                    <textarea class="form-control" id="observaciones_bot" rows="2" placeholder="Notas adicionales..."></textarea>
+                  </div>
+                </div>
+
+                <button type="button" class="btn btn-success" id="btn_registrar_botellones">
+                  <i class="bi bi-save"></i> Registrar Lote
+                </button>
+              </div>
+            </div>
+
+            <!-- SECCIÓN: RESUMEN DE BOTELLONES -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-table"></i> Resumen de Botellones Registrados
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table" id="tabla_botellones">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Hora Inicio</th>
+                        <th>Hora Cierre</th>
+                        <th>Producidos</th>
+                        <th>Rechazados</th>
+                        <th>Motivo</th>
+                        <th>Observaciones</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="8" class="text-center text-muted" style="padding: 2rem;">
+                          <i class="bi bi-inbox"></i> No hay registros aún
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECCIÓN: ESTADÍSTICAS BOTELLONES -->
+            <div class="card mt-4">
+              <div class="card-header">
+                <span class="icon-title">
+                  <i class="bi bi-graph-up"></i> Estadísticas del Día
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="stat-box">
+                      <div class="stat-label">Total Botellones Producidos</div>
+                      <div class="stat-value" id="stat_botellones_producidos">0</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="stat-box">
+                      <div class="stat-label">Total Rechazados</div>
+                      <div class="stat-value" id="stat_botellones_rechazados_total" style="color: var(--danger-color);">0</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="stat-box">
+                      <div class="stat-label">Eficiencia</div>
+                      <div class="stat-value" id="stat_eficiencia_botellones" style="color: var(--success-color);">100%</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TAB PRINCIPAL: CALIDAD -->
+      <div class="tab-pane fade" id="calidad-main-content" role="tabpanel">
+        
+        <!-- SECCIÓN: REGISTRAR PRUEBA DE CALIDAD -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <span class="icon-title">
+              <i class="bi bi-flask"></i> Registrar Prueba de Calidad Diaria
+            </span>
+          </div>
+          <div class="card-body">
+            <div class="row row-space">
+              <div class="col-md-6">
+                <label for="fecha_calidad" class="form-label required">Fecha</label>
+                <input type="date" class="form-control" id="fecha_calidad" value="2025-11-12">
+              </div>
+              <div class="col-md-6">
+                <label for="tds_calidad" class="form-label required">TDS (ppm)</label>
+                <input type="number" class="form-control" id="tds_calidad" placeholder="Total Dissolved Solids" step="0.1" min="0">
+              </div>
+            </div>
+
+            <div class="row row-space">
+              <div class="col-md-6">
+                <label for="usm_calidad" class="form-label required">USM (µS/cm)</label>
+                <input type="number" class="form-control" id="usm_calidad" placeholder="Conductividad" step="0.1" min="0">
+              </div>
+              <div class="col-md-6">
+                <label for="temperatura_calidad" class="form-label required">Temperatura (°C)</label>
+                <input type="number" class="form-control" id="temperatura_calidad" placeholder="Temperatura del agua" step="0.1" min="-10" max="50">
+              </div>
+            </div>
+
+            <div class="row row-space">
+              <div class="col-md-6">
+                <label for="ph_calidad" class="form-label">PH <small style="color: #6b7280;">(Opcional)</small></label>
+                <input type="number" class="form-control" id="ph_calidad" placeholder="Escala 0-14" step="0.1" min="0" max="14">
+              </div>
+            </div>
+
+            <div class="row row-space">
+  <div class="col-12">
+    <label for="observaciones_calidad" class="form-label">Observaciones Generales</label>
+    <textarea class="form-control" id="observaciones_calidad" rows="2" placeholder="Notas adicionales sobre la prueba..."></textarea>
+  </div>
+</div>
+
+<!-- ✅ NUEVOS CAMPOS: SALES AL OZONO -->
+<div class="row row-space">
+  <div class="col-md-6">
+    <label for="usa_sales_ozono" class="form-label">¿Se usó Sales al Ozono? <small style="color: #6b7280;">(Opcional)</small></label>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <div>
+        <input type="radio" id="sales_si" name="usa_sales_ozono" value="true"> 
+        <label for="sales_si" style="margin: 0; font-weight: normal;">Sí</label>
+      </div>
+      <div>
+        <input type="radio" id="sales_no" name="usa_sales_ozono" value="false"> 
+        <label for="sales_no" style="margin: 0; font-weight: normal;">No</label>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <label for="observacion_sales_ozono" class="form-label">Cantidad/Observación Sales</label>
+    <input type="text" class="form-control" id="observacion_sales_ozono" placeholder="Ej: 2 litros, dosis alta, etc." disabled>
+  </div>
+</div>
+
+<!-- ✅ NUEVOS CAMPOS: SILICE -->
+<div class="row row-space">
+  <div class="col-md-6">
+    <label for="usa_silice" class="form-label">¿Se usó Silice? <small style="color: #6b7280;">(Opcional)</small></label>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <div>
+        <input type="radio" id="silice_si" name="usa_silice" value="true"> 
+        <label for="silice_si" style="margin: 0; font-weight: normal;">Sí</label>
+      </div>
+      <div>
+        <input type="radio" id="silice_no" name="usa_silice" value="false"> 
+        <label for="silice_no" style="margin: 0; font-weight: normal;">No</label>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <label for="observacion_silice" class="form-label">Cantidad/Observación Silice</label>
+    <input type="text" class="form-control" id="observacion_silice" placeholder="Ej: 1 kilo, cantidad normal, etc." disabled>
+  </div>
+</div>
+
+            <button type="button" class="btn btn-success" id="btn_registrar_calidad">
+              <i class="bi bi-save"></i> Registrar Prueba
+            </button>
+          </div>
+        </div>
+
+        <!-- SECCIÓN: RESUMEN DE PRUEBAS DE CALIDAD -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <span class="icon-title">
+              <i class="bi bi-table"></i> Pruebas de Calidad Registradas
+            </span>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table" id="tabla_calidad">
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>TDS (ppm)</th>
+      <th>USM (µS/cm)</th>
+      <th>Temperatura (°C)</th>
+      <th>PH</th>
+      <th>Observaciones</th>
+      <th>¿Sales Ozono?</th>
+      <th>Obs. Sales</th>
+      <th>¿Silice?</th>
+      <th>Obs. Silice</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+                <tbody>
+                  <tr>
+                    <td colspan="11" class="text-center text-muted" style="padding: 2rem;">
+                      <i class="bi bi-inbox"></i> No hay registros aún
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN: ESTADÍSTICAS DE CALIDAD -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <span class="icon-title">
+              <i class="bi bi-graph-up"></i> Estadísticas del Día
+            </span>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="stat-box">
+                  <div class="stat-label">TDS Promedio</div>
+                  <div class="stat-value" id="stat_tds_promedio">--</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-box">
+                  <div class="stat-label">USM Promedio</div>
+                  <div class="stat-value" id="stat_usm_promedio">--</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-box">
+                  <div class="stat-label">Temperatura Promedio</div>
+                  <div class="stat-value" id="stat_temp_promedio">--</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-box">
+                  <div class="stat-label">PH Promedio</div>
+                  <div class="stat-value" id="stat_ph_promedio">--</div>
+                </div>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-12">
+                <div class="stat-label">Total de Pruebas del Día</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: var(--primary-color);">
+                  <span id="stat_total_pruebas">0</span> prueba(s)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  <!-- SCRIPT BOOTSTRAP -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- 🔐 SUPABASE Y AUTENTICACIÓN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="roles.js"></script>
+  <script src="auth.js"></script>
+  
+  <!-- 🏭 PRODUCCIÓN -->
+  <script src="proteccion-produccion.js"></script> 
+  <script src="produccion.js"></script>
+
+  <script>
+  // Ocultar botones solo-admin
+  const rol = localStorage.getItem('rolUsuario');
+  if (rol !== 'admin') {
+    document.querySelectorAll('.admin-only').forEach(el => {
+      el.style.display = 'none';
+    });
+  }
+</script>
+  </body>
+</html>

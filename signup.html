@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro - Agua Zafiro</title>
+</head>
+<body>
+  <h1>Registro de Usuario</h1>
+
+  <form id="signup-form">
+    <label>Email:</label><br>
+    <input type="email" id="email" required><br><br>
+
+    <label>Contraseña:</label><br>
+    <input type="password" id="password" required><br><br>
+
+    <button type="submit">Registrarse</button>
+  </form>
+
+  <p id="message"></p>
+
+  <script type="module">
+    // Importa la librería de Supabase
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    // Configuración con tu URL y KEY públicas
+    const SUPABASE_URL = "https://wgogbzsmhswbhpzebodr.supabase.co"; 
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indnb2dienNtaHN3YmhwemVib2RyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc3NjA3MjAsImV4cCI6MjA3MzMzNjcyMH0.X1kriRg0XxtcWkub8njVf4DHRQ5CvDuCwn5obVmukCM";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const form = document.getElementById("signup-form");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password
+      });
+
+      if (error) {
+        message.textContent = "❌ Error: " + error.message;
+        message.style.color = "red";
+      } else {
+        message.textContent = "✅ Registro exitoso. Revisa tu correo para confirmar.";
+        message.style.color = "green";
+        console.log("Nuevo usuario:", data.user);
+      }
+    });
+  </script>
+</body>
+</html>

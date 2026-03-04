@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Agua Zafiro</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <style>
+    /* Estilos específicos para login */
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 400px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .login-logo {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+
+    .login-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 5px;
+    }
+
+    .login-subtitle {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: white;
+      box-sizing: border-box;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    .login-button {
+      width: 100%;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    .login-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+    }
+
+    .login-button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .error-message, .success-message {
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      display: none;
+      text-align: center;
+    }
+
+    .demo-users {
+      background: #f8fafc;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .demo-title {
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .demo-user {
+      background: white;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      border: 1px solid #e5e7eb;
+      transition: all 0.2s ease;
+      font-size: 12px;
+    }
+
+    .demo-user:hover {
+      border-color: #3b82f6;
+      background: #f0f9ff;
+    }
+
+    .demo-user-name {
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .demo-user-role {
+      color: #6b7280;
+      font-size: 11px;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .debug-button {
+      background: #dc2626;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-top: 10px;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo">💧</div>
+        <h1 class="login-title">Agua Zafiro</h1>
+        <p class="login-subtitle">Sistema de Gestión</p>
+      </div>
+
+      <form id="loginForm">
+        <div class="error-message" id="error-message"></div>
+        <div class="success-message" id="success-message"></div>
+
+        <div class="form-group">
+          <label class="form-label" for="username">Usuario</label>
+          <input type="text" id="username" class="form-input" placeholder="Ingresa tu usuario" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Contraseña</label>
+          <input type="password" id="password" class="form-input" placeholder="Ingresa tu contraseña" required>
+        </div>
+
+        <button type="submit" class="login-button">
+          Iniciar Sesión
+        </button>
+      </form>
+
+      <!-- Panel de usuarios demo -->
+      <div class="demo-users">
+        <div class="demo-title">Usuarios de Prueba</div>
+        
+        <div class="demo-user" onclick="autoLogin('admin', 'admin123')">
+          <div class="demo-user-name">admin</div>
+          <div class="demo-user-role">Administrador - Acceso completo</div>
+        </div>
+
+        <div class="demo-user" onclick="autoLogin('socio', 'socio123')">
+          <div class="demo-user-name">socio</div>
+          <div class="demo-user-role">Solo lectura - Ver todo sin modificar</div>
+        </div>
+
+        <div class="demo-user" onclick="autoLogin('vendedor1', 'venta123')">
+          <div class="demo-user-name">vendedor1</div>
+          <div class="demo-user-role">Ventas - Capturador y calendario</div>
+        </div>
+
+        <div class="demo-user" onclick="autoLogin('vendedor2', 'venta123')">
+          <div class="demo-user-name">vendedor2</div>
+          <div class="demo-user-role">Ventas - Capturador y calendario</div>
+        </div>
+      </div>
+
+      <!-- Botón debug temporal -->
+      <button type="button" class="debug-button" onclick="localStorage.clear(); location.reload();">
+        🗑️ Limpiar Sesión y Recargar
+      </button>
+    </div>
+  </div>
+
+  <!-- 📡 SUPABASE CDN - ORDEN CORRECTO -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- 🔑 CONFIGURACIÓN SUPABASE -->
+  <script src="supabase-config.js"></script>
+  
+  <!-- 🔐 SISTEMA DE AUTENTICACIÓN -->
+  <script src="auth.js"></script>
+
+  <script>
+    // 🎯 FUNCIÓN AUTO-LOGIN PARA BOTONES DEMO
+    function autoLogin(username, password) {
+      document.getElementById('username').value = username;
+      document.getElementById('password').value = password;
+      
+      // Simular submit del formulario
+      const form = document.getElementById('loginForm');
+      const event = new Event('submit', { bubbles: true, cancelable: true });
+      form.dispatchEvent(event);
+    }
+
+    console.log('✅ Login page loaded with Supabase integration');
+  </script>
+</body>
+</html>
