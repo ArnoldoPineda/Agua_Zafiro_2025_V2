@@ -7,13 +7,13 @@ let creditosCount = 0;
 let guardandoRegistro = false;
 
 const vendedores = ['Brayan', 'Ariel', 'Ever','Bodega'];
-const ciudades = ['Comayagua', 'Siguatepeque', 'Ajuterique', 'El Rosario', 'Flores', 'Zambrano', 'El Pantanal', 'Bodega'];
+const ciudades = ['Comayagua', 'Siguatepeque', 'Ajuterique', 'El Rosario', 'Flores', 'Zambrano', 'El Pantanal', 'La Paz', 'Playitas', 'Bodega'];
 const productos = ['Botellones', 'Bolsas'];
 const categoriasGastos = [
   'Combustible', 'Planilla Omar', 'Planilla Tomas', 'Planilla Brayan', 'Sales', 'Bobinas',
   'Edgardo', 'Arreglo Vehículo', 'Arreglo Bodega', 'Electricidad', 'Cuota del Camión',
   'Transferencia', 'Chapeada', 'Flete Agua','Aceite Pagos', 'Aceite Flete','Alquiler Vehículo', 'Préstamos Personales',
-  'Abonos a Deudas', 'Otros'
+  'Abonos a Deudas', 'Gastos Administrativos', 'Otros'
 ];
 const categoriasCreditos = ['CORRAL LA VILLA', 'EMPRESA SERINAL', 'CORRAL TAMPISQUE', 'TRANSFERENCIAS POR VENTAS', 'OTROS'];
 
