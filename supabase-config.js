@@ -25,7 +25,7 @@ const SupabaseAuth = {
         .select('*')
         .eq('username', username)
         .eq('password_hash', password)
-        .single();
+        .maybeSingle();
 
       if (error || !users) {
         console.error('❌ Usuario o contraseña incorrectos');
@@ -123,7 +123,7 @@ const SupabaseData = {
           created_at: new Date().toISOString()
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 
@@ -177,7 +177,7 @@ const SupabaseData = {
           created_at: new Date().toISOString()
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 
@@ -265,7 +265,7 @@ const SupabaseData = {
           onConflict: 'fecha'
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (upsertError) throw upsertError;
 
@@ -405,7 +405,7 @@ const SupabaseProduccion = {
           created_by: currentUser.id
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       console.log('✅ Orden de producción creada:', orden.id);
@@ -472,7 +472,7 @@ const SupabaseProduccion = {
           usuario: currentUser.username
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 
@@ -480,7 +480,7 @@ const SupabaseProduccion = {
         .from('inventario_materia_prima')
         .select('cantidad')
         .eq('id', data.material_id)
-        .single();
+        .maybeSingle();
 
       if (inventarioActual) {
         const cantidadCambio = data.tipo === 'entrada' 
@@ -522,7 +522,7 @@ const SupabaseProduccion = {
           cantidad: parseFloat(data.cantidad)
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       console.log('✅ Lote creado:', lote.numero_lote);
@@ -548,7 +548,7 @@ const SupabaseProduccion = {
           analista: data.analista
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       console.log('✅ Control de calidad registrado');
