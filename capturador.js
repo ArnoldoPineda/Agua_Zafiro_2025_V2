@@ -7,7 +7,7 @@ let creditosCount = 0;
 let guardandoRegistro = false;
 
 const vendedores = ['Brayan', 'Ariel', 'Ever','Bodega'];
-const ciudades = ['Comayagua', 'Siguatepeque', 'Ajuterique', 'El Rosario', 'Flores', 'Zambrano', 'El Pantanal', 'La Paz', 'Playitas', 'Bodega'];
+const ciudades = ['Comayagua', 'Siguatepeque', 'Ajuterique', 'El Rosario', 'Flores', 'Plazuela', 'Zambrano', 'El Pantanal', 'La Paz', 'Playitas', 'Bodega'];
 const productos = ['Botellones', 'Bolsas'];
 const categoriasGastos = [
   'Combustible', 'Planilla Omar', 'Planilla Tomas', 'Planilla Brayan', 'Sales', 'Bobinas',
